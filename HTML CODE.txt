@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusON - Bütüncül Öğrenci Analiz Platformu</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                margin: 0; 
+                padding: 0;
+                border: none; 
+                box-shadow: none; 
+            }
+            .no-print { display: none !important; }
+            @page { margin: 1.5cm; size: A4; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-700">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        // --- ICON COMPONENTS (Inline SVG) ---
+        const Icons = {
+            Dashboard: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>,
+            GraduationCap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+            PieChart: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>,
+            Users: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+            Zap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+            Target: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+            BrainCircuit: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588"/><path d="M12 12h.01"/></svg>,
+            AlertTriangle: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>,
+            BarChart3: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>,
+            Heart: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+            PenTool: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>,
+            Smile: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>,
+            Printer: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>,
+            ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
+            CheckCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            Anchor: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" x2="12" y1="22" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>,
+            Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+            Gift: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>,
+            List: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>,
+            Map: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" x2="8" y1="2" y2="18"/><line x1="16" x2="16" y1="6" y2="22"/></svg>,
+            Snowflake: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg>,
+            Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        };
+
+        // --- CONSTANTS & QUESTIONS ---
+        const QUESTIONS = {
+            // ... (Existing questions omitted for brevity, keeping all previously added) ...
+            OTI_A: [
+                "Ders çalışmaya başlamadan önce ne yapacağımı planlarım.", "Çalışma masam düzenli ve sadedir.", "Çalışırken cep telefonumu odadan çıkarırım/kapatırım.",
+                "Anlamadığım konuları ertelemeden öğretmenime/koçuma sorarım.", "Deneme sınavı sonuçlarımı analiz eder, hatalarımı öğrenirim.", "Uykumu düzenli alırım (Günde en az 7-8 saat).",
+                "Uzun süre masa başında dikkatim dağılmadan oturabilirim.", "Okul/Dershane dışında günlük tekrar yaparım.", "Sınav/Ders stresiyle başa çıkabilirim.", "Hedefim için içsel motivasyona sahibim."
+            ],
+            ABBA_A: ["Ailem, sınav sonuçlarım ne olursa olsun beni sevdiğini hissettirir.", "Evde sürekli 'Ders çalış' uyarısı alırım, bu beni strese sokar.", "Ailem beni sık sık başkalarının çocuklarıyla kıyaslar.", "Ders dışındaki hobilerim ailem tarafından desteklenir.", "Notlarım düştüğünde ailem 'Nasıl çözeriz?' diye sorar.", "Notlarım düştüğünde ailem bana küser veya kızar.", "Geleceğimle ilgili kararları benim yerime ailem verir.", "Ailem benden 'mükemmel' olmamı bekler.", "Sınav kaygımı ailemle rahatça paylaşabilirim.", "Ailem başarısız olursam emeklerinin boşa gideceğini söyler."],
+            ABBA_B: ["Kendimi değerli ve sevilmeye layık görüyorum.", "Başarısız olduğumda kendimi 'işe yaramaz' hissederim.", "Hata yaptığımda kendimi suçlarım.", "Başkalarının düşünceleri benimkinden önemlidir.", "Zorluklarla mücadele gücünü kendimde bulurum.", "Kendimi fiziksel ve kişisel olarak barışık hissederim.", "Sık sık 'Keşke başka biri olsaydım' derim.", "Fikirlerimi rahatça ifade edebilirim.", "Eleştirildiğimde aşırı üzülürüm.", "Geleceğe dair umutluyum."],
+            ABBA_C: ["Yeterince çalışırsam öğrenebileceğime inanırım.", "Sayısal derslerde zihnimin 'basmadığını' düşünürüm.", "Bildiğim soruları bile yapamayacağımdan korkarım.", "Arkadaşlarımdan daha yavaş öğrendiğimi düşünüyorum.", "Yeni konular beni heyecanlandırır.", "Başarısızlık yeteneksizlikten değil, yanlış çalışmadandır.", "Öğretmenlerimin beni başarılı gördüğünü düşünürüm.", "Dikkatim dağılsa bile tekrar odaklanabilirim.", "Sınav anında heyecanımı kontrol edebilirim.", "Hedefimi kazanacak potansiyele sahibim."],
+            AG_MOT_A: ["Geleceğe baktığımda karanlık bir tablo görüyorum.", "İstediğim sonucu asla alamayacağıma inanıyorum.", "Herkesin benden şanslı olduğunu düşünüyorum.", "Hayallerime ulaşmak imkansız görünüyor.", "Sınavdan sonra hayatımın iyi olacağına umudum yok.", "Konular yetişmeyecek hissi artıyor.", "Çevremdekileri hayal kırıklığına uğratacağım."],
+            AG_MOT_B: ["İlk 10.000 gelmezse hayatım mahvolur.", "Bir denemede başarısız olursam bu yetersiz olduğumu gösterir.", "Sınav anında elim ayağım dolaşacak.", "Kazanamazsam rezil olurum.", "Öğretmenlerimin 'Bu yapamaz' dediğini biliyorum.", "Bir konuyu anlamadıysam diğerlerini de anlamam.", "Kendimi başarısız hissediyorum, demek ki başarısızım.", "Ben 'tembel' veya 'kapasitesiz' biriyim."],
+            AG_MOT_C: ["Başarısız olsam bile mutlu olabilirim.", "Gelecek planlarım beni heyecanlandırıyor.", "Çabalarsam durumu değiştirebilirim.", "Zorluklarda pes etmem çözüm ararım.", "Kendimi geliştirecek güce sahibim."],
+            ADTE_A: ["Zihnim sürekli başka yere gider.", "Soruyu tam okumadan işlem yaparım.", "Dersi dinlerken zihnim kopar.", "Biri konuşurken aklım başka yerde gibidir.", "Ödevleri yarım bırakırım.", "Organize olmakta güçlük çekerim.", "Zihinsel çaba gerektiren işlerden kaçınırım.", "Eşyalarımı kaybederim.", "Dış sesler dikkatimi hemen dağıtır.", "Günlük işleri unuturum.", "Detaylara inildiğinde sıkılırım."],
+            ADTE_B: ["Ellerim ayaklarım kıpır kıpırdır.", "Sık sık kalkar dolaşırım.", "İçimde motor çalışıyormuş gibi hissederim.", "Sessizce durmak zordur.", "Çok konuşurum.", "Soru bitmeden cevabı yapıştırırım.", "Sıra beklemek işkence gibidir.", "Başkalarının sözünü keserim.", "Ani kararlar alırım.", "Çabuk öfkelenirim."],
+            APEA_COG: ["Dersi anlıyorum ama soruyu yapamıyorum.", "Temel konu eksiklerim var.", "Uzun sorularda dikkatim dağılıyor.", "Çözüm mantığını kuramıyorum.", "Çok çabuk unutuyorum.", "İşlem hatası yapıyorum.", "Çalışma yöntemim yanlış.", "Süreyi yetiştiremiyorum.", "Soyut kavramları anlamıyorum.", "Önemli bilgiyi ayırt edemiyorum."],
+            APEA_EMO: ["Ne kadar çalışsam da yapamayacağım.", "Sınav anında kalbim çarpıyor.", "Beklentiler baskı yaratıyor.", "Ders çalışma isteğim yok.", "Başarısız olursam sevilmem.", "Kendimi kıyaslıyorum.", "Hedefim yok.", "Zorlanınca bırakıyorum.", "Sınav sistemi öfkelendiriyor.", "Hata yapmaktan korkuyorum."],
+            APEA_BEH: ["Sürekli erteliyorum.", "Telefon başında saatler harcıyorum.", "Plansız çalışıyorum.", "Uyku düzenim bozuk.", "Ortam dağınık/gürültülü.", "Sadece sevdiğim dersleri çalışıyorum.", "Denemeden kaçıyorum.", "Tekrar yapmıyorum.", "Beslenmem düzensiz.", "Verdiğim sözleri tutamıyorum."],
+            APK_S_COG: ["Bildiğimi unutacağımı düşünüyorum.", "Aileme ne derim düşüncesi.", "Hiçbir şey bilmiyorum hissi.", "Başkaları hızlı çözünce panik.", "Sürekli hatalarımı düşünüyorum.", "Felaket senaryoları kuruyorum.", "Soruyu 3-4 kez okuyorum.", "Zaman yetmeyecek korkusu."],
+            APK_S_PHY: ["Kalbim yerinden çıkacak gibi.", "Ellerim titriyor/terliyor.", "Midem bulanıyor/ağrıyor.", "Nefes almakta zorlanıyorum.", "Tuvalet ihtiyacı hissediyorum.", "Kaslarım kasılıyor.", "Ağzım kuruyor.", "Baş dönmesi yaşıyorum."],
+            APK_S_BEH: ["Denemeden kaçıyorum.", "Ders çalışmayı erteliyorum.", "Zor soruda bırakıyorum.", "Tiklerim (tırnak yeme vb.) artıyor.", "Kitapçığı kontrol etmeye korkuyorum.", "Hızlı çözüp kaçmak istiyorum.", "Sürekli mola veriyorum.", "Yeme düzenim bozuldu."],
+            AS_EQ_SELF: ["Duygumun sebebini bilirim.", "Ruh halimin etkisini fark ederim.", "Güçlü/zayıf yönlerimi kabul ederim.", "Duygularımı ifade ederim.", "Stres tepkilerimi fark ederim."],
+            AS_EQ_MANAGE: ["Sınavda kendimi sakinleştiririm.", "Eleştiriyi dinlerim.", "Ani tepki vermem.", "Dikkatimi toparlarım.", "Sorunla karşılaşınca çözüm ararım."],
+            AS_EQ_MOT: ["Tekrar deneme isteğim vardır.", "Hedeflerim heyecanlandırır.", "Hazzı erteleyebilirim.", "İnancım engellerden büyüktür.", "Öğrenmekten keyif alırım."],
+            AS_EQ_EMP: ["Arkadaşımın hissini anlarım.", "Yargılamadan dinlerim.", "Farklı görüşe saygı duyarım.", "Şakanın etkisini fark ederim.", "Yardım etmek önemlidir."],
+            AS_EQ_SOC: ["Takım oyununa uyarım.", "Kolay arkadaşlık kurarım.", "Arabulucu olurum.", "Kendimi kırmadan ifade ederim.", "Yardım istemekten çekinmem."],
+            ADDE_EMO: ["Ailem, sınav sonucum ne olursa olsun beni seveceğini hissettirir.", "Sınav stresimi veya korkularımı ailemle rahatça konuşabilirim.", "Başarısız olduğumda beni yargılamak yerine moral verirler.", "Ailem bana güvendiğini sözleriyle ve davranışlarıyla belli eder.", "Ders çalışmadığım zamanlarda bile bana değer verirler.", "Ailem beni başkalarının çocuklarıyla kıyaslamaz.", "Sınav kaygısı yaşadığımda ailem beni sakinleştirir.", "Evde huzurlu ve sevgi dolu bir ortam olduğunu hissederim.", "Ailem kararlarıma saygı duyar.", "Ailemle vakit geçirmek beni dinlendirir."],
+            ADDE_ACAD: ["Ailem bana sessiz çalışma ortamı sağlar.", "Kitap/Dershane desteğini karşılarlar.", "Deneme sonuçlarımı baskı yapmadan takip ederler.", "Ailem sınav sistemi hakkında bilgi sahibidir.", "Ders çalışırken dikkatimi dağıtmazlar.", "Okul toplantılarına katılırlar.", "Uyku ve beslenmeme dikkat ederler.", "Gelecek planlarım hakkında mantıklı konuşurlar.", "Sorunlarımda rehberlik ederler.", "Evdeki sorumluluklarımı dersime göre ayarlarlar."],
+            CDO_PLAN: ["Haftalık programımı yazılı hale getiririm.", "Bugün neyi bitireceğim bellidir.", "Zor dersleri zihnim açıkken çalışırım.", "Masam sadedir.", "Okul ile kendi programımı birleştiririm.", "Telafi saatleri bırakırım.", "Hangi kaynaktan çalışacağımı belirlerim.", "Acil ve Önemli ayrımı yaparım."],
+            CDO_CONT: ["İsteğim olmasa da programa sadık kalırım.", "Program aksasa da ertesi gün devam ederim.", "Hafta sonları da düzenimi bozmam.", "Başladığım kitabı yarım bırakmam.", "Sınavım kötü gelse de tempomu düşürmem.", "Zinciri Kırma metodunu uygularım.", "Zor konuda vazgeçmem.", "Rutinimi kolay değiştirmem."],
+            CDO_DISC: ["Ders çalışırken telefonu odadan çıkarırım.", "Mola bitince hemen dönerim.", "Dikkatim dağılsa da toparlarım.", "Ders saatinde 'Hayır' diyebilirim.", "Blok çalışma bitmeden kalkmam.", "Hedefim bitmeden yatmam.", "Müzik/atıştırmalık tuzağına düşmem.", "Kurallarıma uyarım."],
+            CZ_VERBAL: ["Kelime oyunlarını severim.", "Okuduğumu/izlediğimi anlatırım.", "Özet çıkararak öğrenirim."],
+            CZ_LOGIC: ["Neden-sonuç ilişkisi kurarım.", "Hesaplama/Strateji severim.", "Listeler/Şemalarla çalışırım."],
+            CZ_VISUAL: ["Yön bulmada/Hayal etmede iyiyim.", "Resim/Grafik dikkatimi çeker.", "Renkli kalem/Zihin haritası kullanırım."],
+            CZ_MUSIC: ["Müzik/Ritimle odaklanırım.", "Şarkı sözlerini çabuk ezberlerim.", "Ses tonlarını ayırt ederim."],
+            CZ_KIN: ["Hareketsiz duramam.", "Dokunarak/Yaparak öğrenirim.", "El becerisi gerektiren işleri severim."],
+            CZ_SOCIAL: ["Grup çalışmasını severim.", "Empati yeteneğim yüksektir.", "Tartışarak öğrenirim."],
+            CZ_INTRA: ["Bireysel çalışmayı severim.", "Güçlü/zayıf yönlerimi bilirim.", "Sessiz ortamda odaklanırım."],
+            CZ_NATURE: ["Doğada vakit geçirmeyi severim.", "Biyoloji/Coğrafya ilgimi çeker.", "Çevresel değişimleri fark ederim."],
+            ADT_GEN: ["Bu ders işime yaramaz.", "Bu ders için özel zeka lazım.", "Çalışsam da yapamam.", "Konular çok soyut.", "Temelim eksik.", "Dersi görünce modum düşüyor.", "Uykum geliyor.", "Elim titriyor.", "Başarım şans eseri.", "Hoca beni soğutuyor.", "Hep erteliyorum.", "Sürekli mola veriyorum.", "Not tutmuyorum.", "Ödev yapmıyorum.", "Testleri atlıyorum."],
+            // YENİ EKLENENLER:
+            IM_OM_A: ["Mükemmel olmayacaksa başlamam.", "İşin büyüklüğü gözümü korkutuyor.", "Son gece hallederim derim.", "Biri söyleyince yapasım kaçar.", "Masada canım sıkılır."],
+            IM_OM_B: ["Yataktan kalkmak zor gelir.", "Enerjim hemen tükenir.", "Hedef heyecanlandırmıyor.", "Başarısız olmaktan korkuyorum.", "Kendime sözümü tutamıyorum."],
+            DOPA_SELF: ["Testi yaparken gözlerim yoruldu.", "Harfler birbirine girdi.", "Sıkıldım, bitse de gitsek dedim.", "Dış sesler dikkatimi dağıttı.", "Gördüm ama işaretleyemedim.", "Hata korkusuyla yavaşladım.", "Robot gibi hissettim.", "Sınavlarda da böyle kopuk hissediyorum."],
+            IPKO_VERBAL: ["Kitap okumayı/dinlemeyi severim.", "Yeni kelimeler ilgimi çeker.", "Tekerleme/Şiir ezberlerim."],
+            IPKO_LOGIC: ["Saymayı/Gruplandırmayı severim.", "Çok soru sorarım (Neden?).", "Zeka oyunlarında iyiyim."],
+            IPKO_VISUAL: ["Resim yapmayı severim.", "Lego/Yapboz severim.", "Yolları/Detayları unutmam."],
+            IPKO_KIN: ["Hareketsiz duramam.", "Koşmayı/Atlamayı severim.", "Dokunmak/Kurcalamak isterim."],
+            IPKO_MUSIC: ["Melodileri mırıldanırım.", "Ritim tutarım.", "Şarkıları çabuk öğrenirim."],
+            IPKO_SOCIAL: ["Arkadaşlarımla oynamayı severim.", "Arkadaşımın üzüntüsünü anlarım.", "Oyunlarda liderlik yaparım."],
+            IPKO_INTRA: ["Tek başıma oynamayı severim.", "Neyi sevdiğimi iyi bilirim.", "Özel eşyalarım/günlüğüm vardır."],
+            IPKO_NATURE: ["Hayvanları severim.", "Taş/Böcek toplarım.", "Dışarıda oynamayı severim."],
+            KOLB_QUESTIONS: [
+                {q: "Yeni bir konu öğrenirken en çok neyi tercih edersin?", a: "Hislerime güvenirim (Somut)", b: "İzler ve düşünürüm (Yansıtıcı)", c: "Mantığını anlarım (Soyut)", d: "Hemen uygularım (Aktif)"},
+                {q: "Bir problemle karşılaştığında ilk tepkin ne olur?", a: "İçgüdülerimle hareket ederim", b: "Başkalarına bakarım", c: "Analiz yaparım", d: "Çözüm denerim"},
+                {q: "Sınıfta en verimli olduğun an hangisidir?", a: "Duygusal bağ kurduğumda", b: "Sessizce dinlediğimde", c: "Teoriyi kavradığımda", d: "Uygulama yaptığımda"},
+                {q: "Grup çalışmasında rolün nedir?", a: "Uyum sağlayan", b: "Gözlemci", c: "Planlayıcı", d: "Yürütücü"},
+                {q: "Sınava çalışırken tarzın nasıldır?", a: "Tartışarak", b: "Okuyarak", c: "Özet çıkararak", d: "Test çözerek"},
+                {q: "Bir şeyi 'öğrendim' demen için ne gerekir?", a: "Hissetmem", b: "Tartmam", c: "Kavramam", d: "Uygulamam"},
+                {q: "Zamanını nasıl kullanırsın?", a: "Akışına bırakırım", b: "Planlarım ama esnetirim", c: "Dakik planlarım", d: "Hızlı hareket ederim"},
+                {q: "Karar verirken neye güvenirsin?", a: "Hislerime", b: "Gözlemlerime", c: "Mantığıma", d: "Sonuçlara"},
+                {q: "İnsanlarla iletişimde nasılsın?", a: "Sıcakkanlı", b: "Mesafeli/Gözlemci", c: "Ciddi/Fikir odaklı", d: "Doğrudan/Net"},
+                {q: "Hata yaptığında ne yaparsın?", a: "Üzülürüm", b: "Nedenini düşünürüm", c: "Analiz ederim", d: "Düzeltip devam ederim"},
+                {q: "Hangi hoca tipini seversin?", a: "Arkadaş canlısı", b: "Bilgili", c: "Sistematik", d: "Pratik yaptıran"},
+                {q: "En sevdiğin söz hangisi olabilir?", a: "Kalbinin sesini dinle", b: "İki dinle bir söyle", c: "Önce anla sonra yap", d: "Kervan yolda düzülür"}
+            ]
+        };
+
+        const FORM_TYPES = [
+            { id: 'oti-a', title: 'ÖTİ-A (İlk Analiz)', icon: 'GraduationCap', description: 'Öğrenci Tanıma ve İlk Analiz (Başlangıç)' },
+            { id: 'oz-af', title: 'ÖZ-AF (360° Farkındalık)', icon: 'PieChart', description: 'Öz-Analiz, SWOT ve Yaşam Çarkı' },
+            { id: 'abba', title: 'ABBA (Aile ve Benlik)', icon: 'Users', description: 'Aile Tutumu, Benlik Saygısı, Akademik İnanç' },
+            { id: 'ag-mot', title: 'AG-MOT (Motivasyon)', icon: 'Zap', description: 'Gelecek Beklentisi ve Motivasyon Blokajları' },
+            { id: 'im-om', title: 'İM-OM (Oto-Motivasyon)', icon: 'Zap', description: 'Erteleme Türü ve İçsel Motor Analizi' },
+            { id: 'hirat', title: 'HİRAT (Hedef İzleme)', icon: 'Target', description: 'Haftalık Hedef/Gerçekleşme Takibi' },
+            { id: 'dart', title: 'DART (Hedef Yönetimi)', icon: 'Target', description: 'Makro, Mezo ve Mikro Hedef Planlama' },
+            { id: 'gts-36', title: 'GTS-36 (Gelecek Tasarım)', icon: 'Map', description: 'Tercih Simülasyonu ve Meslek Analizi' },
+            { id: 'aid-y', title: 'AİD-Y (İnanç Dönüştürme)', icon: 'BrainCircuit', description: 'Negatif İnançları Yeniden Yapılandırma' },
+            { id: 'amid', title: 'AMİD (Alt Modalite)', icon: 'BrainCircuit', description: 'Beyin Kodlarını Değiştirme Protokolü' },
+            { id: 'at-cm', title: 'AT-ÇM (Akıllı Tuş)', icon: 'Anchor', description: 'Duygu Kontrol ve Çıpalama Modülü' },
+            { id: 'mc-zp', title: 'MÇ-ZP (Mükemmellik Çemberi)', icon: 'CheckCircle', description: 'Özgüven ve Zirve Performans Çapası' },
+            { id: 'mpc', title: 'MPÇ (Mercek Modülü)', icon: 'Search', description: 'Çok Boyutlu Problem Çözme (6 Şapka)' },
+            { id: 'b-avo', title: 'B-AVO (Anti-Virüs)', icon: 'Shield', description: 'Bilişsel Anti-Virüs Operasyonu' },
+            { id: 'adte-20', title: 'ADTE-20 (Dikkat Tarama)', icon: 'AlertTriangle', description: 'Odak ve Hiperaktivite Ön Tarama' },
+            { id: 'dopa', title: 'DOPA (Dikkat Performans)', icon: 'Activity', description: 'Sürekli Dikkat ve Hata Analizi (Hibrit)' },
+            { id: 'apea-3d', title: 'APEA-3D (Engel Analizi)', icon: 'BarChart3', description: 'Bilişsel, Duygusal, Davranışsal Engeller' },
+            { id: 'apk-s', title: 'APK-S (Sınav Kaygısı)', icon: 'Heart', description: 'Sınav Stresi ve Kaygı Düzeyi' },
+            { id: 'ab-cte', title: 'AB-CTE (Cümle Tamamlama)', icon: 'PenTool', description: 'Bilinçaltı Akademik Algı Testi' },
+            { id: 'as-eq', title: 'AS-EQ (Duygusal Zeka)', icon: 'Smile', description: 'Akademik ve Sosyal Duygusal Zeka' },
+            { id: 'adde-20', title: 'ADDE-20 (Aile Destek)', icon: 'Users', description: 'Algılanan Aile Akademik ve Duygusal Destek' },
+            { id: 'cdo-e', title: 'ÇDÖ-E (Çalışma Disiplini)', icon: 'List', description: 'Planlama, Süreklilik ve Öz-Disiplin' },
+            { id: 'c-mod', title: 'Ç-MOD (Çikolata Modeli)', icon: 'Gift', description: 'Haz Erteleme ve Ödül Yönetimi Sistemi' },
+            { id: 'k-e-a', title: 'K-E-A (Kartopu Etkisi)', icon: 'Snowflake', description: 'Alışkanlık İnşa ve Zinciri Kırma' },
+            { id: 'cz-8', title: 'ÇZ-8 (Çoklu Zekâ)', icon: 'BrainCircuit', description: '8 Farklı Zekâ Alanı Değerlendirmesi' },
+            { id: 'i-pko', title: 'İ-PKÖ (İlköğretim Potansiyel)', icon: 'Smile', description: 'İlköğretim İçin Yetenek Keşfi' },
+            { id: 'kolb-dose', title: 'KOLB-DÖSE (Öğrenme Stili)', icon: 'Layout', description: 'Deneyimsel Öğrenme Stilleri Envanteri' },
+            { id: 'adt-o', title: 'ADT-Ö (Ders Tutumu)', icon: 'BarChart3', description: 'Branş Bazlı Tutum ve Önyargı Analizi' },
+            { id: 'pdar-360', title: 'PDAR-360 (Deneme Analizi)', icon: 'BarChart3', description: 'Panoramik Deneme Analiz Raporu' }
+        ];
+
+        // --- COMPONENTS ---
+
+        function InputGroup({ title, fields, values, onChange }) {
+            return (
+                <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                    <h4 className="font-bold text-indigo-900 mb-4 text-sm uppercase">{title}</h4>
+                    <div className="space-y-4">
+                        {fields.map(f => (
+                            <div key={f.n}>
+                                <label className="block text-xs font-semibold text-slate-500 mb-1">{f.l}</label>
+                                {f.t === 'range' ? (
+                                    <div className="flex items-center gap-3">
+                                        <input type="range" name={f.n} min="1" max={f.max} className="w-full accent-indigo-600 cursor-pointer" value={values[f.n]||5} onChange={onChange}/>
+                                        <span className="w-8 text-center font-bold text-indigo-600 bg-indigo-50 rounded px-2 py-1">{values[f.n]||5}</span>
+                                    </div>
+                                ) : (
+                                    <input type="text" name={f.n} className="w-full p-2 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="..." value={values[f.n]||''} onChange={onChange}/>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function LikertGroup({ title, prefix, questions, values, onChange, scale = 5 }) {
+            return (
+                <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    {title && <h4 className="font-bold text-indigo-900 mb-4 text-sm uppercase border-b border-indigo-50 pb-2 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-indigo-500"></div>{title}</h4>}
+                    <div className="space-y-5">
+                        {questions.map((q, idx) => (
+                            <div key={idx} className="group">
+                                <p className="text-sm text-slate-700 mb-2 font-medium group-hover:text-indigo-700 transition-colors">{idx + 1}. {q}</p>
+                                <div className="flex gap-2 justify-between bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    {Array.from({length: scale === 3 ? 4 : 5}, (_, i) => i + (scale === 3 ? 0 : 1)).map(val => (
+                                        <label key={val} className="flex-1 flex flex-col items-center cursor-pointer hover:bg-white hover:shadow-sm rounded p-1 transition-all">
+                                            <input 
+                                                type="radio" 
+                                                name={`${prefix}_${idx}`} 
+                                                value={val} 
+                                                checked={values[`${prefix}_${idx}`] === String(val)} 
+                                                onChange={onChange}
+                                                className="accent-indigo-600 w-4 h-4 mb-1"
+                                            />
+                                            <span className="text-[10px] font-bold text-slate-400">{val}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- MAIN APPLICATION ---
+
+        function FocusONApp() {
+            const [activeTab, setActiveTab] = React.useState('dashboard');
+            const [selectedForm, setSelectedForm] = React.useState(null);
+            const [formData, setFormData] = React.useState({});
+            // State for dynamic tables
+            const [hiratRows, setHiratRows] = React.useState([ { category: 'Matematik', metric: 'Soru Sayısı', target: 250, actual: 0, quality: '' }, { category: 'Türkçe', metric: 'Paragraf', target: 140, actual: 0, quality: '' }, { category: 'Konu', metric: 'Dakika', target: 300, actual: 0, quality: '' }, { category: 'Deneme', metric: 'Adet', target: 1, actual: 0, quality: '' } ]);
+            const [adtRows, setAdtRows] = React.useState([ { subject: 'Matematik', score: 5, reason: '' }, { subject: 'Fizik', score: 5, reason: '' }, { subject: 'Türkçe', score: 5, reason: '' }, { subject: 'Tarih', score: 5, reason: '' } ]);
+            const [bavoRows, setBavoRows] = React.useState([ { virus: '', type: '', antivirus: '' }, { virus: '', type: '', antivirus: '' }, { virus: '', type: '', antivirus: '' } ]);
+            const [pdarRows, setPdarRows] = React.useState([ { sub: 'Türkçe', q: 40, t: 0, f: 0, e: 0 }, { sub: 'Matematik', q: 40, t: 0, f: 0, e: 0 }, { sub: 'Fen', q: 20, t: 0, f: 0, e: 0 }, { sub: 'Sosyal', q: 20, t: 0, f: 0, e: 0 } ]);
+            const [gtsRows, setGtsRows] = React.useState([ { uni: '', dept: '', score: 'A' }, { uni: '', dept: '', score: 'B' }, { uni: '', dept: '', score: 'C' } ]);
+            
+            const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+            const [result, setResult] = React.useState(null);
+
+            const handleFormSelect = (form) => { setSelectedForm(form); setFormData({}); setResult(null); setActiveTab('form'); };
+            const handleInputChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
+            
+            // Dynamic Table Handlers
+            const handleHiratChange = (i, f, v) => { const n = [...hiratRows]; n[i][f] = v; setHiratRows(n); };
+            const handleAdtChange = (i, f, v) => { const n = [...adtRows]; n[i][f] = v; setAdtRows(n); };
+            const handleBavoChange = (i, f, v) => { const n = [...bavoRows]; n[i][f] = v; setBavoRows(n); };
+            const handlePdarChange = (i, f, v) => { const n = [...pdarRows]; n[i][f] = parseInt(v)||0; setPdarRows(n); };
+            const handleGtsChange = (i, f, v) => { const n = [...gtsRows]; n[i][f] = v; setGtsRows(n); };
+
+            const calculateSum = (data, prefix, count) => { let sum = 0; for (let i = 0; i < count; i++) { sum += parseInt(data[`${prefix}_${i}`]) || 0; } return sum; };
+            const calculateReverseSum = (data, prefix, count, indices0based, maxVal = 5, minVal = 1) => { let sum = 0; for (let i = 0; i < count; i++) { let val = parseInt(data[`${prefix}_${i}`]) || 0; if (indices0based.includes(i)) { val = (maxVal + minVal) - val; } sum += val; } return sum; };
+
+            const performAnalysis = () => {
+                setIsAnalyzing(true);
+                setTimeout(() => {
+                    let res = { score: 0, summary: '', recommendations: [], details: [], parentNote: '', color: 'gray' };
+                    const d = formData;
+
+                    switch (selectedForm.id) {
+                        case 'oti-a':
+                            const otiScore = calculateSum(d, 'oti_c', 10); res.score = otiScore;
+                            if (otiScore <= 25) { res.color = 'red'; res.summary = 'Kırmızı Bölge: Temel çalışma disiplini eksik.'; res.recommendations = ['Uyku düzeni sabitle.', 'Masa düzeni kur.']; }
+                            else if (otiScore <= 39) { res.color = 'yellow'; res.summary = 'Sarı Bölge: İstikrarsız uygulama.'; res.recommendations = ['Haftalık plan takibi yap.', 'Pomodoro tekniği kullan.']; }
+                            else { res.color = 'green'; res.summary = 'Yeşil Bölge: Yüksek disiplin.'; }
+                            res.parentNote = "Öğrencimizle çalışma alışkanlıklarını inceledik. " + (otiScore < 30 ? "Temel rutinleri oturtmak için desteğinize ihtiyacımız var." : "Gayet disiplinli ilerliyor, süreci korumalıyız.");
+                            break;
+                        
+                        case 'kolb-dose':
+                            // A=Somut(SY), B=Yansıtıcı(YG), C=Soyut(SK), D=Aktif(AY)
+                            let sy=0, yg=0, sk=0, ay=0;
+                            for(let i=0; i<12; i++) {
+                                const ans = d[`kolb_${i}`];
+                                if(ans==='a') sy++; if(ans==='b') yg++; if(ans==='c') sk++; if(ans==='d') ay++;
+                            }
+                            const algilama = sk - sy; const isleme = ay - yg;
+                            let style = "";
+                            if(algilama>=0 && isleme>=0) style = "AYRIŞTIRAN (Mühendis)";
+                            else if(algilama>=0 && isleme<0) style = "ÖZÜMSEYEN (Teorisyen)";
+                            else if(algilama<0 && isleme>=0) style = "YERLEŞTİREN (Girişken)";
+                            else style = "DEĞİŞTİREN (Fikir Babası)";
+                            res.score = style; res.summary = `Baskın Öğrenme Stili: ${style}`;
+                            res.details = [{label:'SY (His)',val:sy}, {label:'YG (İzle)',val:yg}, {label:'SK (Düşün)',val:sk}, {label:'AY (Yap)',val:ay}];
+                            if(style.includes("YERLEŞTİREN")) res.recommendations.push("Deneme-yanılma ile öğren. Bol test çöz.");
+                            if(style.includes("ÖZÜMSEYEN")) res.recommendations.push("Önce konunun mantığını oku, özet çıkar.");
+                            res.parentNote = `Öğrencimiz ${style.split(' ')[0]} stilinde öğreniyor. Bu yüzden çalışma masasında bazen farklı yöntemler denemesine izin vermeliyiz.`;
+                            break;
+
+                        case 'dopa': // Hibrit
+                            const dopaSelf = calculateSum(d, 'dopa_s', 8);
+                            const perfSpeed = parseInt(d.dopa_speed) || 0;
+                            const perfErr = parseInt(d.dopa_error) || 0;
+                            res.score = `${dopaSelf}/40`;
+                            res.summary = perfErr > 5 ? "TAVŞAN (Hızlı ama Hatalı)" : perfSpeed < 10 ? "KAPLUMBAĞA (Yavaş ama Dikkatli)" : "Dengeli Profil";
+                            res.details = [{label:'Öz-Algı Puanı',val:dopaSelf}, {label:'Hız (Satır)',val:perfSpeed}, {label:'Hata Sayısı',val:perfErr}];
+                            if(perfErr > 5) res.recommendations.push("Dur-Düşün-Yap stratejisi çalışılmalı.");
+                            res.parentNote = "Dikkat testinde " + (perfErr > 5 ? "aceleci davrandığı" : "yavaş kaldığı") + " görüldü. Hız-Kontrol dengesini kuracağız.";
+                            break;
+
+                        case 'pdar-360':
+                            let totalNet = 0, totalWrong = 0;
+                            pdarRows.forEach(r => { 
+                                const net = r.t - (r.f / 4); 
+                                totalNet += net; 
+                                totalWrong += r.f;
+                            });
+                            res.score = totalNet.toFixed(2);
+                            const errInfo = parseInt(d.err_info)||0; const errAtt = parseInt(d.err_att)||0;
+                            res.summary = errAtt > errInfo ? "DİKKAT KAÇAĞI YÜKSEK (%60+)" : "BİLGİ EKSİKLİĞİ BASKIN";
+                            res.details = [{label:'Toplam Net',val:totalNet}, {label:'Toplam Yanlış',val:totalWrong}, {label:'Dikkat Hatası',val:errAtt}];
+                            if(errAtt > 5) res.recommendations.push("Sınav anı nefes molaları verilmeli.");
+                            res.parentNote = `Deneme analizinde ${totalWrong} yanlışın ${errAtt} tanesinin sadece dikkatten kaçtığını gördük. Bilgisi var, odaklanma çalışacağız.`;
+                            break;
+
+                        case 'im-om':
+                            const imScoreA = calculateSum(d, 'im_a', 5);
+                            const imScoreB = calculateSum(d, 'im_b', 5);
+                            res.score = imScoreA + imScoreB;
+                            res.details = [{label:'Erteleme Puanı',val:imScoreA}, {label:'Motivasyon Blokajı',val:imScoreB}];
+                            res.summary = res.score > 35 ? "MOTOR BOZUK: Eylemsizlik hali." : "MARŞ BASMIYOR: Tetikleyici lazım.";
+                            if(imScoreA > 20) res.recommendations.push("5 Saniye Kuralı (Roket Kalkışı) uygula.");
+                            res.parentNote = "Öğrencimiz 'yapmak istiyor' ama 'başlayamıyor'. Bu bir irade sorunu değil, strateji hatası. Küçük adımlarla başlatacağız.";
+                            break;
+
+                        case 'oz-af':
+                            const wheelScores = ['lesson','sleep','family','friends','mood','health'].map(k => parseInt(d[`wheel_${k}`]) || 5);
+                            const avg = wheelScores.reduce((a,b)=>a+b,0) / 6; res.score = Math.round(avg * 10);
+                            res.summary = avg < 5 ? "Yaşam dengesi riskli." : "Denge iyi.";
+                            res.parentNote = "Öğrenci kendi farkındalığıyla eksiklerini buldu. Onu yargılamadan destekleyelim.";
+                            break;
+
+                        case 'abba':
+                            const scoreA = calculateReverseSum(d, 'abba_a', 10, [1,2,5,6,7,9]); 
+                            const scoreB = calculateReverseSum(d, 'abba_b', 10, [1,2,3,6,8]);
+                            const scoreC = calculateReverseSum(d, 'abba_c', 10, [1,2,3]);
+                            res.details = [{ label: 'Aile Desteği', val: scoreA }, { label: 'Benlik Saygısı', val: scoreB }, { label: 'Akademik İnanç', val: scoreC }];
+                            res.score = Math.round((scoreA+scoreB+scoreC)/1.5);
+                            if (scoreA > 40 && scoreB < 25) { res.summary = "RİSK: CAM KULE (Baskı yüksek, özgüven düşük)."; res.recommendations.push("Aile ile 'tampon bölge' görüşmesi."); }
+                            else res.summary = "Analiz Tamamlandı.";
+                            res.parentNote = "Öğrencimiz hata yapmaktan korkuyor olabilir. Sonuçtan çok çabaya odaklanalım.";
+                            break;
+
+                        case 'i-pko':
+                            // İlköğretim Zeka
+                            const ipkoScores = [
+                                {n:'Sözel', v:calculateSum(d, 'ipko_verbal', 3)}, {n:'Mantıksal', v:calculateSum(d, 'ipko_logic', 3)},
+                                {n:'Görsel', v:calculateSum(d, 'ipko_visual', 3)}, {n:'Bedensel', v:calculateSum(d, 'ipko_kin', 3)},
+                                {n:'Müziksel', v:calculateSum(d, 'ipko_music', 3)}, {n:'Sosyal', v:calculateSum(d, 'ipko_social', 3)},
+                                {n:'İçsel', v:calculateSum(d, 'ipko_intra', 3)}, {n:'Doğacı', v:calculateSum(d, 'ipko_nature', 3)}
+                            ].sort((a,b) => b.v - a.v);
+                            res.score = "Potansiyel"; res.summary = `Baskın Alan: ${ipkoScores[0].n} Zeka`;
+                            res.details = ipkoScores.slice(0,3).map(s=>({label:s.n, val:s.v}));
+                            res.parentNote = `Çocuğunuz ${ipkoScores[0].n} zekasını kullanarak dünyayı algılıyor. Oyunlarını ve derslerini buna göre seçersek çok daha mutlu öğrenir.`;
+                            break;
+
+                        default:
+                            // Generic handlers for other forms
+                            if(selectedForm.id.includes('cz-8')) {
+                                const czScores = [{n:'Sözel', v: calculateSum(d, 'cz_verbal', 3)}, {n:'Mantıksal', v: calculateSum(d, 'cz_logic', 3)}, {n:'Görsel', v: calculateSum(d, 'cz_visual', 3)}, {n:'Müziksel', v: calculateSum(d, 'cz_music', 3)}, {n:'Bedensel', v: calculateSum(d, 'cz_kinesthetic', 3)}, {n:'Sosyal', v: calculateSum(d, 'cz_social', 3)}, {n:'İçsel', v: calculateSum(d, 'cz_intra', 3)}, {n:'Doğacı', v: calculateSum(d, 'cz_nature', 3)}].sort((a,b) => b.v - a.v);
+                                res.score = czScores[0].v; res.summary = `Baskın: ${czScores[0].n} ve ${czScores[1].n}`; res.details = czScores.slice(0,3).map(s=>({label:s.n, val:s.v}));
+                                res.parentNote = `Öğrencimizin ${czScores[0].n} zekâsı çok güçlü. Çalışma yöntemini buna göre uyarladık.`;
+                            } else {
+                                res.summary = "Analiz/Protokol Kaydedildi."; res.score = 100; res.color = 'blue';
+                                res.parentNote = "Bu çalışma bir farkındalık ve strateji geliştirme seansıdır. Notlar dosyasına eklenmiştir.";
+                            }
+                    }
+                    setResult(res); setIsAnalyzing(false);
+                }, 1500);
+            };
+
+            const IconComponent = selectedForm ? Icons[selectedForm.icon] : Icons.Dashboard;
+
+            return (
+                <div className="min-h-screen flex flex-col md:flex-row">
+                    <aside className="bg-white w-full md:w-72 border-r border-slate-200 flex-shrink-0 h-auto md:h-screen md:sticky md:top-0 md:overflow-y-auto no-print z-10">
+                        <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                            <div className="flex items-center gap-2 text-indigo-700 font-extrabold text-2xl tracking-tighter">
+                                <Icons.Target /> <span>FocusON</span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-2 font-medium">Bütüncül Öğrenci Koçluk Sistemi</p>
+                        </div>
+                        <nav className="p-4 space-y-1">
+                            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === 'dashboard' ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
+                                <Icons.Dashboard /> <span>Yönetim Paneli</span>
+                            </button>
+                            <div className="mt-6 mb-2 px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Envanterler</div>
+                            <div className="space-y-1">
+                                {FORM_TYPES.map(form => {
+                                    const FormIcon = Icons[form.icon] || Icons.Dashboard;
+                                    return (
+                                        <button key={form.id} onClick={() => handleFormSelect(form)} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors text-left group ${selectedForm?.id === form.id ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-50'}`}>
+                                            <span className={selectedForm?.id === form.id ? 'text-indigo-200' : 'text-slate-400 group-hover:text-indigo-500'}><FormIcon /></span>
+                                            <span className="font-medium truncate">{form.title}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </nav>
+                    </aside>
+
+                    <main className="flex-1 p-4 md:p-10 bg-slate-50 min-h-screen">
+                        {activeTab === 'dashboard' && (
+                            <div className="max-w-6xl mx-auto animate-fade-in">
+                                <header className="mb-10 text-center md:text-left">
+                                    <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Koçluk Merkezi</h1>
+                                    <p className="text-slate-500 text-lg">Öğrencinin ihtiyacına uygun analiz modülünü seçerek başlayın.</p>
+                                </header>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {FORM_TYPES.map(form => {
+                                        const FormIcon = Icons[form.icon] || Icons.Dashboard;
+                                        return (
+                                            <div key={form.id} onClick={() => handleFormSelect(form)} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group">
+                                                <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-inner"><FormIcon /></div>
+                                                <h3 className="font-bold text-lg text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors">{form.title}</h3>
+                                                <p className="text-sm text-slate-500 leading-relaxed">{form.description}</p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'form' && selectedForm && (
+                            <div className="max-w-7xl mx-auto animate-fade-in flex flex-col xl:flex-row gap-8 items-start">
+                                <div className="w-full xl:w-1/2 no-print">
+                                    <div className="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                                        <button onClick={() => setActiveTab('dashboard')} className="hover:text-indigo-600 font-medium">Ana Sayfa</button> <Icons.ChevronRight /> <span className="text-slate-800 font-semibold">{selectedForm.title}</span>
+                                    </div>
+                                    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                                        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                                            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg"><IconComponent /></div>
+                                            <h2 className="text-xl font-bold text-slate-900">{selectedForm.title}</h2>
+                                        </div>
+                                        <div className="p-6 space-y-8 max-h-[75vh] overflow-y-auto">
+                                            
+                                            {/* --- FORM RENDER LOGIC --- */}
+                                            {selectedForm.id === 'oti-a' && <LikertGroup prefix="oti_c" questions={QUESTIONS.OTI_A} onChange={handleInputChange} values={formData} />}
+                                            {selectedForm.id === 'oz-af' && (<div className="space-y-6"><InputGroup title="Yaşam Çarkı (1-10 Puan)" fields={[{n:'wheel_lesson',l:'Ders Başarısı',t:'range',max:10}, {n:'wheel_sleep',l:'Uyku Düzeni',t:'range',max:10}, {n:'wheel_family',l:'Aile İlişkileri',t:'range',max:10}, {n:'wheel_friends',l:'Arkadaş İlişkileri',t:'range',max:10}, {n:'wheel_mood',l:'Motivasyon',t:'range',max:10}, {n:'wheel_health',l:'Sağlık',t:'range',max:10}]} onChange={handleInputChange} values={formData}/><InputGroup title="Trafik Işığı" fields={[{n:'traffic_stop',l:'🔴 DUR (Bırakılacaklar)',t:'text'}, {n:'traffic_start',l:'🟡 BAŞLA (Yenilikler)',t:'text'}, {n:'traffic_continue',l:'🟢 DEVAM ET (İyi Huy)',t:'text'}]} onChange={handleInputChange} values={formData}/></div>)}
+                                            {selectedForm.id === 'abba' && (<div className="space-y-8"><LikertGroup title="A. Aile Tutumu" prefix="abba_a" questions={QUESTIONS.ABBA_A} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Benlik Saygısı" prefix="abba_b" questions={QUESTIONS.ABBA_B} onChange={handleInputChange} values={formData} /><LikertGroup title="C. Akademik İnanç" prefix="abba_c" questions={QUESTIONS.ABBA_C} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'ag-mot' && (<div className="space-y-8"><LikertGroup title="A. Umutsuzluk" prefix="ag_mot_a" questions={QUESTIONS.AG_MOT_A} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Bilişsel Çarpıtmalar" prefix="ag_mot_b" questions={QUESTIONS.AG_MOT_B} onChange={handleInputChange} values={formData} /><LikertGroup title="C. Olumlu Gelecek" prefix="ag_mot_c" questions={QUESTIONS.AG_MOT_C} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'im-om' && (<div className="space-y-8"><LikertGroup title="A. Erteleme Türü Teşhisi" prefix="im_a" questions={QUESTIONS.IM_OM_A} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Motivasyon Bariyerleri" prefix="im_b" questions={QUESTIONS.IM_OM_B} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'hirat' && (<div className="overflow-x-auto border rounded-lg"><table className="w-full text-sm text-left"><thead className="bg-slate-50 text-slate-600 font-bold uppercase text-xs"><tr><th className="p-3">Kategori</th><th className="p-3">Hedef</th><th className="p-3">Gerçekleşen</th></tr></thead><tbody className="divide-y divide-slate-100 bg-white">{hiratRows.map((row, idx) => (<tr key={idx}><td className="p-3 font-medium">{row.category} <span className="text-slate-400 text-xs block">{row.metric}</span></td><td className="p-3"><input type="number" className="w-20 p-2 border rounded focus:ring-2 focus:ring-indigo-200 outline-none" value={row.target} onChange={(e)=>handleHiratChange(idx,'target',e.target.value)} /></td><td className="p-3"><input type="number" className="w-20 p-2 border rounded bg-indigo-50 font-semibold focus:ring-2 focus:ring-indigo-200 outline-none" value={row.actual} onChange={(e)=>handleHiratChange(idx,'actual',e.target.value)} /></td></tr>))}</tbody></table></div>)}
+                                            {selectedForm.id === 'adte-20' && (<div className="space-y-8"><p className="text-sm bg-yellow-50 text-yellow-800 p-3 rounded border border-yellow-200 flex items-center gap-2"><Icons.AlertTriangle /> Puanlama: 0 (Hiç) - 3 (Çok Sık)</p><LikertGroup title="A. Dikkatsizlik" prefix="adte_a" scale={3} questions={QUESTIONS.ADTE_A} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Hiperaktivite" prefix="adte_b" scale={3} questions={QUESTIONS.ADTE_B} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'apea-3d' && (<div className="space-y-8"><LikertGroup title="Bilişsel Boyut" prefix="apea_cog" questions={QUESTIONS.APEA_COG} onChange={handleInputChange} values={formData} /><LikertGroup title="Duygusal Boyut" prefix="apea_emo" questions={QUESTIONS.APEA_EMO} onChange={handleInputChange} values={formData} /><LikertGroup title="Davranışsal Boyut" prefix="apea_beh" questions={QUESTIONS.APEA_BEH} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'apk-s' && (<div className="space-y-8"><LikertGroup title="Bilişsel Belirtiler" prefix="apk_s_cog" questions={QUESTIONS.APK_S_COG} onChange={handleInputChange} values={formData} /><LikertGroup title="Fiziksel Belirtiler" prefix="apk_s_phy" questions={QUESTIONS.APK_S_PHY} onChange={handleInputChange} values={formData} /><LikertGroup title="Davranışsal Belirtiler" prefix="apk_s_beh" questions={QUESTIONS.APK_S_BEH} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'as-eq' && (<div className="space-y-8"><LikertGroup title="Öz-Bilinç" prefix="as_eq_self" questions={QUESTIONS.AS_EQ_SELF} onChange={handleInputChange} values={formData}/><LikertGroup title="Öz-Yönetim" prefix="as_eq_manage" questions={QUESTIONS.AS_EQ_MANAGE} onChange={handleInputChange} values={formData}/><LikertGroup title="Motivasyon" prefix="as_eq_mot" questions={QUESTIONS.AS_EQ_MOT} onChange={handleInputChange} values={formData}/><LikertGroup title="Empati" prefix="as_eq_emp" questions={QUESTIONS.AS_EQ_EMP} onChange={handleInputChange} values={formData}/><LikertGroup title="Sosyal Beceri" prefix="as_eq_soc" questions={QUESTIONS.AS_EQ_SOC} onChange={handleInputChange} values={formData}/></div>)}
+                                            {selectedForm.id === 'adde-20' && (<div className="space-y-8"><LikertGroup title="A. Duygusal Destek" prefix="adde_emo" questions={QUESTIONS.ADDE_EMO} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Akademik Destek" prefix="adde_acad" questions={QUESTIONS.ADDE_ACAD} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'cdo-e' && (<div className="space-y-8"><LikertGroup title="A. Planlama" prefix="cdo_plan" questions={QUESTIONS.CDO_PLAN} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Süreklilik" prefix="cdo_cont" questions={QUESTIONS.CDO_CONT} onChange={handleInputChange} values={formData} /><LikertGroup title="C. Disiplin" prefix="cdo_disc" questions={QUESTIONS.CDO_DISC} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'cz-8' && (<div className="space-y-8"><LikertGroup title="A. Sözel" prefix="cz_verbal" questions={QUESTIONS.CZ_VERBAL} onChange={handleInputChange} values={formData} /><LikertGroup title="B. Mantıksal" prefix="cz_logic" questions={QUESTIONS.CZ_LOGIC} onChange={handleInputChange} values={formData} /><LikertGroup title="C. Görsel" prefix="cz_visual" questions={QUESTIONS.CZ_VISUAL} onChange={handleInputChange} values={formData} /><LikertGroup title="D. Müziksel" prefix="cz_music" questions={QUESTIONS.CZ_MUSIC} onChange={handleInputChange} values={formData} /><LikertGroup title="E. Bedensel" prefix="cz_kinesthetic" questions={QUESTIONS.CZ_KINESTHETIC} onChange={handleInputChange} values={formData} /><LikertGroup title="F. Sosyal" prefix="cz_social" questions={QUESTIONS.CZ_SOCIAL} onChange={handleInputChange} values={formData} /><LikertGroup title="G. İçsel" prefix="cz_intra" questions={QUESTIONS.CZ_INTRA} onChange={handleInputChange} values={formData} /><LikertGroup title="H. Doğacı" prefix="cz_nature" questions={QUESTIONS.CZ_NATURE} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'i-pko' && (<div className="space-y-8"><p className="text-sm bg-blue-50 text-blue-800 p-3 rounded flex gap-2">😊 1: Hiç, 😐 2: Biraz, 😎 3: Tamamen</p><LikertGroup title="Sözel Zeka" prefix="ipko_verbal" scale={3} questions={QUESTIONS.IPKO_VERBAL} onChange={handleInputChange} values={formData} /><LikertGroup title="Mantıksal Zeka" prefix="ipko_logic" scale={3} questions={QUESTIONS.IPKO_LOGIC} onChange={handleInputChange} values={formData} /><LikertGroup title="Görsel Zeka" prefix="ipko_visual" scale={3} questions={QUESTIONS.IPKO_VISUAL} onChange={handleInputChange} values={formData} /><LikertGroup title="Bedensel Zeka" prefix="ipko_kin" scale={3} questions={QUESTIONS.IPKO_KIN} onChange={handleInputChange} values={formData} /><LikertGroup title="Müziksel Zeka" prefix="ipko_music" scale={3} questions={QUESTIONS.IPKO_MUSIC} onChange={handleInputChange} values={formData} /><LikertGroup title="Sosyal Zeka" prefix="ipko_social" scale={3} questions={QUESTIONS.IPKO_SOCIAL} onChange={handleInputChange} values={formData} /><LikertGroup title="İçsel Zeka" prefix="ipko_intra" scale={3} questions={QUESTIONS.IPKO_INTRA} onChange={handleInputChange} values={formData} /><LikertGroup title="Doğacı Zeka" prefix="ipko_nature" scale={3} questions={QUESTIONS.IPKO_NATURE} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'adt-o' && (<div className="space-y-8"><div className="bg-blue-50 p-4 rounded-lg"><h4 className="font-bold text-blue-900 mb-2">Bölüm A: Ders Karnesi</h4><table className="w-full text-sm text-left bg-white rounded-lg overflow-hidden"><thead className="bg-blue-100 text-blue-800"><tr><th className="p-2">Ders</th><th className="p-2">Puan (1-10)</th><th className="p-2">Neden Düşük?</th></tr></thead><tbody>{adtRows.map((row, idx) => (<tr key={idx} className="border-b"><td className="p-2 font-medium">{row.subject}</td><td className="p-2"><input type="number" min="1" max="10" className="w-16 border rounded p-1" value={row.score} onChange={(e)=>handleAdtChange(idx,'score',e.target.value)} /></td><td className="p-2"><input type="text" className="w-full border rounded p-1" placeholder="Hoca, zorluk..." value={row.reason} onChange={(e)=>handleAdtChange(idx,'reason',e.target.value)} /></td></tr>))}</tbody></table></div><LikertGroup title="Bölüm B: Genel Tutum Ölçeği" prefix="adt_gen" questions={QUESTIONS.ADT_GEN} onChange={handleInputChange} values={formData} /></div>)}
+                                            {selectedForm.id === 'b-avo' && (<div className="space-y-6"><p className="text-sm bg-red-50 text-red-800 p-3 rounded">Otomatik negatif düşünceleri (virüsleri) tespit et ve mantıklı alternatifler (anti-virüs) üret.</p>{bavoRows.map((row, idx) => (<div key={idx} className="bg-slate-50 p-4 rounded-lg border border-slate-200"><div className="mb-2"><label className="text-xs font-bold text-red-600">VİRÜSLÜ DÜŞÜNCE {idx+1}</label><input type="text" className="w-full p-2 border rounded" placeholder="Örn: Ben aptalım..." value={row.virus} onChange={(e)=>handleBavoChange(idx,'virus',e.target.value)} /></div><div className="mb-2"><label className="text-xs font-bold text-slate-500">TÜRÜ</label><input type="text" className="w-full p-2 border rounded" placeholder="Etiketleme, Genelleme..." value={row.type} onChange={(e)=>handleBavoChange(idx,'type',e.target.value)} /></div><div><label className="text-xs font-bold text-green-600">ANTİ-VİRÜS</label><input type="text" className="w-full p-2 border rounded" placeholder="Örn: Sadece bu konuda eksiğim var..." value={row.antivirus} onChange={(e)=>handleBavoChange(idx,'antivirus',e.target.value)} /></div></div>))}</div>)}
+                                            {selectedForm.id === 'dart' && (<div className="space-y-6"><InputGroup title="DART Hedefleri" fields={[{n:'dart_macro',l:'DIŞ HALKA (Makro - Yıl Sonu)',t:'text'}, {n:'dart_mezo',l:'ORTA HALKA (Mezo - 3 Ay)',t:'text'}, {n:'dart_micro',l:'MERKEZ (Mikro - Bugün)',t:'text'}]} onChange={handleInputChange} values={formData}/><div className="bg-yellow-50 p-4 rounded-lg"><h4 className="font-bold text-yellow-800 mb-2 text-sm">WOOP Analizi</h4><textarea name="dart_woop" className="w-full h-24 p-2 border rounded" placeholder="Engel ne? Planın ne?" onChange={handleInputChange}></textarea></div></div>)}
+                                            {selectedForm.id === 'c-mod' && (<div className="space-y-6 text-center"><div className="p-6 bg-pink-50 rounded-xl border border-pink-100"><Icons.Gift /><h3 className="font-bold text-pink-700 text-lg mt-2">Çikolata Dükkanı</h3><p className="text-sm text-pink-600 mb-4">Haz Erteleme ve Ödül Sistemi</p><div className="text-left text-sm bg-white p-4 rounded shadow-sm"><strong>GELİR (Kazan):</strong><ul className="list-disc pl-5 mb-2"><li>40dk Blok Çalışma: +50 Puan</li><li>Erken Kalkış: +30 Puan</li><li>Haftalık Hedef: +500 Puan</li></ul><strong>GİDER (Harca):</strong><ul className="list-disc pl-5"><li>15dk Sosyal Medya: -50 Puan</li><li>1 Bölüm Dizi: -200 Puan</li><li>Geç Kalkmak: -100 Puan</li></ul></div></div></div>)}
+                                            {selectedForm.id === 'at-cm' && (<div className="space-y-4"><div className="bg-indigo-50 p-4 rounded text-sm text-indigo-800"><strong>Protokol:</strong> Bu modül öğrenci ile birebir uygulanır.</div><InputGroup title="Çıpalama Kaydı" fields={[{n:'anchor_trigger',l:'Seçilen Tuş (Hareket)',t:'text'}, {n:'anchor_emotion',l:'Yüklenen Duygu',t:'text'}, {n:'anchor_test',l:'Test Sonucu (1-10)',t:'range',max:10}]} onChange={handleInputChange} values={formData}/></div>)}
+                                            {selectedForm.id === 'amid' && (<div className="space-y-4"><InputGroup title="İnanç Değişimi" fields={[{n:'amid_old',l:'Eski Kısıtlayıcı İnanç',t:'text'}, {n:'amid_new',l:'Yeni Güçlendirici İnanç',t:'text'}, {n:'amid_driver',l:'Sürücü (Fark - Örn: Renk/Uzaklık)',t:'text'}]} onChange={handleInputChange} values={formData}/></div>)}
+                                            {(selectedForm.id === 'aid-y' || selectedForm.id === 'ab-cte' || selectedForm.id === 'mpc' || selectedForm.id === 'mc-zp' || selectedForm.id === 'k-e-a') && (<div className="p-5 bg-blue-50 text-blue-900 rounded-lg border border-blue-100"><div className="flex items-center gap-2 font-bold mb-2"><Icons.PenTool/> Niteliksel Analiz</div>Bu modüller yazılı çalışma gerektirir. Lütfen koçluk görüşmesi sırasında not alarak uygulayınız.<textarea className="w-full mt-4 p-4 rounded-xl border border-blue-200 h-48 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-inner text-sm" placeholder="Öğrenci cevaplarını buraya not alabilirsiniz..."></textarea></div>)}
+                                            
+                                            {/* --- NEW SPECIAL MODULES --- */}
+                                            {selectedForm.id === 'dopa' && (
+                                                <div className="space-y-6">
+                                                    <div className="bg-slate-100 p-4 rounded border">
+                                                        <h4 className="font-bold text-slate-700 mb-2">Performans Testi Sonuçları</h4>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div><label className="text-xs font-bold">Hız (Taranan Satır)</label><input type="number" name="dopa_speed" className="w-full p-2 border rounded" onChange={handleInputChange}/></div>
+                                                            <div><label className="text-xs font-bold">Hata Sayısı (Yanlış/Boş)</label><input type="number" name="dopa_error" className="w-full p-2 border rounded" onChange={handleInputChange}/></div>
+                                                        </div>
+                                                    </div>
+                                                    <LikertGroup title="Öz-Değerlendirme Anketi" prefix="dopa_s" questions={QUESTIONS.DOPA_SELF} onChange={handleInputChange} values={formData} />
+                                                </div>
+                                            )}
+
+                                            {selectedForm.id === 'kolb-dose' && (
+                                                <div className="space-y-6">
+                                                    <div className="bg-indigo-50 p-4 rounded text-sm text-indigo-900 mb-4">Her soruda size en uygun olan <strong>TEK</strong> şıkkı seçiniz.</div>
+                                                    {QUESTIONS.KOLB_QUESTIONS.map((item, idx) => (
+                                                        <div key={idx} className="bg-white p-4 rounded border border-slate-200 shadow-sm">
+                                                            <p className="font-bold text-slate-800 mb-3">{idx+1}. {item.q}</p>
+                                                            <div className="grid grid-cols-1 gap-2">
+                                                                {['a','b','c','d'].map(opt => (
+                                                                    <label key={opt} className={`flex items-center gap-3 p-2 rounded cursor-pointer border ${formData[`kolb_${idx}`] === opt ? 'bg-indigo-100 border-indigo-500' : 'hover:bg-slate-50 border-slate-100'}`}>
+                                                                        <input type="radio" name={`kolb_${idx}`} value={opt} onChange={handleInputChange} checked={formData[`kolb_${idx}`] === opt} className="accent-indigo-600"/>
+                                                                        <span className="text-sm">{item[opt]}</span>
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {selectedForm.id === 'pdar-360' && (
+                                                <div className="space-y-6">
+                                                    <div className="overflow-x-auto border rounded-lg">
+                                                        <table className="w-full text-sm text-center">
+                                                            <thead className="bg-slate-100 font-bold"><tr><th className="p-2 text-left">Ders</th><th>Soru</th><th>Doğru</th><th>Yanlış</th><th>Boş</th></tr></thead>
+                                                            <tbody>
+                                                                {pdarRows.map((r,i) => (
+                                                                    <tr key={i} className="border-t">
+                                                                        <td className="p-2 text-left font-medium">{r.sub}</td>
+                                                                        <td>{r.q}</td>
+                                                                        <td><input type="number" className="w-12 border rounded text-center" onChange={(e)=>handlePdarChange(i,'t',e.target.value)}/></td>
+                                                                        <td><input type="number" className="w-12 border rounded text-center bg-red-50" onChange={(e)=>handlePdarChange(i,'f',e.target.value)}/></td>
+                                                                        <td><input type="number" className="w-12 border rounded text-center" onChange={(e)=>handlePdarChange(i,'e',e.target.value)}/></td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <InputGroup title="Hata Analizi (Adet Giriniz)" fields={[{n:'err_info',l:'Bilgi Eksikliği',t:'number'}, {n:'err_att',l:'Dikkat Hatası',t:'number'}, {n:'err_time',l:'Süre Yetişmedi',t:'number'}, {n:'err_stress',l:'Stres/Panik',t:'number'}]} onChange={handleInputChange} values={formData}/>
+                                                        <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+                                                            <h4 className="font-bold text-yellow-800 mb-2">Reçete</h4>
+                                                            <textarea className="w-full h-32 p-2 rounded text-sm" placeholder="Gelecek sınav stratejisi..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {selectedForm.id === 'gts-36' && (
+                                                <div className="space-y-6">
+                                                    <InputGroup title="Bölüm A: Mesleki Ruh Eşleşmesi (1-10 Puan)" fields={[{n:'gts_ilgi',l:'İlgi (Tutku)',t:'range',max:10}, {n:'gts_yetenek',l:'Yetenek (Beceri)',t:'range',max:10}, {n:'gts_deger',l:'Değer (Para/Statü)',t:'range',max:10}, {n:'gts_piyasa',l:'Piyasa (Gelecek)',t:'range',max:10}]} onChange={handleInputChange} values={formData}/>
+                                                    <div className="bg-white p-4 rounded border shadow-sm">
+                                                        <h4 className="font-bold text-indigo-900 mb-3">Tercih Simülasyonu</h4>
+                                                        {gtsRows.map((r,i) => (
+                                                            <div key={i} className="flex gap-2 mb-2">
+                                                                <input placeholder="Üniversite" className="border rounded p-2 flex-1" onChange={(e)=>handleGtsChange(i,'uni',e.target.value)}/>
+                                                                <input placeholder="Bölüm" className="border rounded p-2 flex-1" onChange={(e)=>handleGtsChange(i,'dept',e.target.value)}/>
+                                                                <select className="border rounded p-2" onChange={(e)=>handleGtsChange(i,'score',e.target.value)}><option>A (Kesin)</option><option>B (Belki)</option><option>C (Risk)</option></select>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="pt-6 border-t border-slate-100">
+                                                <button onClick={performAnalysis} disabled={isAnalyzing} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-indigo-200 disabled:opacity-70 disabled:cursor-wait">
+                                                    {isAnalyzing ? <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Analiz Yapılıyor...</span> : <><Icons.BrainCircuit/> Analizi Tamamla</>}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* REPORT SIDE */}
+                                <div className={`w-full xl:w-1/2 transition-all duration-700 ${result ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-10 blur-sm pointer-events-none'}`}>
+                                    {result && (
+                                        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden" id="print-area">
+                                            <div className="bg-slate-900 text-white p-8">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-2"><div className="text-indigo-400"><Icons.Target /></div><h1 className="text-2xl font-bold tracking-tight">FocusON</h1></div>
+                                                        <p className="text-slate-400 text-sm">Öğrenci Koçluk Raporu</p>
+                                                    </div>
+                                                    <div className="text-right"><div className="text-xs font-bold uppercase tracking-widest text-indigo-400">{selectedForm.id.toUpperCase()}</div><div className="text-xl font-bold">{new Date().toLocaleDateString('tr-TR')}</div></div>
+                                                </div>
+                                            </div>
+                                            <div className="p-8 space-y-8">
+                                                <div className="flex flex-col md:flex-row gap-6 items-center bg-slate-50 p-6 rounded-xl border border-slate-100">
+                                                    <div className={`w-24 h-24 rounded-full flex items-center justify-center text-xl font-bold border-8 shadow-inner bg-white text-center p-2 leading-tight ${result.color === 'green' ? 'border-emerald-400 text-emerald-700' : result.color === 'red' ? 'border-rose-400 text-rose-700' : result.color === 'blue' ? 'border-blue-400 text-blue-700' : 'border-amber-400 text-amber-700'}`}>{result.score}</div>
+                                                    <div className="flex-1 text-center md:text-left"><h4 className="text-lg font-bold text-slate-800 mb-1">Analiz Sonucu</h4><p className="text-slate-600 leading-relaxed">{result.summary}</p></div>
+                                                </div>
+                                                {result.details && result.details.length > 0 && (<div className="grid grid-cols-2 gap-4">{result.details.map((d,i) => (<div key={i} className="p-4 bg-white border border-slate-100 rounded-lg shadow-sm"><span className="block text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">{d.label}</span><span className="text-xl font-bold text-slate-800">{d.val}</span></div>))}</div>)}
+                                                {result.recommendations && result.recommendations.length > 0 && (<div><h5 className="font-bold text-slate-900 flex items-center gap-2 mb-4 text-sm uppercase tracking-wide"><div className="text-amber-500"><Icons.Zap /></div> Koçluk Müdahaleleri</h5><ul className="space-y-3">{result.recommendations.map((rec, i) => (<li key={i} className="flex gap-3 text-sm text-slate-700 bg-amber-50/50 p-3 rounded-lg border border-amber-100"><span className="font-bold text-amber-600">•</span> {rec}</li>))}</ul></div>)}
+                                                {result.parentNote && (<div className="mt-6 p-6 bg-indigo-50 rounded-xl border border-indigo-100 text-sm text-indigo-900 leading-relaxed relative"><div className="absolute top-4 right-4 text-indigo-200 opacity-50"><Icons.Users /></div><strong className="block text-indigo-700 font-bold mb-2 uppercase text-xs tracking-wider">📢 Veli Bilgilendirme Notu</strong>"{result.parentNote}"</div>)}
+                                                <div className="pt-6 border-t border-slate-100 text-[10px] text-slate-400 text-center leading-tight">Bu rapor bir eğitim koçluğu aracıdır. Tıbbi tanı veya tedavi yerine geçmez. <br/> DEHB, Depresyon veya Anksiyete şüphesinde lütfen bir sağlık uzmanına danışınız.</div>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 border-t border-slate-200 flex justify-end no-print"><button onClick={() => window.print()} className="bg-slate-800 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:bg-black transition-colors shadow-lg shadow-slate-300/50"><Icons.Printer /> Yazdır / PDF İndir</button></div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<FocusONApp />);
+
+    </script>
+</body>
+</html>
