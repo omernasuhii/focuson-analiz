@@ -240,6 +240,67 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+            // --- ÇZ-8 (ÇOKLU ZEKÂ) SONUÇ EKRANI ---
+            else if (testData.id === 'cz-8') {
+                let scores = {
+                    'Sözel': parseInt(answers['cz1']||0) + parseInt(answers['cz2']||0) + parseInt(answers['cz3']||0),
+                    'Mantıksal': parseInt(answers['cz4']||0) + parseInt(answers['cz5']||0) + parseInt(answers['cz6']||0),
+                    'Görsel': parseInt(answers['cz7']||0) + parseInt(answers['cz8']||0) + parseInt(answers['cz9']||0),
+                    'Müziksel': parseInt(answers['cz10']||0) + parseInt(answers['cz11']||0) + parseInt(answers['cz12']||0),
+                    'Bedensel': parseInt(answers['cz13']||0) + parseInt(answers['cz14']||0) + parseInt(answers['cz15']||0),
+                    'Sosyal': parseInt(answers['cz16']||0) + parseInt(answers['cz17']||0) + parseInt(answers['cz18']||0),
+                    'İçsel': parseInt(answers['cz19']||0) + parseInt(answers['cz20']||0) + parseInt(answers['cz21']||0),
+                    'Doğacı': parseInt(answers['cz22']||0) + parseInt(answers['cz23']||0) + parseInt(answers['cz24']||0)
+                };
+
+                // Puanları büyükten küçüğe sırala
+                let sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+                let top1 = sorted[0];
+                let top2 = sorted[1];
+
+                const strategies = {
+                    'Sözel': { icon: '🗣️', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200', tips: ['Okuyarak anlat, hikayeleştir, akrostiş yap.', 'Konuyu bir başkasına anlatır gibi ses kaydı al.'] },
+                    'Mantıksal': { icon: '🧩', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', tips: ['Konuları neden-sonuç ilişkisine göre şematize et.', '"Eğer... ise..." mantığını kur. Kodlama yap.'] },
+                    'Görsel': { icon: '👁️', color: 'text-fuchsia-600', bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', tips: ['Zihin haritaları kullan.', 'Tarih/Coğrafya çalışırken belgesel izle. Renk kodları oluştur.'] },
+                    'Müziksel': { icon: '🎵', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-200', tips: ['Formülleri ritmik şarkılar haline getir.', 'Arka planda sözsüz (Barok/Lo-fi) müzik kullan.'] },
+                    'Bedensel': { icon: '🏃', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', tips: ['Yürüyerek tekrar yap. Odayı ders istasyonlarına böl.', 'Pomodoro tekniğini hareketli uygula.'] },
+                    'Sosyal': { icon: '👥', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', tips: ['Çalışma grupları kur.', 'Arkadaşınla soru-cevap yap. "Öğretmencilik" oyna.'] },
+                    'İçsel': { icon: '🧘', color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200', tips: ['Günlük tut, hedef belirle.', 'Sessiz ortamda, kendi hızında çalış.'] },
+                    'Doğacı': { icon: '🌿', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', tips: ['Konuları sınıflandır (Taksonomi).', 'Biyoloji/Coğrafya\'yı doğada gözlemleyerek çalış.'] }
+                };
+
+                let domStrategy = strategies[top1[0]];
+
+                content = (
+                    <div className={`p-6 rounded-2xl border ${domStrategy.bg} ${domStrategy.border} mb-8 text-left`}>
+                        <div className="flex items-center gap-3 mb-4 justify-center">
+                            <span className="text-4xl">{domStrategy.icon}</span>
+                            <h3 className={`text-2xl font-extrabold ${domStrategy.color}`}>BASKIN: {top1[0].toUpperCase()} ZEKÂ</h3>
+                        </div>
+                        <p className="text-slate-600 font-medium mb-4 text-center">İkinci güçlü alanın: <strong>{top2[0]} Zekâ</strong></p>
+                        <div className="bg-white p-4 rounded-xl border border-slate-100 mb-4">
+                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
+                            <ul className="space-y-2">
+                                {domStrategy.tips.map((tip, idx) => (
+                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className={domStrategy.color}>•</span> {tip}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                            <h4 className="text-xs font-bold text-slate-500 mb-2 uppercase text-center">Tüm Puanların</h4>
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {sorted.map(s => (
+                                    <span key={s[0]} className="text-[10px] bg-white border border-slate-200 px-2 py-1 rounded-full text-slate-600 font-semibold shadow-sm">
+                                        {s[0]}: {s[1]}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
             // --- VAK SONUÇ EKRANI ---
             else if (testData.id === 'vak') {
                 let counts = { G: 0, I: 0, K: 0 };
