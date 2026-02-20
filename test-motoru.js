@@ -282,17 +282,6 @@ const FocusON_Engine = () => {
                             <textarea autoFocus value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(e.target.value)} placeholder={currentQ.placeholder} className="w-full h-32 text-xl md:text-2xl text-indigo-900 placeholder-slate-300 bg-transparent border-b-2 border-slate-200 focus:border-indigo-600 outline-none pb-4 transition-colors resize-none"></textarea>
                         )}
 
-                        {currentQ.type === 'multiple_choice' && (
-                            <div className="flex flex-col gap-3 md:gap-4">
-                                {currentQ.options.map((opt, i) => {
-                                    const isSelected = answers[currentQ.id] === opt.value;
-                                    return (
-                                        <label key={i} className={`cursor-pointer p-4 rounded-xl border-2 font-semibold text-base md:text-lg transition-all transform hover:-translate-y-1 flex items-center gap-4 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>
-                                            <input type="radio" name={currentQ.id} value={opt.value} onChange={() => { handleAnswer(opt.value); setTimeout(nextStep, 400); }} checked={isSelected} className="hidden" />
-                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600' : 'border-slate-300'}`}>
-                                                {isSelected && <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>}
-                                            </div>
-
                         {currentQ.type === 'likert' && (
                             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                                 {['1: Hiç', '2: Nadiren', '3: Bazen', '4: Sıklıkla', '5: Her Zaman'].map((opt, i) => {
@@ -307,6 +296,22 @@ const FocusON_Engine = () => {
                                 })}
                             </div>
                         )}
+
+                        <div className="flex flex-col gap-3 md:gap-4">
+                            {currentQ.options.map((opt, i) => {
+                                const isSelected = answers[currentQ.id] === opt.value;
+                                return (
+                                    <label key={i} className={`cursor-pointer p-4 rounded-xl border-2 font-semibold text-base md:text-lg transition-all transform hover:-translate-y-1 flex items-center gap-4 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>
+                                        <input type="radio" name={currentQ.id} value={opt.value} onChange={() => { handleAnswer(opt.value); setTimeout(nextStep, 400); }} checked={isSelected} className="hidden" />
+                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600' : 'border-slate-300'}`}>
+                                            {isSelected && <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>}
+                                        </div>
+                                        {opt.label}
+                                    </label>
+                                );
+                            })}
+                        </div>
+)}
 
                         {currentQ.type === 'scale10' && (
                             <div className="flex flex-wrap gap-2">
