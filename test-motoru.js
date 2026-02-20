@@ -112,6 +112,22 @@ const FocusON_Engine = () => {
                 if (currentQ.type === 'likert' && ['1','2','3','4','5'].includes(e.key)) {
                     handleAnswer(parseInt(e.key));
                     setTimeout(nextStep, 300); 
+                    {currentQ.type === 'multiple_choice' && (
+    <div className="flex flex-col gap-3 md:gap-4">
+        {currentQ.options.map((opt, i) => {
+            const isSelected = answers[currentQ.id] === opt.value;
+            return (
+                <label key={i} className={`cursor-pointer p-4 rounded-xl border-2 font-semibold text-base md:text-lg transition-all transform hover:-translate-y-1 flex items-center gap-4 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>
+                    <input type="radio" name={currentQ.id} value={opt.value} onChange={() => { handleAnswer(opt.value); setTimeout(nextStep, 400); }} checked={isSelected} className="hidden" />
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600' : 'border-slate-300'}`}>
+                        {isSelected && <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>}
+                    </div>
+                    {opt.label}
+                </label>
+            );
+        })}
+    </div>
+)}
                 }
             }
         };
