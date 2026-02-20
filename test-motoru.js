@@ -27,129 +27,101 @@ const FullscreenToggle = () => {
     );
 };
 
-// --- DOPA CANLI OYUN BİLEŞENİ ---
-const DopaGame = ({ onComplete }) => {
-    const [gameState, setGameState] = React.useState('start'); // start, playing, end
-    const [timeLeft, setTimeLeft] = React.useState(45);
+// --- YENİ: DİJİTAL DOPA GÖREVİ (DİKKAT TESTİ) ---
+const DopaInteractiveTask = ({ onComplete }) => {
     const [grid, setGrid] = React.useState([]);
-    const [stats, setStats] = React.useState({ correct: 0, wrong: 0 });
-
-    const targets = ['a', 'b', 'd', 'g'];
-    const distractors = ['p', 'q', 'c', 'e', 'o', 'h', 'm', 'n', 'u', 'y', 'z', 'l', 'k', 't', 'f', 'r', 's', 'v'];
-
-    const initGame = () => {
-        let newGrid = [];
-        for(let i=0; i<84; i++) { // 7x12 ızgara
-            const isTarget = Math.random() < 0.20; // %20 ihtimalle hedef harf
-            const charSet = isTarget ? targets : distractors;
-            const char = charSet[Math.floor(Math.random() * charSet.length)];
-            newGrid.push({ id: i, char, isTarget, status: 'idle' }); 
-        }
-        setGrid(newGrid);
-        setStats({ correct: 0, wrong: 0 });
-        setTimeLeft(45);
-        setGameState('playing');
-    };
+    const [selected, setSelected] = React.useState(new Set());
+    const [started, setStarted] = React.useState(false);
+    const [timeLeft, setTimeLeft] = React.useState(60); // 60 Saniye Süre
+    const cols = 10; // Mobil uyum için 10 sütun (toplam 20 satır = 200 harf)
 
     React.useEffect(() => {
-        let timer;
-        if (gameState === 'playing' && timeLeft > 0) {
-            timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-        } else if (gameState === 'playing' && timeLeft === 0) {
-            endGame();
-        }
-        return () => clearTimeout(timer);
-    }, [gameState, timeLeft]);
-
-    const endGame = () => {
-        setGameState('end');
-        let missed = 0;
-        grid.forEach(item => {
-            if (item.isTarget && item.status === 'idle') missed++;
+        const targets = ['a', 'b', 'd', 'g'];
+        const distractors = ['p', 'q', 'o', 'c', 'e', 'h', 'n', 'u', 'v', 'y'];
+        const newGrid = Array.from({length: 200}, () => {
+            return Math.random() < 0.25 ? targets[Math.floor(Math.random() * targets.length)] : distractors[Math.floor(Math.random() * distractors.length)];
         });
-        
-        const finalSpeed = stats.correct; 
-        const finalErrors = stats.wrong + missed; // Yanlış tıklamalar + gözden kaçanlar
-        
-        // 3 saniye sonra otomatik diğer soruya geç
-        setTimeout(() => onComplete(finalSpeed, finalErrors), 3000);
-    };
-
-    const handleLetterClick = (index) => {
-        if (gameState !== 'playing') return;
-        let newGrid = [...grid];
-        let item = newGrid[index];
-        if (item.status !== 'idle') return; 
-
-        if (item.isTarget) {
-            item.status = 'correct';
-            setStats(s => ({ ...s, correct: s.correct + 1 }));
-        } else {
-            item.status = 'wrong';
-            setStats(s => ({ ...s, wrong: s.wrong + 1 }));
-        }
         setGrid(newGrid);
+    }, []);
+
+    React.useEffect(() => {
+        if (started && timeLeft > 0) {
+            const timer = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+            return () => clearTimeout(timer);
+        } else if (started && timeLeft === 0) {
+            finishTask();
+        }
+    }, [started, timeLeft]);
+
+    const toggleLetter = (index) => {
+        if (!started || timeLeft === 0) return;
+        const newSelected = new Set(selected);
+        if (newSelected.has(index)) newSelected.delete(index);
+        else newSelected.add(index);
+        setSelected(newSelected);
     };
 
-    if (gameState === 'start') {
-        return (
-            <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border border-slate-200 shadow-sm text-center">
-                <div className="text-6xl mb-4">⏱️</div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">Süren: 45 Saniye</h3>
-                <p className="text-slate-500 mb-8">Ekranda belirecek harfler arasından sadece <strong>A, B, D</strong> ve <strong>G</strong> harflerini bulup tıkla. Yanlış harfe tıklamak hata sayılır.</p>
-                <button onClick={initGame} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-xl text-lg transition-transform transform hover:scale-105 shadow-lg shadow-indigo-200">
-                    Süreyi Başlat
-                </button>
-            </div>
-        );
-    }
+    const finishTask = () => {
+        const targets = ['a', 'b', 'd', 'g'];
+        let lastClickedIndex = -1;
+        selected.forEach(idx => { if(idx > lastClickedIndex) lastClickedIndex = idx; });
 
-    if (gameState === 'end') {
+        let rowsCompleted = Math.ceil((lastClickedIndex + 1) / cols); 
+        if(rowsCompleted === 0) rowsCompleted = 1; 
+
+        let errors = 0;
+        let maxIndexToCheck = rowsCompleted * cols;
+        for(let i=0; i < maxIndexToCheck; i++) {
+            const isTarget = targets.includes(grid[i]);
+            const isSelected = selected.has(i);
+            if (isTarget && !isSelected) errors++; // Kaçırılanlar (False Negative)
+            if (!isTarget && isSelected) errors++; // Yanlış tıklananlar (False Positive)
+        }
+
+        onComplete({ speed: rowsCompleted, errors: errors });
+    };
+
+    if (!started) {
         return (
-            <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border border-emerald-200 shadow-sm text-center animate-fade-in">
-                <div className="text-6xl mb-4">🏁</div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">Süre Doldu!</h3>
-                <p className="text-slate-500 mb-4">Sonuçların kaydedildi, testin 2. aşamasına geçiliyor...</p>
-                <div className="flex gap-4 font-mono">
-                    <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg font-bold">Doğru: {stats.correct}</div>
-                    <div className="bg-rose-50 text-rose-700 px-4 py-2 rounded-lg font-bold">Hatalı Tık: {stats.wrong}</div>
-                </div>
+            <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">⏱️</div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Dikkat Testi Başlıyor</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">Karşına harflerden oluşan bir tablo çıkacak. Sadece <strong>a, b, d, g</strong> harflerini bulup üzerlerine tıklamalısın. <br/><br/>Hızlı ama dikkatli ol. Süren: <strong className="text-rose-600">60 Saniye</strong>.</p>
+                <button onClick={() => setStarted(true)} className="bg-indigo-600 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-indigo-700 transition-transform hover:scale-105 shadow-xl">Testi Başlat</button>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-center bg-slate-50 p-6 rounded-3xl border border-slate-200">
-            <div className="flex justify-between w-full mb-6 px-4">
-                <div className="text-xl font-bold text-slate-700">Hedef: A, B, D, G</div>
-                <div className={`text-2xl font-mono font-bold ${timeLeft <= 10 ? 'text-rose-600 animate-pulse' : 'text-indigo-600'}`}>
-                    00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+        <div className="flex flex-col items-center w-full">
+            <div className="text-2xl font-black text-rose-600 mb-6 flex items-center gap-2 bg-rose-50 px-6 py-2 rounded-full border border-rose-100 shadow-sm">
+                ⏱️ {timeLeft} Saniye
+            </div>
+            <div className="bg-white p-3 md:p-6 rounded-2xl shadow-inner border border-slate-200 w-full max-w-lg">
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: '6px' }} className="select-none">
+                    {grid.map((char, idx) => (
+                        <div 
+                            key={idx} 
+                            onClick={() => toggleLetter(idx)}
+                            className={`flex items-center justify-center rounded-lg cursor-pointer text-lg md:text-xl font-semibold transition-all duration-200 aspect-square
+                                ${selected.has(idx) ? 'bg-indigo-600 text-white shadow-md transform scale-110' : 'bg-slate-100 text-slate-600 hover:bg-indigo-100'}
+                            `}
+                        >
+                            {char}
+                        </div>
+                    ))}
                 </div>
             </div>
-            
-            <div className="grid grid-cols-7 sm:grid-cols-12 gap-2 sm:gap-3">
-                {grid.map((item, idx) => {
-                    let btnClass = "w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl font-mono font-bold rounded-lg cursor-pointer transition-colors shadow-sm ";
-                    if (item.status === 'idle') btnClass += "bg-white text-slate-700 hover:bg-indigo-100 border border-slate-200";
-                    else if (item.status === 'correct') btnClass += "bg-emerald-500 text-white border-emerald-600";
-                    else if (item.status === 'wrong') btnClass += "bg-rose-500 text-white border-rose-600";
-                    
-                    return (
-                        <button key={item.id} onClick={() => handleLetterClick(idx)} className={btnClass}>
-                            {item.char}
-                        </button>
-                    );
-                })}
-            </div>
+            <button onClick={finishTask} className="mt-8 bg-slate-800 text-white font-bold py-3 px-8 rounded-xl hover:bg-slate-900 transition-colors">Testi Erken Bitir</button>
         </div>
     );
 };
-
 
 // --- ANA TEST MOTORU ---
 const FocusON_Engine = () => {
     const testData = window.CURRENT_TEST_DATA;
     
+    // Her testin başına otomatik olarak Öğrenci No sorusunu ekliyoruz
     if (!testData.questions.some(q => q.id === 'student_id')) {
         testData.questions.unshift({
             id: 'student_id',
@@ -169,8 +141,10 @@ const FocusON_Engine = () => {
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
+    // --- SUPABASE GÖNDERİM FONKSİYONU ---
     const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
+        
         const studentId = finalAnswers['student_id'];
         const testAnswers = { ...finalAnswers };
         delete testAnswers['student_id'];
@@ -186,7 +160,7 @@ const FocusON_Engine = () => {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'Prefer': 'return=minimal',
-                    'Content-Profile': 'focuson'
+                    'Content-Profile': 'focuson' 
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
@@ -205,14 +179,12 @@ const FocusON_Engine = () => {
         }
     };
 
+    // Klavye kontrolleri
     React.useEffect(() => {
         const handleKeyDown = (e) => {
             if (animating || step === totalQuestions) return;
             if (step === -1 && e.key === 'Enter') return nextStep();
             if (step >= 0 && step < totalQuestions) {
-                // Eğer oyundaysak klavyeyi devre dışı bırak, fare ile oynamalı
-                if (currentQ.type === 'dopa_game') return;
-
                 const isTextInput = currentQ.type === 'text' || currentQ.type === 'textarea' || currentQ.type === 'number';
                 
                 if (e.key === 'Enter') {
@@ -282,13 +254,15 @@ const FocusON_Engine = () => {
             content = <p className="text-rose-500 font-medium mb-8">Gönderim sırasında bir hata oluştu. Lütfen bağlantını kontrol edip sayfayı yenile.</p>;
         } else if (submitStatus === 'success') {
             
-            // --- ÖTİ-A SONUCU ---
+            // --- ÖTİ-A SONUÇ EKRANI ---
             if(testData.id === 'oti-a') {
                 let likertScore = 0;
                 testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
+                
                 let resultZone = likertScore <= 25 ? { color: 'text-rose-600', bg: 'bg-rose-50', border:'border-rose-200', text: 'Kırmızı Bölge', msg: 'Temel çalışma disiplinini baştan kurgulamalıyız.' } :
                                  likertScore <= 39 ? { color: 'text-amber-600', bg: 'bg-amber-50', border:'border-amber-200', text: 'Sarı Bölge', msg: 'Çalışıyorsun ama istikrar sorunun var. Beraber çözeceğiz.' } :
                                  { color: 'text-emerald-600', bg: 'bg-emerald-50', border:'border-emerald-200', text: 'Yeşil Bölge', msg: 'Harika bir öz disiplinin var. Sadece ince ayar yapacağız.' };
+
                 content = (
                     <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8`}>
                         <div className={`text-sm font-bold uppercase tracking-widest mb-2 ${resultZone.color}`}>Çalışma Disiplini Skorun</div>
@@ -297,105 +271,91 @@ const FocusON_Engine = () => {
                     </div>
                 );
             } 
-            // --- VAK SONUCU ---
+            // --- VAK SONUÇ EKRANI ---
             else if (testData.id === 'vak') {
                 let counts = { G: 0, I: 0, K: 0 };
-                Object.keys(answers).forEach(key => { if (key.startsWith('v') && counts[answers[key]] !== undefined) counts[answers[key]]++; });
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('v') && counts[answers[key]] !== undefined) {
+                        counts[answers[key]]++;
+                    }
+                });
                 let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
                 let strategies = {
                     G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun.", tips: ["Renkli kodlama yap.", "Zihin Haritası kullan."] },
-                    I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun.", tips: ["Sesini kaydet.", "Birine sesli anlat."] },
-                    K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun.", tips: ["Odayı turlayarak çalış.", "Sadece okuma; yaz, çiz."] }
+                    I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun.", tips: ["Sesli anlat.", "Fısıldayarak oku."] },
+                    K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun.", tips: ["Hareketli çalış.", "Sık mola ver."] }
                 };
                 let resultZone = strategies[maxStyle];
                 content = (
                     <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
-                        <div className="flex items-center gap-3 mb-4 justify-center">
-                            <span className="text-4xl">{resultZone.icon}</span>
-                            <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
-                        </div>
-                        <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
-                        <ul className="space-y-2 mb-4 bg-white p-4 rounded-xl">
-                            {resultZone.tips.map((tip, idx) => <li key={idx} className="text-sm text-slate-700">• {tip}</li>)}
-                        </ul>
+                        <div className="flex items-center gap-3 mb-4 justify-center"><span className="text-4xl">{resultZone.icon}</span><h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3></div>
+                        <p className="text-center font-medium mb-4 text-slate-600">{resultZone.desc}</p>
                     </div>
                 );
             }
-            // --- KOLB SONUCU ---
+            // --- KOLB SONUÇ EKRANI ---
             else if (testData.id === 'kolb') {
                 let counts = { SY: 0, YG: 0, SK: 0, AY: 0 };
                 Object.keys(answers).forEach(key => { if (key.startsWith('k') && counts[answers[key]] !== undefined) counts[answers[key]]++; });
-                const algilama = counts.SK - counts.SY; 
-                const isleme = counts.AY - counts.YG;   
+                const algilama = counts.SK - counts.SY; const isleme = counts.AY - counts.YG;   
                 let profile = {};
-                if(algilama >= 0 && isleme >= 0) profile = { title: "AYRIŞTIRAN (Mühendis)", icon: "⚙️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" };
-                else if(algilama >= 0 && isleme < 0) profile = { title: "ÖZÜMSEYEN (Teorisyen)", icon: "📚", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" };
-                else if(algilama < 0 && isleme >= 0) profile = { title: "YERLEŞTİREN (Girişken)", icon: "🚀", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" };
-                else profile = { title: "DEĞİŞTİREN (Yansıtan)", icon: "💡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200" };
-
+                if(algilama >= 0 && isleme >= 0) profile = { title: "AYRIŞTIRAN", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" };
+                else if(algilama >= 0 && isleme < 0) profile = { title: "ÖZÜMSEYEN", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" };
+                else if(algilama < 0 && isleme >= 0) profile = { title: "YERLEŞTİREN", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" };
+                else profile = { title: "DEĞİŞTİREN", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200" };
                 content = (
                     <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-center`}>
-                        <span className="text-4xl block mb-2">{profile.icon}</span>
-                        <h3 className={`text-2xl font-extrabold ${profile.color} mb-2`}>{profile.title}</h3>
-                        <p className="text-slate-600 text-sm">Kolb öğrenme stiline göre stratejin koçun tarafından belirlenecektir.</p>
+                        <h3 className={`text-2xl font-extrabold ${profile.color}`}>{profile.title}</h3>
                     </div>
                 );
             }
-            // --- ÇZ-8 SONUCU ---
+            // --- ÇZ-8 SONUÇ EKRANI ---
             else if (testData.id === 'cz-8') {
                 let scores = {
                     'Sözel': parseInt(answers['cz1']||0) + parseInt(answers['cz2']||0) + parseInt(answers['cz3']||0),
                     'Mantıksal': parseInt(answers['cz4']||0) + parseInt(answers['cz5']||0) + parseInt(answers['cz6']||0),
-                    'Görsel': parseInt(answers['cz7']||0) + parseInt(answers['cz8']||0) + parseInt(answers['cz9']||0),
-                    'Müziksel': parseInt(answers['cz10']||0) + parseInt(answers['cz11']||0) + parseInt(answers['cz12']||0),
-                    'Bedensel': parseInt(answers['cz13']||0) + parseInt(answers['cz14']||0) + parseInt(answers['cz15']||0),
-                    'Sosyal': parseInt(answers['cz16']||0) + parseInt(answers['cz17']||0) + parseInt(answers['cz18']||0),
-                    'İçsel': parseInt(answers['cz19']||0) + parseInt(answers['cz20']||0) + parseInt(answers['cz21']||0),
-                    'Doğacı': parseInt(answers['cz22']||0) + parseInt(answers['cz23']||0) + parseInt(answers['cz24']||0)
+                    'Görsel': parseInt(answers['cz7']||0) + parseInt(answers['cz8']||0) + parseInt(answers['cz9']||0)
                 };
                 let sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
                 content = (
                     <div className="p-6 rounded-2xl border bg-indigo-50 border-indigo-200 mb-8 text-center">
-                        <h3 className="text-2xl font-extrabold text-indigo-600 mb-2">BASKIN: {sorted[0][0].toUpperCase()} ZEKÂ</h3>
-                        <p className="text-slate-600 font-medium">İkinci güçlü alanın: {sorted[1][0]} Zekâ</p>
+                        <h3 className="text-2xl font-extrabold text-indigo-600">BASKIN: {sorted[0][0].toUpperCase()} ZEKÂ</h3>
                     </div>
                 );
             }
-            // --- DOPA SONUCU ---
+            // --- DOPA SONUÇ EKRANI ---
             else if (testData.id === 'dopa') {
                 let dopaSelf = 0;
-                Object.keys(answers).forEach(key => {
-                    if (key.startsWith('dopa_s')) dopaSelf += parseInt(answers[key] || 0);
-                });
+                Object.keys(answers).forEach(key => { if (key.startsWith('dopa_s')) dopaSelf += parseInt(answers[key] || 0); });
                 
-                const perfSpeed = parseInt(answers['dopa_speed']) || 0; // Doğru tık sayısı
-                const perfErr = parseInt(answers['dopa_error']) || 0;   // Hatalı tık + Gözden kaçanlar
+                // Dijital görevden gelen veriler
+                const perfSpeed = answers['dopa_perf']?.speed || 0;
+                const perfErr = answers['dopa_perf']?.errors || 0;
                 
                 let profile = {};
-                
-                // 45 saniyede ortalama 15 hedef beklenir.
-                if (perfErr > 8) {
-                    profile = { title: "TAVŞAN PROFİLİ", icon: "🐇", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Sabırsızsın. Çok hızlısın ama çok fazla hata yapıyorsun veya gözden kaçırıyorsun." };
+                if (perfErr > 5) {
+                    profile = { title: "TAVŞAN (Hızlı/Hatalı)", icon: "🐇", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Hız felakettir, bilinçli yavaşlamalısın." };
                 } else if (perfSpeed < 10) {
-                    profile = { title: "KAPLUMBAĞA PROFİLİ", icon: "🐢", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Mükemmeliyetçi ve garantici ilerliyorsun. Hata oranın az ama işlem hızın yavaş." };
+                    profile = { title: "KAPLUMBAĞA (Yavaş/Dikkatli)", icon: "🐢", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Zaman baskısı altında test çözme pratiği yap." };
                 } else {
-                    profile = { title: "DENGELİ PROFİL", icon: "⚖️", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dikkat ve hız dengen bu testte çok başarılı sonuç verdi." };
+                    profile = { title: "DENGELİ ODAK", icon: "⚖️", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dikkat ve hız dengen mükemmel." };
                 }
 
                 content = (
                     <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-center`}>
                         <div className="text-4xl mb-2">{profile.icon}</div>
-                        <h3 className={`text-2xl font-extrabold ${profile.color} mb-2`}>{profile.title}</h3>
-                        <p className="text-slate-600 font-medium mb-6">{profile.desc}</p>
+                        <h3 className={`text-2xl font-extrabold ${profile.color} mb-4`}>{profile.title}</h3>
                         
-                        <div className="flex justify-around text-sm font-bold text-slate-700 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                            <div className="text-center text-slate-400 text-xs tracking-widest">DOĞRU<br/><span className="text-emerald-600 text-2xl">{perfSpeed}</span></div>
-                            <div className="text-center text-slate-400 text-xs tracking-widest">HATA<br/><span className="text-rose-600 text-2xl">{perfErr}</span></div>
-                            <div className="text-center text-slate-400 text-xs tracking-widest">ÖZ-ALGI<br/><span className="text-indigo-600 text-2xl">{dopaSelf}</span>/30</div>
+                        <div className="flex justify-around text-sm font-bold text-slate-700 bg-white p-4 rounded-xl border border-slate-100 shadow-sm mb-4">
+                            <div className="text-center text-slate-400 text-xs">HIZ (Satır)<br/><span className="text-indigo-600 text-2xl">{perfSpeed}</span></div>
+                            <div className="text-center text-slate-400 text-xs">HATA<br/><span className="text-rose-600 text-2xl">{perfErr}</span></div>
+                            <div className="text-center text-slate-400 text-xs">ÖZ-ALGI<br/><span className="text-emerald-600 text-2xl">{dopaSelf}</span></div>
                         </div>
+                        <p className="text-slate-600 font-medium">{profile.desc}</p>
                     </div>
                 );
             }
+            // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
             }
@@ -437,13 +397,10 @@ const FocusON_Engine = () => {
                     <h2 className="text-2xl md:text-4xl font-semibold text-slate-900 mb-10 leading-tight">{currentQ.text}</h2>
 
                     <div className="w-full">
-                        
-                        {/* YENİ EKLENEN: DOPA OYUN MODÜLÜ */}
-                        {currentQ.type === 'dopa_game' && (
-                            <DopaGame onComplete={(speed, errors) => {
-                                handleAnswer('dopa_speed', speed);
-                                handleAnswer('dopa_error', errors);
-                                handleAnswer(currentQ.id, 'completed'); // Bu ekranın bittiğini işaretle
+                        {/* YENİ: DİJİTAL DOPA GÖREVİ */}
+                        {currentQ.type === 'dopa_task' && (
+                            <DopaInteractiveTask onComplete={(result) => {
+                                handleAnswer(result);
                                 setTimeout(nextStep, 500);
                             }} />
                         )}
@@ -492,9 +449,18 @@ const FocusON_Engine = () => {
                             </div>
                         )}
 
+                        {/* 1-10 SCALE */}
+                        {currentQ.type === 'scale10' && (
+                            <div className="flex flex-wrap gap-2">
+                                {[1,2,3,4,5,6,7,8,9,10].map(val => (
+                                    <button key={val} onClick={() => { handleAnswer(val); setTimeout(nextStep, 400); }} className={`w-12 h-14 md:w-14 md:h-16 rounded-xl border-2 font-bold text-lg transition-all transform hover:-translate-y-1 ${answers[currentQ.id] === val ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>{val}</button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {currentQ.type !== 'dopa_game' && (
+                    {/* Dopa Görevi sırasında "İleri" butonu gizlenir, çünkü testin kendi akışı var */}
+                    {currentQ.type !== 'dopa_task' && (
                         <div className="mt-12 flex items-center gap-4">
                             <button onClick={nextStep} disabled={!answers[currentQ.id]} className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center gap-2">
                                 İleri <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
