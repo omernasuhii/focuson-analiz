@@ -31,65 +31,62 @@ const FullscreenToggle = () => {
 const FocusON_Engine = () => {
     const testData = window.CURRENT_TEST_DATA;
     
+    // SİHİRLİ DOKUNUŞ: Her testin başına otomatik olarak Öğrenci No sorusunu ekliyoruz
+    // (Eğer daha önce eklenmemişse)
+    if (!testData.questions.some(q => q.id === 'student_id')) {
+        testData.questions.unshift({
+            id: 'student_id',
+            type: 'text',
+            section: 'Öğrenci Doğrulama',
+            text: 'Lütfen sana özel tanımlanan FocusON Numaranı gir.',
+            placeholder: 'Örn: FO-1234'
+        });
+    }
+
     const [step, setStep] = React.useState(-1);
     const [answers, setAnswers] = React.useState({});
     const [animating, setAnimating] = React.useState(false);
-    
-    // Veri gönderim durumları
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [submitSuccess, setSubmitSuccess] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false); // Gönderim durumu
+    const [submitStatus, setSubmitStatus] = React.useState(null); // Başarılı/Hatalı
 
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
-    // Test bittiğinde Supabase'e Otomatik Gönderim
-    React.useEffect(() => {
-        if (step === totalQuestions) {
-            sendDataToSupabase();
-        }
-    }, [step]);
-
-    const sendDataToSupabase = async () => {
+    // --- SUPABASE GÖNDERİM FONKSİYONU ---
+    const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
         
-        // Wix'in URL'ye eklediği parametreleri yakala
-        const urlParams = new URLSearchParams(window.location.search);
-        const wixMemberId = urlParams.get('memberId') || 'test-kullanicisi';
-        const supUrl = urlParams.get('supUrl');
-        const supKey = urlParams.get('supKey');
+        // 1. Öğrenci ID'sini cevaplardan ayır (Çünkü o ayrı bir sütuna gidecek)
+        const studentId = finalAnswers['student_id'];
+        const testAnswers = { ...finalAnswers };
+        delete testAnswers['student_id'];
 
-        if (!supUrl || !supKey) {
-            console.warn("API Anahtarları URL'de bulunamadı. Sadece test modunda çalışıyor.");
-            setIsSubmitting(false);
-            setSubmitSuccess(true);
-            return;
-        }
+        // 2. Supabase Kimlik Bilgileri
+        const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
 
+        // 3. Veriyi Gönder
         try {
-            const response = await fetch(`${supUrl}/rest/v1/test_results`, {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'apikey': supKey,
-                    'Authorization': `Bearer ${supKey}`,
-                    'Prefer': 'return=minimal',
-                    // ÇOK KRİTİK: Verinin 'focuson' şemasına gitmesini sağlar
-                    'Content-Profile': 'focuson' 
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Prefer': 'return=minimal'
                 },
                 body: JSON.stringify({
-                    student_id: wixMemberId,
+                    student_id: studentId, 
                     test_code: testData.id,
-                    answers: answers
-                    // ai_summary arka planda (Edge Function) doldurulacak
+                    answers: testAnswers
                 })
             });
 
-            if (!response.ok) throw new Error("Supabase kayıt hatası");
-            setSubmitSuccess(true);
+            if (!response.ok) throw new Error("Ağ hatası oluştu.");
+            setSubmitStatus('success');
         } catch (error) {
-            console.error("Veri gönderilemedi:", error);
-            // Hata olsa bile öğrenciye bitti ekranını gösterelim, moralini bozmayalım
-            setSubmitSuccess(true); 
+            console.error("Gönderim Hatası:", error);
+            setSubmitStatus('error');
         } finally {
             setIsSubmitting(false);
         }
@@ -98,7 +95,7 @@ const FocusON_Engine = () => {
     // Klavye kontrolleri
     React.useEffect(() => {
         const handleKeyDown = (e) => {
-            if (animating) return;
+            if (animating || step === totalQuestions) return;
             if (step === -1 && e.key === 'Enter') return nextStep();
             if (step >= 0 && step < totalQuestions) {
                 const isTextInput = currentQ.type === 'text' || currentQ.type === 'textarea' || currentQ.type === 'number';
@@ -119,11 +116,20 @@ const FocusON_Engine = () => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [step, answers, currentQ, animating]);
+    }, [step, answers, currentQ, animating, totalQuestions]);
 
     const nextStep = () => {
         setAnimating(true);
-        setTimeout(() => { setStep(s => s + 1); setAnimating(false); }, 300);
+        setTimeout(() => { 
+            const nextStepNum = step + 1;
+            setStep(nextStepNum); 
+            setAnimating(false);
+            
+            // Eğer son soruya gelindiyse veriyi yolla
+            if (nextStepNum === totalQuestions) {
+                submitToSupabase(answers);
+            }
+        }, 300);
     };
 
     const handleAnswer = (val) => {
@@ -147,44 +153,50 @@ const FocusON_Engine = () => {
         );
     }
 
-    // Sonuç Ekranı (Yükleniyor veya Tamamlandı)
+    // Sonuç Ekranı
     if (step === totalQuestions) {
-        if (isSubmitting) {
-            return (
-                <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
-                    <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-6"></div>
-                    <h2 className="text-2xl font-bold text-slate-700">Sonuçlar Şifreleniyor...</h2>
-                    <p className="text-slate-500">Lütfen bekleyin, verileriniz koçunuza iletiliyor.</p>
-                </div>
-            );
-        }
-
-        let content = <p className="text-slate-500 mb-8">Verilerin başarıyla analiz merkezine iletildi. Koçun sonuçları değerlendirecek.</p>;
+        let content = <p className="text-slate-500 mb-8">Lütfen bekle, veriler işleniyor...</p>;
         
-        // ÖTİ-A Özel Sonuç Görselleştirmesi
-        if(testData.id === 'oti-a' && submitSuccess) {
-            let likertScore = 0;
-            testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
-            
-            let resultZone = likertScore <= 25 ? { color: 'text-rose-600', bg: 'bg-rose-50', border:'border-rose-200', text: 'Kırmızı Bölge', msg: 'Temel çalışma disiplinini baştan kurgulamalıyız.' } :
-                             likertScore <= 39 ? { color: 'text-amber-600', bg: 'bg-amber-50', border:'border-amber-200', text: 'Sarı Bölge', msg: 'Çalışıyorsun ama istikrar sorunun var. Beraber çözeceğiz.' } :
-                             { color: 'text-emerald-600', bg: 'bg-emerald-50', border:'border-emerald-200', text: 'Yeşil Bölge', msg: 'Harika bir öz disiplinin var. Sadece ince ayar yapacağız.' };
-
+        if (isSubmitting) {
             content = (
-                <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8`}>
-                    <div className={`text-sm font-bold uppercase tracking-widest mb-2 ${resultZone.color}`}>Çalışma Disiplini Skorun</div>
-                    <div className={`text-6xl font-extrabold mb-4 ${resultZone.color}`}>{likertScore}</div>
-                    <p className={`font-medium ${resultZone.color}`}>{resultZone.text}: {resultZone.msg}</p>
+                <div className="flex flex-col items-center mb-8">
+                    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                    <p className="text-slate-500 font-medium">Veriler şifrelenerek koçuna iletiliyor...</p>
                 </div>
             );
+        } else if (submitStatus === 'error') {
+            content = <p className="text-rose-500 font-medium mb-8">Gönderim sırasında bir hata oluştu. Lütfen bağlantını kontrol edip sayfayı yenile.</p>;
+        } else if (submitStatus === 'success') {
+            // Başarılıysa ÖTİ-A skorunu göster
+            if(testData.id === 'oti-a') {
+                let likertScore = 0;
+                testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
+                
+                let resultZone = likertScore <= 25 ? { color: 'text-rose-600', bg: 'bg-rose-50', border:'border-rose-200', text: 'Kırmızı Bölge', msg: 'Temel çalışma disiplinini baştan kurgulamalıyız.' } :
+                                 likertScore <= 39 ? { color: 'text-amber-600', bg: 'bg-amber-50', border:'border-amber-200', text: 'Sarı Bölge', msg: 'Çalışıyorsun ama istikrar sorunun var. Beraber çözeceğiz.' } :
+                                 { color: 'text-emerald-600', bg: 'bg-emerald-50', border:'border-emerald-200', text: 'Yeşil Bölge', msg: 'Harika bir öz disiplinin var. Sadece ince ayar yapacağız.' };
+
+                content = (
+                    <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8`}>
+                        <div className={`text-sm font-bold uppercase tracking-widest mb-2 ${resultZone.color}`}>Çalışma Disiplini Skorun</div>
+                        <div className={`text-6xl font-extrabold mb-4 ${resultZone.color}`}>{likertScore}</div>
+                        <p className={`font-medium ${resultZone.color}`}>{resultZone.text}: {resultZone.msg}</p>
+                    </div>
+                );
+            } else {
+                content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
+            }
         }
 
         return (
             <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in relative">
                 <FullscreenToggle />
                 <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl p-10 text-center border border-slate-100 relative z-10">
-                    <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Analiz Tamamlandı! 🎉</h2>
+                    <h2 className="text-3xl font-extrabold text-slate-900 mb-6">{isSubmitting ? 'Kaydediliyor...' : 'Analiz Tamamlandı! 🎉'}</h2>
                     {content}
+                    {!isSubmitting && (
+                        <a href="index.html" className="inline-block bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-lg transition-colors">Ana Ekrana Dön</a>
+                    )}
                 </div>
             </div>
         );
