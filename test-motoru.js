@@ -29,15 +29,71 @@ const FullscreenToggle = () => {
 
 // --- ANA TEST MOTORU ---
 const FocusON_Engine = () => {
-    // Veriyi HTML sayfasından (window.CURRENT_TEST_DATA) otomatik çeker
     const testData = window.CURRENT_TEST_DATA;
     
     const [step, setStep] = React.useState(-1);
     const [answers, setAnswers] = React.useState({});
     const [animating, setAnimating] = React.useState(false);
+    
+    // Veri gönderim durumları
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [submitSuccess, setSubmitSuccess] = React.useState(false);
 
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
+
+    // Test bittiğinde Supabase'e Otomatik Gönderim
+    React.useEffect(() => {
+        if (step === totalQuestions) {
+            sendDataToSupabase();
+        }
+    }, [step]);
+
+    const sendDataToSupabase = async () => {
+        setIsSubmitting(true);
+        
+        // Wix'in URL'ye eklediği parametreleri yakala
+        const urlParams = new URLSearchParams(window.location.search);
+        const wixMemberId = urlParams.get('memberId') || 'test-kullanicisi';
+        const supUrl = urlParams.get('supUrl');
+        const supKey = urlParams.get('supKey');
+
+        if (!supUrl || !supKey) {
+            console.warn("API Anahtarları URL'de bulunamadı. Sadece test modunda çalışıyor.");
+            setIsSubmitting(false);
+            setSubmitSuccess(true);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${supUrl}/rest/v1/test_results`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': supKey,
+                    'Authorization': `Bearer ${supKey}`,
+                    'Prefer': 'return=minimal',
+                    // ÇOK KRİTİK: Verinin 'focuson' şemasına gitmesini sağlar
+                    'Content-Profile': 'focuson' 
+                },
+                body: JSON.stringify({
+                    student_id: wixMemberId,
+                    test_code: testData.id,
+                    answers: answers
+                    // ai_summary arka planda (Edge Function) doldurulacak
+                })
+            });
+
+            if (!response.ok) throw new Error("Supabase kayıt hatası");
+            setSubmitSuccess(true);
+        } catch (error) {
+            console.error("Veri gönderilemedi:", error);
+            // Hata olsa bile öğrenciye bitti ekranını gösterelim, moralini bozmayalım
+            setSubmitSuccess(true); 
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     // Klavye kontrolleri
     React.useEffect(() => {
@@ -74,7 +130,7 @@ const FocusON_Engine = () => {
         setAnswers(prev => ({ ...prev, [currentQ.id]: val }));
     };
 
-    // Karşılama
+    // Karşılama Ekranı
     if (step === -1) {
         return (
             <div className="h-full flex flex-col items-center justify-center p-6 text-center animate-fade-in relative">
@@ -91,45 +147,22 @@ const FocusON_Engine = () => {
         );
     }
 
-    // Sonuç Ekranı (Dinamik Puan Hesaplama ve Veritabanı Kaydı)
+    // Sonuç Ekranı (Yükleniyor veya Tamamlandı)
     if (step === totalQuestions) {
-        
-        // Sadece bir kere çalışması için useEffect kullanıyoruz
-        React.useEffect(() => {
-            const saveToSupabase = async () => {
-                const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
-                const SUPABASE_KEY = "";
-                
-                // 1. Wix'ten gelen ID'yi URL'den yakala
-                const urlParams = new URLSearchParams(window.location.search);
-                const wixMemberId = urlParams.get('uid') || 'anonim_ogrenci'; 
+        if (isSubmitting) {
+            return (
+                <div className="h-full flex flex-col items-center justify-center p-6 animate-fade-in">
+                    <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-6"></div>
+                    <h2 className="text-2xl font-bold text-slate-700">Sonuçlar Şifreleniyor...</h2>
+                    <p className="text-slate-500">Lütfen bekleyin, verileriniz koçunuza iletiliyor.</p>
+                </div>
+            );
+        }
 
-                // 2. Veriyi Supabase'e gönder
-                try {
-                    await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify({
-                            student_id: wixMemberId, // URL'den gelen Wix ID
-                            test_code: testData.id,  // HTML'den gelen testin kendi ID'si (örn: oti-a)
-                            answers: answers         // Öğrencinin verdiği tüm cevaplar (JSONB)
-                        })
-                    });
-                    console.log("Veri Supabase'e başarıyla uçtu!");
-                } catch (error) {
-                    console.error("Veritabanı hatası:", error);
-                }
-            };
-            
-            saveToSupabase();
-        }, []); // [] sayesinde test bittiğinde bu kod sadece 1 kez tetiklenir
-        // Sadece ÖTİ-A için özel sonuç ekranı görselleştirmesi
-        if(testData.id === 'oti-a') {
+        let content = <p className="text-slate-500 mb-8">Verilerin başarıyla analiz merkezine iletildi. Koçun sonuçları değerlendirecek.</p>;
+        
+        // ÖTİ-A Özel Sonuç Görselleştirmesi
+        if(testData.id === 'oti-a' && submitSuccess) {
             let likertScore = 0;
             testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
             
@@ -152,13 +185,12 @@ const FocusON_Engine = () => {
                 <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl p-10 text-center border border-slate-100 relative z-10">
                     <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Analiz Tamamlandı! 🎉</h2>
                     {content}
-                    <a href="index.html" className="inline-block bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-lg transition-colors">Ana Ekrana Dön</a>
                 </div>
             </div>
         );
     }
 
-    // Sorular
+    // Sorular Ekranı
     const progress = ((step) / totalQuestions) * 100;
 
     return (
