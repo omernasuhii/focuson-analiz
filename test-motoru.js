@@ -181,6 +181,65 @@ const FocusON_Engine = () => {
                     </div>
                 );
             } 
+            // --- KOLB SONUÇ EKRANI ---
+            else if (testData.id === 'kolb') {
+                let counts = { SY: 0, YG: 0, SK: 0, AY: 0 };
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('k') && counts[answers[key]] !== undefined) {
+                        counts[answers[key]]++;
+                    }
+                });
+                
+                // Matris Hesabı
+                const algilama = counts.SK - counts.SY; // Dikey Eksen
+                const isleme = counts.AY - counts.YG;   // Yatay Eksen
+                
+                let style = "";
+                let profile = {};
+                
+                if(algilama >= 0 && isleme >= 0) {
+                    style = "AYRIŞTIRAN";
+                    profile = { title: "AYRIŞTIRAN (Mühendis)", icon: "⚙️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Soyut düşünür, aktif uygularsın. Problem çözücüsün. Teoriyi pratiğe dökmeyi çok seversin.", tips: ["Doğrudan soru çözümüne geç.", "Formülleri uygula, bol deneme çöz.", "Projeler ve hedefler üzerinden ilerle."] };
+                }
+                else if(algilama >= 0 && isleme < 0) {
+                    style = "ÖZÜMSEYEN";
+                    profile = { title: "ÖZÜMSEYEN (Teorisyen)", icon: "📚", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Soyut düşünür, yansıtıcı gözlemlersin. Düzenlisin, insanlardan çok kavramlarla ilgilenirsin.", tips: ["Bol bol konu anlatımı oku, kendi özetini çıkar.", "Mantıksal şemalar ve sistemler kur.", "Sessiz ortamlarda, detaya inerek çalış."] };
+                }
+                else if(algilama < 0 && isleme >= 0) {
+                    style = "YERLEŞTİREN";
+                    profile = { title: "YERLEŞTİREN (Girişken)", icon: "🚀", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Somut hisseder, aktif uygularsın. Risk almayı seversin. Deneme-yanılma tam sana göre.", tips: ["Önce çöz, yapamazsan konuya dön (Deneme-yanılma).", "Oyunlaştırarak, başkalarıyla yarışarak çalış.", "Hareket halinde, kısa ve enerjik seanslar yap."] };
+                }
+                else {
+                    style = "DEĞİŞTİREN";
+                    profile = { title: "DEĞİŞTİREN (Yansıtan)", icon: "💡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200", desc: "Somut hisseder, yansıtıcı gözlemlersin. Farklı açılardan bakmayı ve fikir üretmeyi seversin.", tips: ["Grup çalışmaları yap, fikir alışverişinde bulun.", "Konuları hikayeleştir, büyük resmi gör.", "Zihin haritaları (Mind Map) kullan."] };
+                }
+
+                content = (
+                    <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-left`}>
+                        <div className="flex items-center gap-3 mb-4 justify-center">
+                            <span className="text-4xl">{profile.icon}</span>
+                            <h3 className={`text-2xl font-extrabold ${profile.color}`}>{profile.title}</h3>
+                        </div>
+                        <p className="text-slate-600 font-medium mb-4 text-center">{profile.desc}</p>
+                        <div className="bg-white p-4 rounded-xl border border-slate-100 mb-4">
+                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
+                            <ul className="space-y-2">
+                                {profile.tips.map((tip, idx) => (
+                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className={profile.color}>•</span> {tip}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="flex justify-around text-[10px] sm:text-xs text-slate-400 font-bold tracking-widest border-t border-slate-200 pt-4">
+                            <span>SOMUT: {counts.SY}</span>
+                            <span>SOYUT: {counts.SK}</span>
+                            <span>YANSITICI: {counts.YG}</span>
+                            <span>AKTİF: {counts.AY}</span>
+                        </div>
+                    </div>
+                );
+            }
             // --- VAK SONUÇ EKRANI ---
             else if (testData.id === 'vak') {
                 let counts = { G: 0, I: 0, K: 0 };
