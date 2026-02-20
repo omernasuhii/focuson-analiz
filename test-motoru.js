@@ -31,8 +31,7 @@ const FullscreenToggle = () => {
 const FocusON_Engine = () => {
     const testData = window.CURRENT_TEST_DATA;
     
-    // SİHİRLİ DOKUNUŞ: Her testin başına otomatik olarak Öğrenci No sorusunu ekliyoruz
-    // (Eğer daha önce eklenmemişse)
+    // Her testin başına otomatik olarak Öğrenci No sorusunu ekliyoruz
     if (!testData.questions.some(q => q.id === 'student_id')) {
         testData.questions.unshift({
             id: 'student_id',
@@ -46,8 +45,8 @@ const FocusON_Engine = () => {
     const [step, setStep] = React.useState(-1);
     const [answers, setAnswers] = React.useState({});
     const [animating, setAnimating] = React.useState(false);
-    const [isSubmitting, setIsSubmitting] = React.useState(false); // Gönderim durumu
-    const [submitStatus, setSubmitStatus] = React.useState(null); // Başarılı/Hatalı
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [submitStatus, setSubmitStatus] = React.useState(null);
 
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
@@ -56,17 +55,13 @@ const FocusON_Engine = () => {
     const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
         
-        // 1. Öğrenci ID'sini cevaplardan ayır (Çünkü o ayrı bir sütuna gidecek)
         const studentId = finalAnswers['student_id'];
         const testAnswers = { ...finalAnswers };
         delete testAnswers['student_id'];
 
-        // 2. Supabase Kimlik Bilgileri
         const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
 
-        // 3. Veriyi Gönder
-        // 3. Veriyi Gönder
         try {
             const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
                 method: 'POST',
@@ -75,7 +70,7 @@ const FocusON_Engine = () => {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'Prefer': 'return=minimal',
-                    'Content-Profile': 'focuson'  // <--- İŞTE EKLENEN SİHİRLİ SATIR
+                    'Content-Profile': 'focuson' // SİHİRLİ ŞEMA SATIRI
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
@@ -83,6 +78,7 @@ const FocusON_Engine = () => {
                     answers: testAnswers
                 })
             });
+
             if (!response.ok) throw new Error("Ağ hatası oluştu.");
             setSubmitStatus('success');
         } catch (error) {
@@ -112,12 +108,6 @@ const FocusON_Engine = () => {
                 if (currentQ.type === 'likert' && ['1','2','3','4','5'].includes(e.key)) {
                     handleAnswer(parseInt(e.key));
                     setTimeout(nextStep, 300); 
-                    {opt.label}
-                </label>
-            );
-        })}
-    </div>
-)}
                 }
             }
         };
@@ -132,7 +122,6 @@ const FocusON_Engine = () => {
             setStep(nextStepNum); 
             setAnimating(false);
             
-            // Eğer son soruya gelindiyse veriyi yolla
             if (nextStepNum === totalQuestions) {
                 submitToSupabase(answers);
             }
@@ -174,7 +163,8 @@ const FocusON_Engine = () => {
         } else if (submitStatus === 'error') {
             content = <p className="text-rose-500 font-medium mb-8">Gönderim sırasında bir hata oluştu. Lütfen bağlantını kontrol edip sayfayı yenile.</p>;
         } else if (submitStatus === 'success') {
-            // Başarılıysa ÖTİ-A skorunu göster
+            
+            // --- ÖTİ-A SONUÇ EKRANI ---
             if(testData.id === 'oti-a') {
                 let likertScore = 0;
                 testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
@@ -191,49 +181,50 @@ const FocusON_Engine = () => {
                     </div>
                 );
             } 
+            // --- VAK SONUÇ EKRANI ---
             else if (testData.id === 'vak') {
-    let counts = { G: 0, I: 0, K: 0 };
-    Object.keys(answers).forEach(key => {
-        if (key.startsWith('v') && counts[answers[key]] !== undefined) {
-            counts[answers[key]]++;
-        }
-    });
-    
-    // Baskın stili bul
-    let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-    
-    // Strateji Kartları
-    let strategies = {
-        G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun. 'Görmediğim şeye inanmam' diyenlerdensin.", tips: ["Ders notlarında renkli kodlama yap.", "Zihin Haritası (Mind Mapping) kullan.", "Konuyu dersten önce videodan izle."] },
-        I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun. 'Bana anlatırsan anlarım' diyenlerdensin.", tips: ["Kendi sesini kaydet ve dinle.", "Konuyu birine sesli anlat (Feynman).", "İçinden değil, fısıldayarak oku."] },
-        K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun. 'Yaparak öğrenirim' diyenlerdensin.", tips: ["Odayı turlayarak elinde kitapla çalış.", "25 dk çalış, 5 dk mutlaka hareket et.", "Sadece okuma; yaz, çiz, karala."] }
-    };
-    
-    let resultZone = strategies[maxStyle];
+                let counts = { G: 0, I: 0, K: 0 };
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('v') && counts[answers[key]] !== undefined) {
+                        counts[answers[key]]++;
+                    }
+                });
+                
+                let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+                
+                let strategies = {
+                    G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun. 'Görmediğim şeye inanmam' diyenlerdensin.", tips: ["Ders notlarında renkli kodlama yap.", "Zihin Haritası (Mind Mapping) kullan.", "Konuyu dersten önce videodan izle."] },
+                    I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun. 'Bana anlatırsan anlarım' diyenlerdensin.", tips: ["Kendi sesini kaydet ve dinle.", "Konuyu birine sesli anlat (Feynman).", "İçinden değil, fısıldayarak oku."] },
+                    K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun. 'Yaparak öğrenirim' diyenlerdensin.", tips: ["Odayı turlayarak elinde kitapla çalış.", "25 dk çalış, 5 dk mutlaka hareket et.", "Sadece okuma; yaz, çiz, karala."] }
+                };
+                
+                let resultZone = strategies[maxStyle];
 
-    content = (
-        <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
-            <div className="flex items-center gap-3 mb-4 justify-center">
-                <span className="text-4xl">{resultZone.icon}</span>
-                <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
-            </div>
-            <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
-            <div className="bg-white p-4 rounded-xl border border-slate-100">
-                <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
-                <ul className="space-y-2">
-                    {resultZone.tips.map((tip, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                            <span className={resultZone.color}>•</span> {tip}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="mt-4 text-center text-xs text-slate-400 font-bold tracking-widest">
-                GÖZ: {counts.G} | KULAK: {counts.I} | BEDEN: {counts.K}
-            </div>
-        </div>
-    );
-} else {
+                content = (
+                    <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
+                        <div className="flex items-center gap-3 mb-4 justify-center">
+                            <span className="text-4xl">{resultZone.icon}</span>
+                            <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
+                        </div>
+                        <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
+                        <div className="bg-white p-4 rounded-xl border border-slate-100">
+                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
+                            <ul className="space-y-2">
+                                {resultZone.tips.map((tip, idx) => (
+                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className={resultZone.color}>•</span> {tip}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="mt-4 text-center text-xs text-slate-400 font-bold tracking-widest">
+                            GÖZ: {counts.G} | KULAK: {counts.I} | BEDEN: {counts.K}
+                        </div>
+                    </div>
+                );
+            }
+            // --- DİĞER TESTLER İÇİN GENEL SONUÇ ---
+            else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
             }
         }
@@ -274,14 +265,17 @@ const FocusON_Engine = () => {
                     <h2 className="text-2xl md:text-4xl font-semibold text-slate-900 mb-10 leading-tight">{currentQ.text}</h2>
 
                     <div className="w-full">
+                        {/* TEXT / NUMBER */}
                         {(currentQ.type === 'text' || currentQ.type === 'number') && (
                             <input type={currentQ.type} autoFocus value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(e.target.value)} placeholder={currentQ.placeholder} className="w-full text-2xl md:text-3xl text-indigo-900 placeholder-slate-300 bg-transparent border-b-2 border-slate-200 focus:border-indigo-600 outline-none pb-4 transition-colors" />
                         )}
 
+                        {/* TEXTAREA */}
                         {currentQ.type === 'textarea' && (
                             <textarea autoFocus value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(e.target.value)} placeholder={currentQ.placeholder} className="w-full h-32 text-xl md:text-2xl text-indigo-900 placeholder-slate-300 bg-transparent border-b-2 border-slate-200 focus:border-indigo-600 outline-none pb-4 transition-colors resize-none"></textarea>
                         )}
 
+                        {/* LIKERT */}
                         {currentQ.type === 'likert' && (
                             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                                 {['1: Hiç', '2: Nadiren', '3: Bazen', '4: Sıklıkla', '5: Her Zaman'].map((opt, i) => {
@@ -297,22 +291,25 @@ const FocusON_Engine = () => {
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-3 md:gap-4">
-                            {currentQ.options.map((opt, i) => {
-                                const isSelected = answers[currentQ.id] === opt.value;
-                                return (
-                                    <label key={i} className={`cursor-pointer p-4 rounded-xl border-2 font-semibold text-base md:text-lg transition-all transform hover:-translate-y-1 flex items-center gap-4 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>
-                                        <input type="radio" name={currentQ.id} value={opt.value} onChange={() => { handleAnswer(opt.value); setTimeout(nextStep, 400); }} checked={isSelected} className="hidden" />
-                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600' : 'border-slate-300'}`}>
-                                            {isSelected && <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>}
-                                        </div>
-                                        {opt.label}
-                                    </label>
-                                );
-                            })}
-                        </div>
-)}
+                        {/* ÇOKTAN SEÇMELİ (MULTIPLE CHOICE - VAK İÇİN) */}
+                        {currentQ.type === 'multiple_choice' && (
+                            <div className="flex flex-col gap-3 md:gap-4">
+                                {currentQ.options.map((opt, i) => {
+                                    const isSelected = answers[currentQ.id] === opt.value;
+                                    return (
+                                        <label key={i} className={`cursor-pointer p-4 rounded-xl border-2 font-semibold text-base md:text-lg transition-all transform hover:-translate-y-1 flex items-center gap-4 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>
+                                            <input type="radio" name={currentQ.id} value={opt.value} onChange={() => { handleAnswer(opt.value); setTimeout(nextStep, 400); }} checked={isSelected} className="hidden" />
+                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-indigo-600' : 'border-slate-300'}`}>
+                                                {isSelected && <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>}
+                                            </div>
+                                            {opt.label}
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        )}
 
+                        {/* 1-10 SCALE */}
                         {currentQ.type === 'scale10' && (
                             <div className="flex flex-wrap gap-2">
                                 {[1,2,3,4,5,6,7,8,9,10].map(val => (
