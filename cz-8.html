@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ÇZ-8 Çoklu Zekâ Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'cz-8',
+            title: 'ÇZ-8 Çoklu Zekâ Analizi',
+            description: 'Bu test, senin ne kadar zeki olduğunu değil; hangi yollarla daha kolay öğrendiğini keşfetmek içindir. Aşağıdaki ifadelere 1 (Hiç Uygun Değil) ile 5 (Tamamen Uygun) arasında puan ver.',
+            questions: [
+                { id: 'cz1', type: 'likert', section: 'Bölüm 1', text: 'Kelime oyunlarını (Scrabble, bulmaca vb.) severim; yeni kelimeler öğrenmek ilgimi çeker.' },
+                { id: 'cz2', type: 'likert', section: 'Bölüm 1', text: 'Okuduğum bir kitabı veya izlediğim bir filmi detaylarıyla anlatmakta başarılıyımdır.' },
+                { id: 'cz3', type: 'likert', section: 'Bölüm 1', text: 'Ders çalışırken özet çıkarmak veya not tutmak benim için en iyi öğrenme yoludur.' },
+                
+                { id: 'cz4', type: 'likert', section: 'Bölüm 2', text: 'Olaylar arasında neden-sonuç ilişkisi kurmayı ve "Neden?" sorusunu sormayı severim.' },
+                { id: 'cz5', type: 'likert', section: 'Bölüm 2', text: 'Zihinden hesaplama yapmak veya strateji oyunları (Satranç vb.) oynamak hoşuma gider.' },
+                { id: 'cz6', type: 'likert', section: 'Bölüm 2', text: 'Ders çalışırken maddeler halinde, listelerle veya şemalarla çalışmak işimi kolaylaştırır.' },
+                
+                { id: 'cz7', type: 'likert', section: 'Bölüm 3', text: 'Harita okumakta, yön bulmakta veya bir nesnenin 3 boyutlu halini hayal etmekte iyiyimdir.' },
+                { id: 'cz8', type: 'likert', section: 'Bölüm 3', text: 'Kitaplardaki metinlerden çok resimler, grafikler ve tablolar dikkatimi çeker.' },
+                { id: 'cz9', type: 'likert', section: 'Bölüm 3', text: 'Ders notlarımı renkli kalemlerle, şekiller çizerek veya zihin haritaları yaparak tutarım.' },
+                
+                { id: 'cz10', type: 'likert', section: 'Bölüm 4', text: 'Ders çalışırken arka planda hafif bir müzik olması veya ritim tutmak odaklanmamı artırır.' },
+                { id: 'cz11', type: 'likert', section: 'Bölüm 4', text: 'Şarkı sözlerini ve melodileri çok çabuk ezberlerim.' },
+                { id: 'cz12', type: 'likert', section: 'Bölüm 4', text: 'Ses tonlarındaki değişimlere karşı hassasım; birinin yalan söylediğini sesinden anlarım.' },
+                
+                { id: 'cz13', type: 'likert', section: 'Bölüm 5', text: 'Uzun süre hareketsiz oturmakta zorlanırım, ders çalışırken sık sık hareket etme ihtiyacı duyarım.' },
+                { id: 'cz14', type: 'likert', section: 'Bölüm 5', text: 'Bir şeyi okuyarak değil, dokunarak, söküp takarak veya deneyerek daha iyi öğrenirim.' },
+                { id: 'cz15', type: 'likert', section: 'Bölüm 5', text: 'El becerisi gerektiren işlerde (maket yapma, tamirat, dans, spor) yetenekliyimdir.' },
+                
+                { id: 'cz16', type: 'likert', section: 'Bölüm 6', text: 'Arkadaşlarımla grup halinde ders çalışmak tek başıma çalışmaktan daha verimlidir.' },
+                { id: 'cz17', type: 'likert', section: 'Bölüm 6', text: 'Başkalarının duygularını, jest ve mimiklerini çabuk fark eder ve anlarım (Empati).' },
+                { id: 'cz18', type: 'likert', section: 'Bölüm 6', text: 'Bir sorunu çözmek için başkalarından fikir almayı veya tartışmayı tercih ederim.' },
+                
+                { id: 'cz19', type: 'likert', section: 'Bölüm 7', text: 'Kendi başıma kalıp düşünmekten ve bireysel çalışmaktan hoşlanırım.' },
+                { id: 'cz20', type: 'likert', section: 'Bölüm 7', text: 'Güçlü ve zayıf yönlerimin farkındayım; kendi hedeflerimi kendim belirlerim.' },
+                { id: 'cz21', type: 'likert', section: 'Bölüm 7', text: 'Kalabalık ortamlardansa sakin ve sessiz yerlerde daha iyi odaklanırım.' },
+                
+                { id: 'cz22', type: 'likert', section: 'Bölüm 8', text: 'Doğada vakit geçirmek, hayvanlar veya bitkilerle ilgilenmek beni dinlendirir.' },
+                { id: 'cz23', type: 'likert', section: 'Bölüm 8', text: 'Biyoloji, coğrafya gibi doğayla ilgili konuları diğer derslerden daha kolay anlarım.' },
+                { id: 'cz24', type: 'likert', section: 'Bölüm 8', text: 'Çevremdeki değişimleri (hava durumu, bitkilerdeki değişim vb.) çabuk fark ederim.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
