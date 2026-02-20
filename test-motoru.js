@@ -91,10 +91,43 @@ const FocusON_Engine = () => {
         );
     }
 
-    // Sonuç Ekranı (Dinamik Puan Hesaplama)
+    // Sonuç Ekranı (Dinamik Puan Hesaplama ve Veritabanı Kaydı)
     if (step === totalQuestions) {
-        let content = <p className="text-slate-500 mb-8">Verilerin başarıyla şifrelenip koçuna iletildi.</p>;
         
+        // Sadece bir kere çalışması için useEffect kullanıyoruz
+        React.useEffect(() => {
+            const saveToSupabase = async () => {
+                const SUPABASE_URL = "https://SENIN_PROJEN.supabase.co";
+                const SUPABASE_KEY = "SENIN_ANON_KEY";
+                
+                // 1. Wix'ten gelen ID'yi URL'den yakala
+                const urlParams = new URLSearchParams(window.location.search);
+                const wixMemberId = urlParams.get('uid') || 'anonim_ogrenci'; 
+
+                // 2. Veriyi Supabase'e gönder
+                try {
+                    await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            student_id: wixMemberId, // URL'den gelen Wix ID
+                            test_code: testData.id,  // HTML'den gelen testin kendi ID'si (örn: oti-a)
+                            answers: answers         // Öğrencinin verdiği tüm cevaplar (JSONB)
+                        })
+                    });
+                    console.log("Veri Supabase'e başarıyla uçtu!");
+                } catch (error) {
+                    console.error("Veritabanı hatası:", error);
+                }
+            };
+            
+            saveToSupabase();
+        }, []); // [] sayesinde test bittiğinde bu kod sadece 1 kez tetiklenir
         // Sadece ÖTİ-A için özel sonuç ekranı görselleştirmesi
         if(testData.id === 'oti-a') {
             let likertScore = 0;
