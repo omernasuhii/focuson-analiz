@@ -27,11 +27,129 @@ const FullscreenToggle = () => {
     );
 };
 
+// --- DOPA CANLI OYUN BİLEŞENİ ---
+const DopaGame = ({ onComplete }) => {
+    const [gameState, setGameState] = React.useState('start'); // start, playing, end
+    const [timeLeft, setTimeLeft] = React.useState(45);
+    const [grid, setGrid] = React.useState([]);
+    const [stats, setStats] = React.useState({ correct: 0, wrong: 0 });
+
+    const targets = ['a', 'b', 'd', 'g'];
+    const distractors = ['p', 'q', 'c', 'e', 'o', 'h', 'm', 'n', 'u', 'y', 'z', 'l', 'k', 't', 'f', 'r', 's', 'v'];
+
+    const initGame = () => {
+        let newGrid = [];
+        for(let i=0; i<84; i++) { // 7x12 ızgara
+            const isTarget = Math.random() < 0.20; // %20 ihtimalle hedef harf
+            const charSet = isTarget ? targets : distractors;
+            const char = charSet[Math.floor(Math.random() * charSet.length)];
+            newGrid.push({ id: i, char, isTarget, status: 'idle' }); 
+        }
+        setGrid(newGrid);
+        setStats({ correct: 0, wrong: 0 });
+        setTimeLeft(45);
+        setGameState('playing');
+    };
+
+    React.useEffect(() => {
+        let timer;
+        if (gameState === 'playing' && timeLeft > 0) {
+            timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+        } else if (gameState === 'playing' && timeLeft === 0) {
+            endGame();
+        }
+        return () => clearTimeout(timer);
+    }, [gameState, timeLeft]);
+
+    const endGame = () => {
+        setGameState('end');
+        let missed = 0;
+        grid.forEach(item => {
+            if (item.isTarget && item.status === 'idle') missed++;
+        });
+        
+        const finalSpeed = stats.correct; 
+        const finalErrors = stats.wrong + missed; // Yanlış tıklamalar + gözden kaçanlar
+        
+        // 3 saniye sonra otomatik diğer soruya geç
+        setTimeout(() => onComplete(finalSpeed, finalErrors), 3000);
+    };
+
+    const handleLetterClick = (index) => {
+        if (gameState !== 'playing') return;
+        let newGrid = [...grid];
+        let item = newGrid[index];
+        if (item.status !== 'idle') return; 
+
+        if (item.isTarget) {
+            item.status = 'correct';
+            setStats(s => ({ ...s, correct: s.correct + 1 }));
+        } else {
+            item.status = 'wrong';
+            setStats(s => ({ ...s, wrong: s.wrong + 1 }));
+        }
+        setGrid(newGrid);
+    };
+
+    if (gameState === 'start') {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border border-slate-200 shadow-sm text-center">
+                <div className="text-6xl mb-4">⏱️</div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Süren: 45 Saniye</h3>
+                <p className="text-slate-500 mb-8">Ekranda belirecek harfler arasından sadece <strong>A, B, D</strong> ve <strong>G</strong> harflerini bulup tıkla. Yanlış harfe tıklamak hata sayılır.</p>
+                <button onClick={initGame} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-xl text-lg transition-transform transform hover:scale-105 shadow-lg shadow-indigo-200">
+                    Süreyi Başlat
+                </button>
+            </div>
+        );
+    }
+
+    if (gameState === 'end') {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl border border-emerald-200 shadow-sm text-center animate-fade-in">
+                <div className="text-6xl mb-4">🏁</div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Süre Doldu!</h3>
+                <p className="text-slate-500 mb-4">Sonuçların kaydedildi, testin 2. aşamasına geçiliyor...</p>
+                <div className="flex gap-4 font-mono">
+                    <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg font-bold">Doğru: {stats.correct}</div>
+                    <div className="bg-rose-50 text-rose-700 px-4 py-2 rounded-lg font-bold">Hatalı Tık: {stats.wrong}</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-col items-center bg-slate-50 p-6 rounded-3xl border border-slate-200">
+            <div className="flex justify-between w-full mb-6 px-4">
+                <div className="text-xl font-bold text-slate-700">Hedef: A, B, D, G</div>
+                <div className={`text-2xl font-mono font-bold ${timeLeft <= 10 ? 'text-rose-600 animate-pulse' : 'text-indigo-600'}`}>
+                    00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
+                </div>
+            </div>
+            
+            <div className="grid grid-cols-7 sm:grid-cols-12 gap-2 sm:gap-3">
+                {grid.map((item, idx) => {
+                    let btnClass = "w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl font-mono font-bold rounded-lg cursor-pointer transition-colors shadow-sm ";
+                    if (item.status === 'idle') btnClass += "bg-white text-slate-700 hover:bg-indigo-100 border border-slate-200";
+                    else if (item.status === 'correct') btnClass += "bg-emerald-500 text-white border-emerald-600";
+                    else if (item.status === 'wrong') btnClass += "bg-rose-500 text-white border-rose-600";
+                    
+                    return (
+                        <button key={item.id} onClick={() => handleLetterClick(idx)} className={btnClass}>
+                            {item.char}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+
 // --- ANA TEST MOTORU ---
 const FocusON_Engine = () => {
     const testData = window.CURRENT_TEST_DATA;
     
-    // Her testin başına otomatik olarak Öğrenci No sorusunu ekliyoruz
     if (!testData.questions.some(q => q.id === 'student_id')) {
         testData.questions.unshift({
             id: 'student_id',
@@ -51,10 +169,8 @@ const FocusON_Engine = () => {
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
-    // --- SUPABASE GÖNDERİM FONKSİYONU ---
     const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
-        
         const studentId = finalAnswers['student_id'];
         const testAnswers = { ...finalAnswers };
         delete testAnswers['student_id'];
@@ -70,7 +186,7 @@ const FocusON_Engine = () => {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'Prefer': 'return=minimal',
-                    'Content-Profile': 'focuson' // SİHİRLİ ŞEMA SATIRI
+                    'Content-Profile': 'focuson'
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
@@ -89,12 +205,14 @@ const FocusON_Engine = () => {
         }
     };
 
-    // Klavye kontrolleri
     React.useEffect(() => {
         const handleKeyDown = (e) => {
             if (animating || step === totalQuestions) return;
             if (step === -1 && e.key === 'Enter') return nextStep();
             if (step >= 0 && step < totalQuestions) {
+                // Eğer oyundaysak klavyeyi devre dışı bırak, fare ile oynamalı
+                if (currentQ.type === 'dopa_game') return;
+
                 const isTextInput = currentQ.type === 'text' || currentQ.type === 'textarea' || currentQ.type === 'number';
                 
                 if (e.key === 'Enter') {
@@ -164,15 +282,13 @@ const FocusON_Engine = () => {
             content = <p className="text-rose-500 font-medium mb-8">Gönderim sırasında bir hata oluştu. Lütfen bağlantını kontrol edip sayfayı yenile.</p>;
         } else if (submitStatus === 'success') {
             
-            // --- ÖTİ-A SONUÇ EKRANI ---
+            // --- ÖTİ-A SONUCU ---
             if(testData.id === 'oti-a') {
                 let likertScore = 0;
                 testData.questions.filter(q => q.type === 'likert').forEach(q => likertScore += parseInt(answers[q.id] || 0));
-                
                 let resultZone = likertScore <= 25 ? { color: 'text-rose-600', bg: 'bg-rose-50', border:'border-rose-200', text: 'Kırmızı Bölge', msg: 'Temel çalışma disiplinini baştan kurgulamalıyız.' } :
                                  likertScore <= 39 ? { color: 'text-amber-600', bg: 'bg-amber-50', border:'border-amber-200', text: 'Sarı Bölge', msg: 'Çalışıyorsun ama istikrar sorunun var. Beraber çözeceğiz.' } :
                                  { color: 'text-emerald-600', bg: 'bg-emerald-50', border:'border-emerald-200', text: 'Yeşil Bölge', msg: 'Harika bir öz disiplinin var. Sadece ince ayar yapacağız.' };
-
                 content = (
                     <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8`}>
                         <div className={`text-sm font-bold uppercase tracking-widest mb-2 ${resultZone.color}`}>Çalışma Disiplini Skorun</div>
@@ -181,66 +297,51 @@ const FocusON_Engine = () => {
                     </div>
                 );
             } 
-            // --- KOLB SONUÇ EKRANI ---
-            else if (testData.id === 'kolb') {
-                let counts = { SY: 0, YG: 0, SK: 0, AY: 0 };
-                Object.keys(answers).forEach(key => {
-                    if (key.startsWith('k') && counts[answers[key]] !== undefined) {
-                        counts[answers[key]]++;
-                    }
-                });
-                
-                // Matris Hesabı
-                const algilama = counts.SK - counts.SY; // Dikey Eksen
-                const isleme = counts.AY - counts.YG;   // Yatay Eksen
-                
-                let style = "";
-                let profile = {};
-                
-                if(algilama >= 0 && isleme >= 0) {
-                    style = "AYRIŞTIRAN";
-                    profile = { title: "AYRIŞTIRAN (Mühendis)", icon: "⚙️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Soyut düşünür, aktif uygularsın. Problem çözücüsün. Teoriyi pratiğe dökmeyi çok seversin.", tips: ["Doğrudan soru çözümüne geç.", "Formülleri uygula, bol deneme çöz.", "Projeler ve hedefler üzerinden ilerle."] };
-                }
-                else if(algilama >= 0 && isleme < 0) {
-                    style = "ÖZÜMSEYEN";
-                    profile = { title: "ÖZÜMSEYEN (Teorisyen)", icon: "📚", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Soyut düşünür, yansıtıcı gözlemlersin. Düzenlisin, insanlardan çok kavramlarla ilgilenirsin.", tips: ["Bol bol konu anlatımı oku, kendi özetini çıkar.", "Mantıksal şemalar ve sistemler kur.", "Sessiz ortamlarda, detaya inerek çalış."] };
-                }
-                else if(algilama < 0 && isleme >= 0) {
-                    style = "YERLEŞTİREN";
-                    profile = { title: "YERLEŞTİREN (Girişken)", icon: "🚀", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Somut hisseder, aktif uygularsın. Risk almayı seversin. Deneme-yanılma tam sana göre.", tips: ["Önce çöz, yapamazsan konuya dön (Deneme-yanılma).", "Oyunlaştırarak, başkalarıyla yarışarak çalış.", "Hareket halinde, kısa ve enerjik seanslar yap."] };
-                }
-                else {
-                    style = "DEĞİŞTİREN";
-                    profile = { title: "DEĞİŞTİREN (Yansıtan)", icon: "💡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200", desc: "Somut hisseder, yansıtıcı gözlemlersin. Farklı açılardan bakmayı ve fikir üretmeyi seversin.", tips: ["Grup çalışmaları yap, fikir alışverişinde bulun.", "Konuları hikayeleştir, büyük resmi gör.", "Zihin haritaları (Mind Map) kullan."] };
-                }
-
+            // --- VAK SONUCU ---
+            else if (testData.id === 'vak') {
+                let counts = { G: 0, I: 0, K: 0 };
+                Object.keys(answers).forEach(key => { if (key.startsWith('v') && counts[answers[key]] !== undefined) counts[answers[key]]++; });
+                let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+                let strategies = {
+                    G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun.", tips: ["Renkli kodlama yap.", "Zihin Haritası kullan."] },
+                    I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun.", tips: ["Sesini kaydet.", "Birine sesli anlat."] },
+                    K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun.", tips: ["Odayı turlayarak çalış.", "Sadece okuma; yaz, çiz."] }
+                };
+                let resultZone = strategies[maxStyle];
                 content = (
-                    <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-left`}>
+                    <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
                         <div className="flex items-center gap-3 mb-4 justify-center">
-                            <span className="text-4xl">{profile.icon}</span>
-                            <h3 className={`text-2xl font-extrabold ${profile.color}`}>{profile.title}</h3>
+                            <span className="text-4xl">{resultZone.icon}</span>
+                            <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
                         </div>
-                        <p className="text-slate-600 font-medium mb-4 text-center">{profile.desc}</p>
-                        <div className="bg-white p-4 rounded-xl border border-slate-100 mb-4">
-                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
-                            <ul className="space-y-2">
-                                {profile.tips.map((tip, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                                        <span className={profile.color}>•</span> {tip}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="flex justify-around text-[10px] sm:text-xs text-slate-400 font-bold tracking-widest border-t border-slate-200 pt-4">
-                            <span>SOMUT: {counts.SY}</span>
-                            <span>SOYUT: {counts.SK}</span>
-                            <span>YANSITICI: {counts.YG}</span>
-                            <span>AKTİF: {counts.AY}</span>
-                        </div>
+                        <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
+                        <ul className="space-y-2 mb-4 bg-white p-4 rounded-xl">
+                            {resultZone.tips.map((tip, idx) => <li key={idx} className="text-sm text-slate-700">• {tip}</li>)}
+                        </ul>
                     </div>
                 );
             }
-            // --- ÇZ-8 (ÇOKLU ZEKÂ) SONUÇ EKRANI ---
+            // --- KOLB SONUCU ---
+            else if (testData.id === 'kolb') {
+                let counts = { SY: 0, YG: 0, SK: 0, AY: 0 };
+                Object.keys(answers).forEach(key => { if (key.startsWith('k') && counts[answers[key]] !== undefined) counts[answers[key]]++; });
+                const algilama = counts.SK - counts.SY; 
+                const isleme = counts.AY - counts.YG;   
+                let profile = {};
+                if(algilama >= 0 && isleme >= 0) profile = { title: "AYRIŞTIRAN (Mühendis)", icon: "⚙️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" };
+                else if(algilama >= 0 && isleme < 0) profile = { title: "ÖZÜMSEYEN (Teorisyen)", icon: "📚", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" };
+                else if(algilama < 0 && isleme >= 0) profile = { title: "YERLEŞTİREN (Girişken)", icon: "🚀", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" };
+                else profile = { title: "DEĞİŞTİREN (Yansıtan)", icon: "💡", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200" };
+
+                content = (
+                    <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-center`}>
+                        <span className="text-4xl block mb-2">{profile.icon}</span>
+                        <h3 className={`text-2xl font-extrabold ${profile.color} mb-2`}>{profile.title}</h3>
+                        <p className="text-slate-600 text-sm">Kolb öğrenme stiline göre stratejin koçun tarafından belirlenecektir.</p>
+                    </div>
+                );
+            }
+            // --- ÇZ-8 SONUCU ---
             else if (testData.id === 'cz-8') {
                 let scores = {
                     'Sözel': parseInt(answers['cz1']||0) + parseInt(answers['cz2']||0) + parseInt(answers['cz3']||0),
@@ -252,98 +353,49 @@ const FocusON_Engine = () => {
                     'İçsel': parseInt(answers['cz19']||0) + parseInt(answers['cz20']||0) + parseInt(answers['cz21']||0),
                     'Doğacı': parseInt(answers['cz22']||0) + parseInt(answers['cz23']||0) + parseInt(answers['cz24']||0)
                 };
-
-                // Puanları büyükten küçüğe sırala
                 let sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-                let top1 = sorted[0];
-                let top2 = sorted[1];
-
-                const strategies = {
-                    'Sözel': { icon: '🗣️', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200', tips: ['Okuyarak anlat, hikayeleştir, akrostiş yap.', 'Konuyu bir başkasına anlatır gibi ses kaydı al.'] },
-                    'Mantıksal': { icon: '🧩', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', tips: ['Konuları neden-sonuç ilişkisine göre şematize et.', '"Eğer... ise..." mantığını kur. Kodlama yap.'] },
-                    'Görsel': { icon: '👁️', color: 'text-fuchsia-600', bg: 'bg-fuchsia-50', border: 'border-fuchsia-200', tips: ['Zihin haritaları kullan.', 'Tarih/Coğrafya çalışırken belgesel izle. Renk kodları oluştur.'] },
-                    'Müziksel': { icon: '🎵', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-200', tips: ['Formülleri ritmik şarkılar haline getir.', 'Arka planda sözsüz (Barok/Lo-fi) müzik kullan.'] },
-                    'Bedensel': { icon: '🏃', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', tips: ['Yürüyerek tekrar yap. Odayı ders istasyonlarına böl.', 'Pomodoro tekniğini hareketli uygula.'] },
-                    'Sosyal': { icon: '👥', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', tips: ['Çalışma grupları kur.', 'Arkadaşınla soru-cevap yap. "Öğretmencilik" oyna.'] },
-                    'İçsel': { icon: '🧘', color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200', tips: ['Günlük tut, hedef belirle.', 'Sessiz ortamda, kendi hızında çalış.'] },
-                    'Doğacı': { icon: '🌿', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', tips: ['Konuları sınıflandır (Taksonomi).', 'Biyoloji/Coğrafya\'yı doğada gözlemleyerek çalış.'] }
-                };
-
-                let domStrategy = strategies[top1[0]];
-
                 content = (
-                    <div className={`p-6 rounded-2xl border ${domStrategy.bg} ${domStrategy.border} mb-8 text-left`}>
-                        <div className="flex items-center gap-3 mb-4 justify-center">
-                            <span className="text-4xl">{domStrategy.icon}</span>
-                            <h3 className={`text-2xl font-extrabold ${domStrategy.color}`}>BASKIN: {top1[0].toUpperCase()} ZEKÂ</h3>
-                        </div>
-                        <p className="text-slate-600 font-medium mb-4 text-center">İkinci güçlü alanın: <strong>{top2[0]} Zekâ</strong></p>
-                        <div className="bg-white p-4 rounded-xl border border-slate-100 mb-4">
-                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
-                            <ul className="space-y-2">
-                                {domStrategy.tips.map((tip, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                                        <span className={domStrategy.color}>•</span> {tip}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-slate-200">
-                            <h4 className="text-xs font-bold text-slate-500 mb-2 uppercase text-center">Tüm Puanların</h4>
-                            <div className="flex flex-wrap justify-center gap-2">
-                                {sorted.map(s => (
-                                    <span key={s[0]} className="text-[10px] bg-white border border-slate-200 px-2 py-1 rounded-full text-slate-600 font-semibold shadow-sm">
-                                        {s[0]}: {s[1]}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
+                    <div className="p-6 rounded-2xl border bg-indigo-50 border-indigo-200 mb-8 text-center">
+                        <h3 className="text-2xl font-extrabold text-indigo-600 mb-2">BASKIN: {sorted[0][0].toUpperCase()} ZEKÂ</h3>
+                        <p className="text-slate-600 font-medium">İkinci güçlü alanın: {sorted[1][0]} Zekâ</p>
                     </div>
                 );
             }
-            // --- VAK SONUÇ EKRANI ---
-            else if (testData.id === 'vak') {
-                let counts = { G: 0, I: 0, K: 0 };
+            // --- DOPA SONUCU ---
+            else if (testData.id === 'dopa') {
+                let dopaSelf = 0;
                 Object.keys(answers).forEach(key => {
-                    if (key.startsWith('v') && counts[answers[key]] !== undefined) {
-                        counts[answers[key]]++;
-                    }
+                    if (key.startsWith('dopa_s')) dopaSelf += parseInt(answers[key] || 0);
                 });
                 
-                let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+                const perfSpeed = parseInt(answers['dopa_speed']) || 0; // Doğru tık sayısı
+                const perfErr = parseInt(answers['dopa_error']) || 0;   // Hatalı tık + Gözden kaçanlar
                 
-                let strategies = {
-                    G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun. 'Görmediğim şeye inanmam' diyenlerdensin.", tips: ["Ders notlarında renkli kodlama yap.", "Zihin Haritası (Mind Mapping) kullan.", "Konuyu dersten önce videodan izle."] },
-                    I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun. 'Bana anlatırsan anlarım' diyenlerdensin.", tips: ["Kendi sesini kaydet ve dinle.", "Konuyu birine sesli anlat (Feynman).", "İçinden değil, fısıldayarak oku."] },
-                    K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun. 'Yaparak öğrenirim' diyenlerdensin.", tips: ["Odayı turlayarak elinde kitapla çalış.", "25 dk çalış, 5 dk mutlaka hareket et.", "Sadece okuma; yaz, çiz, karala."] }
-                };
+                let profile = {};
                 
-                let resultZone = strategies[maxStyle];
+                // 45 saniyede ortalama 15 hedef beklenir.
+                if (perfErr > 8) {
+                    profile = { title: "TAVŞAN PROFİLİ", icon: "🐇", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Sabırsızsın. Çok hızlısın ama çok fazla hata yapıyorsun veya gözden kaçırıyorsun." };
+                } else if (perfSpeed < 10) {
+                    profile = { title: "KAPLUMBAĞA PROFİLİ", icon: "🐢", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Mükemmeliyetçi ve garantici ilerliyorsun. Hata oranın az ama işlem hızın yavaş." };
+                } else {
+                    profile = { title: "DENGELİ PROFİL", icon: "⚖️", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dikkat ve hız dengen bu testte çok başarılı sonuç verdi." };
+                }
 
                 content = (
-                    <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
-                        <div className="flex items-center gap-3 mb-4 justify-center">
-                            <span className="text-4xl">{resultZone.icon}</span>
-                            <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
-                        </div>
-                        <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
-                        <div className="bg-white p-4 rounded-xl border border-slate-100">
-                            <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
-                            <ul className="space-y-2">
-                                {resultZone.tips.map((tip, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                                        <span className={resultZone.color}>•</span> {tip}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="mt-4 text-center text-xs text-slate-400 font-bold tracking-widest">
-                            GÖZ: {counts.G} | KULAK: {counts.I} | BEDEN: {counts.K}
+                    <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} mb-8 text-center`}>
+                        <div className="text-4xl mb-2">{profile.icon}</div>
+                        <h3 className={`text-2xl font-extrabold ${profile.color} mb-2`}>{profile.title}</h3>
+                        <p className="text-slate-600 font-medium mb-6">{profile.desc}</p>
+                        
+                        <div className="flex justify-around text-sm font-bold text-slate-700 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                            <div className="text-center text-slate-400 text-xs tracking-widest">DOĞRU<br/><span className="text-emerald-600 text-2xl">{perfSpeed}</span></div>
+                            <div className="text-center text-slate-400 text-xs tracking-widest">HATA<br/><span className="text-rose-600 text-2xl">{perfErr}</span></div>
+                            <div className="text-center text-slate-400 text-xs tracking-widest">ÖZ-ALGI<br/><span className="text-indigo-600 text-2xl">{dopaSelf}</span>/30</div>
                         </div>
                     </div>
                 );
             }
-            // --- DİĞER TESTLER İÇİN GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
             }
@@ -385,6 +437,17 @@ const FocusON_Engine = () => {
                     <h2 className="text-2xl md:text-4xl font-semibold text-slate-900 mb-10 leading-tight">{currentQ.text}</h2>
 
                     <div className="w-full">
+                        
+                        {/* YENİ EKLENEN: DOPA OYUN MODÜLÜ */}
+                        {currentQ.type === 'dopa_game' && (
+                            <DopaGame onComplete={(speed, errors) => {
+                                handleAnswer('dopa_speed', speed);
+                                handleAnswer('dopa_error', errors);
+                                handleAnswer(currentQ.id, 'completed'); // Bu ekranın bittiğini işaretle
+                                setTimeout(nextStep, 500);
+                            }} />
+                        )}
+
                         {/* TEXT / NUMBER */}
                         {(currentQ.type === 'text' || currentQ.type === 'number') && (
                             <input type={currentQ.type} autoFocus value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(e.target.value)} placeholder={currentQ.placeholder} className="w-full text-2xl md:text-3xl text-indigo-900 placeholder-slate-300 bg-transparent border-b-2 border-slate-200 focus:border-indigo-600 outline-none pb-4 transition-colors" />
@@ -411,7 +474,7 @@ const FocusON_Engine = () => {
                             </div>
                         )}
 
-                        {/* ÇOKTAN SEÇMELİ (MULTIPLE CHOICE - VAK İÇİN) */}
+                        {/* ÇOKTAN SEÇMELİ */}
                         {currentQ.type === 'multiple_choice' && (
                             <div className="flex flex-col gap-3 md:gap-4">
                                 {currentQ.options.map((opt, i) => {
@@ -429,21 +492,15 @@ const FocusON_Engine = () => {
                             </div>
                         )}
 
-                        {/* 1-10 SCALE */}
-                        {currentQ.type === 'scale10' && (
-                            <div className="flex flex-wrap gap-2">
-                                {[1,2,3,4,5,6,7,8,9,10].map(val => (
-                                    <button key={val} onClick={() => { handleAnswer(val); setTimeout(nextStep, 400); }} className={`w-12 h-14 md:w-14 md:h-16 rounded-xl border-2 font-bold text-lg transition-all transform hover:-translate-y-1 ${answers[currentQ.id] === val ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg' : 'border-slate-200 bg-white text-slate-600 hover:border-indigo-300'}`}>{val}</button>
-                                ))}
-                            </div>
-                        )}
                     </div>
 
-                    <div className="mt-12 flex items-center gap-4">
-                        <button onClick={nextStep} disabled={!answers[currentQ.id]} className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center gap-2">
-                            İleri <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
-                    </div>
+                    {currentQ.type !== 'dopa_game' && (
+                        <div className="mt-12 flex items-center gap-4">
+                            <button onClick={nextStep} disabled={!answers[currentQ.id]} className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center gap-2">
+                                İleri <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
