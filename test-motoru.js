@@ -97,8 +97,8 @@ const FocusON_Engine = () => {
         // Sadece bir kere çalışması için useEffect kullanıyoruz
         React.useEffect(() => {
             const saveToSupabase = async () => {
-                const SUPABASE_URL = "https://SENIN_PROJEN.supabase.co";
-                const SUPABASE_KEY = "SENIN_ANON_KEY";
+                const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
+                const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzgzMjI2MCwiZXhwIjoyMDgzNDA4MjYwfQ.f_SrCEvZ0fevw8aKEGeZiHE6_laUwtrtiQ-AG8QzZpE";
                 
                 // 1. Wix'ten gelen ID'yi URL'den yakala
                 const urlParams = new URLSearchParams(window.location.search);
