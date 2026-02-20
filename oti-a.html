@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ÖTİ-A Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'oti-a',
+            title: 'Öğrenci Tanıma ve İlk Analiz (ÖTİ-A)',
+            description: 'Bu analiz, senin akademik profilini ve çalışma alışkanlıklarını keşfetmemiz için tasarlandı. Dürüst olman sürecin için en önemli adımdır.',
+            questions: [
+                { id: 'q1', type: 'text', section: 'Akademik Künye', text: 'Okulda en sevdiğin ders hangisi?', placeholder: 'Örn: Matematik...' },
+                { id: 'q2', type: 'text', section: 'Akademik Künye', text: 'Seni en çok zorlayan ders hangisi?', placeholder: 'Örn: Fizik...' },
+                { id: 'q3', type: 'number', section: 'Akademik Künye', text: 'Mevcut Okul Ortalaman (OBP) tahminen kaç?', placeholder: 'Örn: 85' },
+                { id: 'q4', type: 'text', section: 'Akademik Künye', text: 'Hedeflediğin Üniversite/Bölüm nedir?', placeholder: 'Örn: İTÜ Bilgisayar...' },
+                { id: 'q5', type: 'scale10', section: 'Akademik Künye', text: 'Bu hedefe ulaşmak senin için ne kadar önemli?' },
+                
+                { id: 'q6', type: 'textarea', section: 'SWOT Analizi', text: 'Sence en güçlü özelliklerin neler?', placeholder: 'Örn: Pes etmem...' },
+                { id: 'q7', type: 'textarea', section: 'SWOT Analizi', text: 'Geliştirmen gereken zayıf yönlerin neler?', placeholder: 'Örn: Çabuk sıkılırım...' },
+                { id: 'q8', type: 'textarea', section: 'SWOT Analizi', text: 'Etrafındaki avantajlar/fırsatlar neler?', placeholder: 'Örn: Odam var...' },
+                { id: 'q9', type: 'textarea', section: 'SWOT Analizi', text: 'Seni engelleyen tehditler neler?', placeholder: 'Örn: Telefon bağımlılığım...' },
+                
+                { id: 'c1', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Ders çalışmaya başlamadan önce ne yapacağımı planlarım.' },
+                { id: 'c2', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Çalışma masam düzenli ve sadedir.' },
+                { id: 'c3', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Çalışırken cep telefonumu odadan çıkarırım.' },
+                { id: 'c4', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Anlamadığım konuları ertelemeden sorarım.' },
+                { id: 'c5', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Deneme sınavı sonuçlarımı analiz ederim.' },
+                { id: 'c6', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Uykumu düzenli alırım.' },
+                { id: 'c7', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Uzun süre masa başında dikkatim dağılmadan oturabilirim.' },
+                { id: 'c8', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Okul dışında günlük tekrar yaparım.' },
+                { id: 'c9', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Sınav stresiyle başa çıkabilirim.' },
+                { id: 'c10', type: 'likert', section: 'Çalışma Alışkanlıkları', text: 'Hedefim için içsel motivasyona sahibim.' },
+
+                { id: 'd1', type: 'number', section: 'Dijital Hayat', text: 'Günlük ortalama ekran süren kaç saat?', placeholder: 'Örn: 4' },
+                { id: 'd2', type: 'text', section: 'Dijital Hayat', text: 'En çok vakit geçirdiğin 3 uygulama hangisi?', placeholder: 'Örn: Instagram, TikTok...' },
+                { id: 'd3', type: 'text', section: 'Dijital Hayat', text: 'Sence zamanını en çok ne "çalıyor"?', placeholder: 'Dürüst ol...' },
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
