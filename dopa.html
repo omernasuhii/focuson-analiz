@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FocusON - DOPA Canlı Dikkat Analizi</title>
+    <title>FocusON - DOPA Dikkat ve Odaklanma Analizi</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -21,19 +21,21 @@
     <script>
         window.CURRENT_TEST_DATA = {
             id: 'dopa',
-            title: 'DOPA Canlı Dikkat Analizi',
-            description: 'Bu modül dikkatini ve hızını canlı olarak ölçecek. 1. Aşamada karşına çıkan harf tablosunda "a, b, d, g" harflerini 45 saniye içinde bulup tıklaman gerekiyor. 2. Aşamada ise testi çözerkenki hislerini değerlendireceğiz.',
+            title: 'DOPA Dikkat Performans Analizi',
+            description: 'Bu analiz tamamen dijitaldir. Önce 60 saniyelik harf tarama testini ekranda çözecek, ardından deneyimini oylayacaksın.',
             questions: [
-                // BÖLÜM 1: DİJİTAL PERFORMANS OYUNU
-                { id: 'dopa_game_module', type: 'dopa_game', section: 'Aşama 1: Canlı Performans', text: 'Hedef Harfler: A, B, D, G' },
+                // YENİ DİJİTAL GÖREV MODÜLÜ
+                { id: 'dopa_perf', type: 'dopa_task', section: 'Aşama 1: Performans Testi', text: 'Aşağıdaki tabloda sadece "a, b, d, g" harflerini bulup tıkla.' },
                 
-                // BÖLÜM 2: ÖZ DEĞERLENDİRME (LİKERT)
-                { id: 'dopa_s1', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Testi yaparken gözlerim çabuk yoruldu veya harfler birbirine girdi.' },
-                { id: 'dopa_s2', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Zamanın azalması (sayacın geriye sayması) beni strese soktu ve panikletti.' },
-                { id: 'dopa_s3', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Yanlış harfe tıkladığımda dikkatimi toparlamakta zorlandım.' },
-                { id: 'dopa_s4', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Bazı hedef harfleri gördüm ama tıklayana kadar yerini kaybettim.' },
-                { id: 'dopa_s5', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Hata yapmaktan korktuğum için çok yavaş ve garantici ilerledim.' },
-                { id: 'dopa_s6', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Sınavlarda paragraf sorularını okurken de tam olarak böyle kopuk ve yorgun hissediyorum.' }
+                // ÖZ DEĞERLENDİRME (LİKERT)
+                { id: 'dopa_s1', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Testi yaparken gözlerim çabuk yoruldu veya karardı.' },
+                { id: 'dopa_s2', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Bir süre sonra harfler birbirine girmeye başladı (dans etti).' },
+                { id: 'dopa_s3', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Testin sonlarına doğru sıkıldım ve "bitse de gitsek" dedim.' },
+                { id: 'dopa_s4', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Testi yaparken çevresel faktörler dikkatimi dağıttı.' },
+                { id: 'dopa_s5', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Bazı harfleri gördüm ama elim gidene kadar yerini kaybettim.' },
+                { id: 'dopa_s6', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Hata yapmaktan korktuğum için çok yavaş ilerledim.' },
+                { id: 'dopa_s7', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Kendimi "robot gibi" otomatiğe bağlamış hissettim.' },
+                { id: 'dopa_s8', type: 'likert', section: 'Aşama 2: Algısal Dikkat', text: 'Sınavlarda da paragraf okurken tam olarak böyle kopuk hissediyorum.' }
             ]
         };
     </script>
