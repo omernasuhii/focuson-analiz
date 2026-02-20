@@ -200,7 +200,50 @@ const FocusON_Engine = () => {
                         <p className={`font-medium ${resultZone.color}`}>{resultZone.text}: {resultZone.msg}</p>
                     </div>
                 );
-            } else {
+            } 
+            else if (testData.id === 'vak') {
+    let counts = { G: 0, I: 0, K: 0 };
+    Object.keys(answers).forEach(key => {
+        if (key.startsWith('v') && counts[answers[key]] !== undefined) {
+            counts[answers[key]]++;
+        }
+    });
+    
+    // Baskın stili bul
+    let maxStyle = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    
+    // Strateji Kartları
+    let strategies = {
+        G: { title: "GÖRSEL ÖĞRENCİ", icon: "👁️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Dünyayı gözlerinle algılıyorsun. 'Görmediğim şeye inanmam' diyenlerdensin.", tips: ["Ders notlarında renkli kodlama yap.", "Zihin Haritası (Mind Mapping) kullan.", "Konuyu dersten önce videodan izle."] },
+        I: { title: "İŞİTSEL ÖĞRENCİ", icon: "👂", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Dünyayı kulaklarınla algılıyorsun. 'Bana anlatırsan anlarım' diyenlerdensin.", tips: ["Kendi sesini kaydet ve dinle.", "Konuyu birine sesli anlat (Feynman).", "İçinden değil, fısıldayarak oku."] },
+        K: { title: "KİNESTETİK ÖĞRENCİ", icon: "🏃", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Dünyayı bedeninle algılıyorsun. 'Yaparak öğrenirim' diyenlerdensin.", tips: ["Odayı turlayarak elinde kitapla çalış.", "25 dk çalış, 5 dk mutlaka hareket et.", "Sadece okuma; yaz, çiz, karala."] }
+    };
+    
+    let resultZone = strategies[maxStyle];
+
+    content = (
+        <div className={`p-6 rounded-2xl border ${resultZone.bg} ${resultZone.border} mb-8 text-left`}>
+            <div className="flex items-center gap-3 mb-4 justify-center">
+                <span className="text-4xl">{resultZone.icon}</span>
+                <h3 className={`text-2xl font-extrabold ${resultZone.color}`}>{resultZone.title}</h3>
+            </div>
+            <p className="text-slate-600 font-medium mb-4 text-center">{resultZone.desc}</p>
+            <div className="bg-white p-4 rounded-xl border border-slate-100">
+                <h4 className="font-bold text-slate-800 text-sm mb-3 uppercase tracking-wider">🚀 Senin İçin Stratejiler</h4>
+                <ul className="space-y-2">
+                    {resultZone.tips.map((tip, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                            <span className={resultZone.color}>•</span> {tip}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="mt-4 text-center text-xs text-slate-400 font-bold tracking-widest">
+                GÖZ: {counts.G} | KULAK: {counts.I} | BEDEN: {counts.K}
+            </div>
+        </div>
+    );
+} else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
             }
         }
