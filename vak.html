@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - VAK Öğrenme Stilleri Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+        
+        /* Şık butonlar için özel radyo stili gizleme */
+        input[type="radio"] { display: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'vak',
+            title: 'VAK Öğrenme Stilleri Analizi',
+            description: 'Beyninin bilgiyi en hızlı nasıl işlediğini (Göz, Kulak veya Beden) keşfedeceğiz. Doğru ya da yanlış cevap yok, "Bazen hepsi" demek istesen bile ilk aklına gelen sana en uygun şıkkı seç.',
+            questions: [
+                {
+                    id: 'v1', type: 'multiple_choice', section: 'Senaryo 1', 
+                    text: 'Yeni bir elektronik eşya aldığında onu kullanmayı nasıl öğrenirsin?',
+                    options: [
+                        { label: 'A) Kullanma kılavuzundaki resimlere ve şemalara bakarım.', value: 'G' },
+                        { label: 'B) Bilen birine sorarım veya anlatmasını isterim.', value: 'I' },
+                        { label: 'C) Doğrudan tuşlarına basarak, kurcalayarak öğrenirim.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v2', type: 'multiple_choice', section: 'Senaryo 2', 
+                    text: 'Sınava çalışırken en çok neyin faydasını görürsün?',
+                    options: [
+                        { label: 'A) Renkli kalemler, grafikler ve haritalar kullanmanın.', value: 'G' },
+                        { label: 'B) Konuyu bir arkadaşımla tartışmanın veya sesli tekrar yapmanın.', value: 'I' },
+                        { label: 'C) Hareket etmenin, yazarak çalışmanın veya deney yapmanın.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v3', type: 'multiple_choice', section: 'Senaryo 3', 
+                    text: 'Bir roman okurken zihninde ne canlanır?',
+                    options: [
+                        { label: 'A) Olayların geçtiği yerler ve karakterlerin görüntüleri film gibi akar.', value: 'G' },
+                        { label: 'B) Karakterlerin konuşmaları ve ses tonları zihnimde yankılanır.', value: 'I' },
+                        { label: 'C) Olayın heyecanını, duygusunu ve hareketliliğini hissederim.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v4', type: 'multiple_choice', section: 'Senaryo 4', 
+                    text: 'Yol tarifi alırken hangisini tercih edersin?',
+                    options: [
+                        { label: 'A) Bir harita çizilmesini veya navigasyon ekranını görmeyi.', value: 'G' },
+                        { label: 'B) Sözlü olarak anlatılmasını ("Sağa dön, sonra düz git" gibi).', value: 'I' },
+                        { label: 'C) Beni oraya götürmelerini veya parmakla işaret ederek tarif edilmesini.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v5', type: 'multiple_choice', section: 'Senaryo 5', 
+                    text: 'Boş zamanlarında hangisini yapmaktan daha çok hoşlanırsın?',
+                    options: [
+                        { label: 'A) Film izlemek, fotoğraf çekmek, resim yapmak.', value: 'G' },
+                        { label: 'B) Müzik dinlemek, sohbet etmek, podcast dinlemek.', value: 'I' },
+                        { label: 'C) Spor yapmak, yürüyüşe çıkmak, bir şeyler tamir/inşa etmek.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v6', type: 'multiple_choice', section: 'Senaryo 6', 
+                    text: 'Bir derste öğretmenin anlattıklarını en iyi nasıl hatırlarsın?',
+                    options: [
+                        { label: 'A) Tahtaya yazdıklarını veya gösterdiği slaytları hatırlayarak.', value: 'G' },
+                        { label: 'B) Öğretmenin ses tonunu, vurgularını veya hikayesini hatırlayarak.', value: 'I' },
+                        { label: 'C) Derste yapılan bir etkinliği veya o sırada tuttuğum notları hatırlayarak.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v7', type: 'multiple_choice', section: 'Senaryo 7', 
+                    text: 'Çoktan seçmeli bir sınavda takıldığında ne yaparsın?',
+                    options: [
+                        { label: 'A) Soruyu zihnimde canlandırır, şekil varsa ona odaklanırım.', value: 'G' },
+                        { label: 'B) Soruyu içimden veya fısıldayarak okurum.', value: 'I' },
+                        { label: 'C) Kalemle oynarım, bacağımı sallarım veya soruyu elle kapatıp açarım.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v8', type: 'multiple_choice', section: 'Senaryo 8', 
+                    text: 'Bir kelimenin nasıl yazıldığından emin değilsen ne yaparsın?',
+                    options: [
+                        { label: 'A) Kelimeyi zihnimde fotoğraf gibi görmeye çalışırım.', value: 'G' },
+                        { label: 'B) Kelimeyi heceleyerek seslendiririm.', value: 'I' },
+                        { label: 'C) Elimle havaya veya kağıda yazarım, el alışkanlığıma güvenirim.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v9', type: 'multiple_choice', section: 'Senaryo 9', 
+                    text: 'Hangi tür öğretmen seni daha çok etkiler?',
+                    options: [
+                        { label: 'A) Ders notları düzenli olan, bol görsel materyal kullanan.', value: 'G' },
+                        { label: 'B) Hitabeti güçlü olan, ses tonunu iyi kullanan, akıcı konuşan.', value: 'I' },
+                        { label: 'C) Öğrenciyi derse katan, laboratuvar/atölye çalışması yaptıran.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v10', type: 'multiple_choice', section: 'Senaryo 10', 
+                    text: 'Bir şeyi ezberlemen gerektiğinde ne yaparsın?',
+                    options: [
+                        { label: 'A) Post-it\'lere yazar, göz önünde bir yere asarım.', value: 'G' },
+                        { label: 'B) Yüksek sesle tekrar ederim veya şarkı haline getiririm.', value: 'I' },
+                        { label: 'C) Odayı turlayarak ezberlerim veya kartlara yazıp karıştırırım.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v11', type: 'multiple_choice', section: 'Senaryo 11', 
+                    text: 'Seni en çok ne rahatsız eder?',
+                    options: [
+                        { label: 'A) Dağınıklık, karmaşık görüntüler, kötü el yazısı.', value: 'G' },
+                        { label: 'B) Gürültü, uğultu, arkadan gelen konuşma sesleri.', value: 'I' },
+                        { label: 'C) Uzun süre hareketsiz oturmak, rahatsız sandalye.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v12', type: 'multiple_choice', section: 'Senaryo 12', 
+                    text: 'Bir sunum yapacak olsan nasıl hazırlanırsın?',
+                    options: [
+                        { label: 'A) Güzel bir PowerPoint sunusu ve görseller hazırlarım.', value: 'G' },
+                        { label: 'B) Ne konuşacağımı prova eder, cümlelerimi seçerim.', value: 'I' },
+                        { label: 'C) Kullanacağım materyalleri hazırlar, sahnede nasıl duracağımı planlarım.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v13', type: 'multiple_choice', section: 'Senaryo 13', 
+                    text: 'Birini ilk gördüğünde en çok ne dikkatini çeker?',
+                    options: [
+                        { label: 'A) Kıyafeti, yüzü, dış görünüşü.', value: 'G' },
+                        { label: 'B) Ses tonu, konuşma tarzı, ismi.', value: 'I' },
+                        { label: 'C) Duruşu, hareketleri, tokalaşması.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v14', type: 'multiple_choice', section: 'Senaryo 14', 
+                    text: 'Karmaşık bir problemi çözerken:',
+                    options: [
+                        { label: 'A) Problemi şematize ederim, tablo çizerim.', value: 'G' },
+                        { label: 'B) Problemi kendi kendime konuşarak adım adım çözerim.', value: 'I' },
+                        { label: 'C) Parçaları birleştirip ayırarak veya somut nesneler kullanarak çözerim.', value: 'K' }
+                    ]
+                },
+                {
+                    id: 'v15', type: 'multiple_choice', section: 'Senaryo 15', 
+                    text: 'Hayal kurarken:',
+                    options: [
+                        { label: 'A) Net görüntüler görürüm.', value: 'G' },
+                        { label: 'B) Konuşmalar duyarım.', value: 'I' },
+                        { label: 'C) Hareket ve hisler yaşarım.', value: 'K' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
