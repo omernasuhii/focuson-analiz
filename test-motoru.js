@@ -66,6 +66,7 @@ const FocusON_Engine = () => {
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
 
         // 3. Veriyi Gönder
+        // 3. Veriyi Gönder
         try {
             const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
                 method: 'POST',
@@ -73,7 +74,8 @@ const FocusON_Engine = () => {
                     'Content-Type': 'application/json',
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Prefer': 'return=minimal'
+                    'Prefer': 'return=minimal',
+                    'Content-Profile': 'focuson'  // <--- İŞTE EKLENEN SİHİRLİ SATIR
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
@@ -81,7 +83,6 @@ const FocusON_Engine = () => {
                     answers: testAnswers
                 })
             });
-
             if (!response.ok) throw new Error("Ağ hatası oluştu.");
             setSubmitStatus('success');
         } catch (error) {
