@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - KOLB Öğrenme Stilleri Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+        input[type="radio"] { display: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'kolb',
+            title: 'KOLB Deneyimsel Öğrenme Analizi',
+            description: 'Bu envanter, bilgiyi nasıl algıladığını (hissederek mi düşünerek mi) ve nasıl işlediğini (izleyerek mi uygulayarak mı) keşfetmemizi sağlar. Her soruda sana en çok uyan TEK seçeneği işaretle.',
+            questions: [
+                {
+                    id: 'k1', type: 'multiple_choice', section: 'Soru 1',
+                    text: 'Yeni bir konu öğrenirken en çok neyi tercih edersin?',
+                    options: [
+                        { label: 'A) Konuyla ilgili hislerime ve sezgilerime güvenirim.', value: 'SY' },
+                        { label: 'B) Önce dinlerim, izlerim ve sonra düşünürüm.', value: 'YG' },
+                        { label: 'C) Konunun mantığını ve teorik kurallarını anlamaya çalışırım.', value: 'SK' },
+                        { label: 'D) Hemen uygulamaya geçip pratik yaparak öğrenirim.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k2', type: 'multiple_choice', section: 'Soru 2',
+                    text: 'Bir problemle karşılaştığında ilk tepkin ne olur?',
+                    options: [
+                        { label: 'A) İçgüdülerimle hareket ederim, duygularım beni yönlendirir.', value: 'SY' },
+                        { label: 'B) Durumu her açıdan inceler, başkalarının ne yaptığına bakarım.', value: 'YG' },
+                        { label: 'C) Mantıklı bir analiz yapar, neden-sonuç ilişkisi kurarım.', value: 'SK' },
+                        { label: 'D) Hemen bir çözüm denerim, işe yaramazsa başkasını denerim.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k3', type: 'multiple_choice', section: 'Soru 3',
+                    text: 'Sınıfta en verimli olduğun an hangisidir?',
+                    options: [
+                        { label: 'A) Öğretmenle veya arkadaşlarla duygusal bir bağ kurduğumda.', value: 'SY' },
+                        { label: 'B) Dersi sessizce dinleyip not aldığımda.', value: 'YG' },
+                        { label: 'C) Konunun arkasındaki teoriyi ve sistemi kavradığımda.', value: 'SK' },
+                        { label: 'D) Laboratuvarda deney yaptığımda veya tahtada soru çözdüğümde.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k4', type: 'multiple_choice', section: 'Soru 4',
+                    text: 'Bir grup çalışmasında hangi rolü üstlenirsin?',
+                    options: [
+                        { label: 'A) Grubun uyumunu sağlayan, fikirleri birleştiren kişi olurum.', value: 'SY' },
+                        { label: 'B) Gözlemci olurum, not tutarım ve sonra yorum yaparım.', value: 'YG' },
+                        { label: 'C) Planı yapan, mantıksal çerçeveyi kuran kişi olurum.', value: 'SK' },
+                        { label: 'D) İşi bitiren, harekete geçen ve grubu yöneten kişi olurum.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k5', type: 'multiple_choice', section: 'Soru 5',
+                    text: 'Sınava çalışırken tarzın nasıldır?',
+                    options: [
+                        { label: 'A) Arkadaşlarımla çalışarak, tartışarak motive olurum.', value: 'SY' },
+                        { label: 'B) Tek başıma, sessizce okuyarak ve düşünerek çalışırım.', value: 'YG' },
+                        { label: 'C) Konu özetlerini mantıksal sıraya koyarak, şemalarla çalışırım.', value: 'SK' },
+                        { label: 'D) Bol bol test çözerek, pratik yaparak çalışırım.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k6', type: 'multiple_choice', section: 'Soru 6',
+                    text: 'Bir şeyi "öğrendim" demen için ne gerekir?',
+                    options: [
+                        { label: 'A) O konuyu hissetmem ve içselleştirmem gerekir.', value: 'SY' },
+                        { label: 'B) O konuyu zihnimde iyice tartıp biçmem gerekir.', value: 'YG' },
+                        { label: 'C) O konunun mantığını tam olarak kavramam gerekir.', value: 'SK' },
+                        { label: 'D) O konuyu tek başıma uygulayabiliyor olmam gerekir.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k7', type: 'multiple_choice', section: 'Soru 7',
+                    text: 'Zamanını nasıl kullanırsın?',
+                    options: [
+                        { label: 'A) Akışına bırakırım.', value: 'SY' },
+                        { label: 'B) Planlarım ama esnetirim.', value: 'YG' },
+                        { label: 'C) Dakik planlarım.', value: 'SK' },
+                        { label: 'D) Hızlı hareket ederim.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k8', type: 'multiple_choice', section: 'Soru 8',
+                    text: 'Karar verirken neye güvenirsin?',
+                    options: [
+                        { label: 'A) Hislerime.', value: 'SY' },
+                        { label: 'B) Gözlemlerime.', value: 'YG' },
+                        { label: 'C) Mantığıma.', value: 'SK' },
+                        { label: 'D) Sonuçlara.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k9', type: 'multiple_choice', section: 'Soru 9',
+                    text: 'İnsanlarla iletişimde nasılsın?',
+                    options: [
+                        { label: 'A) Sıcakkanlı.', value: 'SY' },
+                        { label: 'B) Mesafeli veya gözlemci.', value: 'YG' },
+                        { label: 'C) Ciddi ve fikir odaklı.', value: 'SK' },
+                        { label: 'D) Doğrudan ve net.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k10', type: 'multiple_choice', section: 'Soru 10',
+                    text: 'Hata yaptığında ne yaparsın?',
+                    options: [
+                        { label: 'A) Üzülürüm.', value: 'SY' },
+                        { label: 'B) Nedenini düşünürüm.', value: 'YG' },
+                        { label: 'C) Analiz ederim.', value: 'SK' },
+                        { label: 'D) Düzeltip hemen devam ederim.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k11', type: 'multiple_choice', section: 'Soru 11',
+                    text: 'Hangi hoca tipini seversin?',
+                    options: [
+                        { label: 'A) Arkadaş canlısı.', value: 'SY' },
+                        { label: 'B) Bilgili.', value: 'YG' },
+                        { label: 'C) Sistematik.', value: 'SK' },
+                        { label: 'D) Pratik yaptıran.', value: 'AY' }
+                    ]
+                },
+                {
+                    id: 'k12', type: 'multiple_choice', section: 'Soru 12',
+                    text: 'En sevdiğin söz hangisi olabilir?',
+                    options: [
+                        { label: 'A) Kalbinin sesini dinle.', value: 'SY' },
+                        { label: 'B) İki dinle bir söyle.', value: 'YG' },
+                        { label: 'C) Önce anla sonra yap.', value: 'SK' },
+                        { label: 'D) Kervan yolda düzülür.', value: 'AY' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
