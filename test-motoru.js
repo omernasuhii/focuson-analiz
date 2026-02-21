@@ -199,6 +199,10 @@ const FocusON_Engine = () => {
                     handleAnswer(parseInt(e.key));
                     setTimeout(nextStep, 300); 
                 }
+                if (currentQ.type === 'likert_0_3' && ['0','1','2','3'].includes(e.key)) {
+                    handleAnswer(parseInt(e.key));
+                    setTimeout(nextStep, 300); 
+                }
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -355,6 +359,47 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+            // --- ADTE-20 SONUÇ EKRANI ---
+            else if (testData.id === 'adte-20') {
+                let scoreA = 0, scoreB = 0;
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('adte_a')) scoreA += parseInt(answers[key] || 0);
+                    if (key.startsWith('adte_b')) scoreB += parseInt(answers[key] || 0);
+                });
+
+                const getZone = (s) => {
+                    if (s >= 20) return { title: "YÜKSEK RİSK", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200" };
+                    if (s >= 11) return { title: "RİSKLİ", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" };
+                    return { title: "NORMAL", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" };
+                };
+
+                const zoneA = getZone(scoreA);
+                const zoneB = getZone(scoreB);
+
+                content = (
+                    <div className="space-y-4 mb-8">
+                        <div className={`p-5 rounded-2xl border ${zoneA.bg} ${zoneA.border} flex justify-between items-center`}>
+                            <div className="text-left">
+                                <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Dalgınlık Modülü</div>
+                                <div className={`font-extrabold text-lg ${zoneA.color}`}>{zoneA.title}</div>
+                            </div>
+                            <div className={`text-4xl font-black ${zoneA.color}`}>{scoreA}<span className="text-lg opacity-50">/30</span></div>
+                        </div>
+                        <div className={`p-5 rounded-2xl border ${zoneB.bg} ${zoneB.border} flex justify-between items-center`}>
+                            <div className="text-left">
+                                <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Hareketlilik Modülü</div>
+                                <div className={`font-extrabold text-lg ${zoneB.color}`}>{zoneB.title}</div>
+                            </div>
+                            <div className={`text-4xl font-black ${zoneB.color}`}>{scoreB}<span className="text-lg opacity-50">/30</span></div>
+                        </div>
+                        {(scoreA >= 20 || scoreB >= 20) && (
+                            <div className="p-4 bg-slate-800 text-white rounded-xl text-sm font-medium leading-relaxed">
+                                ⚠️ <strong>Uyarı:</strong> Puanlarından bazıları klinik şüphe sınırının üzerinde. Eğitim koçluğunu desteklemek amacıyla bir Çocuk ve Ergen Psikiyatristi'nden görüş alman akademik geleceğin için çok faydalı olacaktır.
+                            </div>
+                        )}
+                    </div>
+                );
+            }
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
@@ -431,6 +476,22 @@ const FocusON_Engine = () => {
                             </div>
                         )}
 
+                        {/* LİKERT 0-3 (ADTE-20 İÇİN) */}
+                        {currentQ.type === 'likert_0_3' && (
+                            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                                {['0: Hiçbir Zaman', '1: Bazen', '2: Sık Sık', '3: Çok Sık'].map((opt, i) => {
+                                    const val = i; 
+                                    const isSelected = answers[currentQ.id] === val;
+                                    return (
+                                        <button key={val} onClick={() => { handleAnswer(val); setTimeout(nextStep, 400); }} className={`flex-1 py-4 px-2 rounded-xl border-2 font-bold text-sm md:text-base transition-all transform hover:-translate-y-1 flex flex-col items-center gap-2 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300'}`}>
+                                            <div className={`w-8 h-8 rounded-md flex items-center justify-center text-xs ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{val}</div>
+                                            {opt.split(': ')[1]}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
                         {/* ÇOKTAN SEÇMELİ */}
                         {currentQ.type === 'multiple_choice' && (
                             <div className="flex flex-col gap-3 md:gap-4">
@@ -462,7 +523,7 @@ const FocusON_Engine = () => {
                     {/* Dopa Görevi sırasında "İleri" butonu gizlenir, çünkü testin kendi akışı var */}
                     {currentQ.type !== 'dopa_task' && (
                         <div className="mt-12 flex items-center gap-4">
-                            <button onClick={nextStep} disabled={!answers[currentQ.id]} className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center gap-2">
+                            <button onClick={nextStep} disabled={answers[currentQ.id] === undefined || answers[currentQ.id] === ''} className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center gap-2">
                                 İleri <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
                         </div>
