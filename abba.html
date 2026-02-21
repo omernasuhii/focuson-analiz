@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ABBA Aile ve Benlik Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'abba',
+            title: 'ABBA Aile ve Benlik Analizi',
+            description: 'Bu soruları yanıtlarken aileni veya kendini "korumak" zorunda değilsin. Cevaplarını ailenle aynen paylaşmayacağız. İçinden gelen en dürüst puanı ver (1: Hiç Katılmıyorum - 5: Tamamen Katılıyorum).',
+            questions: [
+                // BÖLÜM A: AİLE TUTUMU (abba_a)
+                { id: 'abba_a_1', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Ailem, sınav sonuçlarım ne olursa olsun beni sevdiğini hissettirir.' },
+                { id: 'abba_a_2', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Evde sürekli "Ders çalış" uyarısı alırım, bu beni strese sokar.' },
+                { id: 'abba_a_3', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Ailem beni sık sık başkalarının çocuklarıyla veya kardeşlerimle kıyaslar.' },
+                { id: 'abba_a_4', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Ders dışındaki hobilerim (spor, müzik vb.) ailem tarafından desteklenir.' },
+                { id: 'abba_a_5', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Notlarım düştüğünde ailem "Nerede hata yaptık, nasıl çözeriz?" diye sorar.' },
+                { id: 'abba_a_6', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Notlarım düştüğünde ailem bana küser, kızar veya cezalandırır.' },
+                { id: 'abba_a_7', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Geleceğimle ilgili kararları (bölüm, meslek) benim yerime ailem verir.' },
+                { id: 'abba_a_8', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Ailem benden "mükemmel" olmamı bekler, küçük hataları kabul etmez.' },
+                { id: 'abba_a_9', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Sınav kaygımı ailemle rahatça paylaşabilirim, beni dinlerler.' },
+                { id: 'abba_a_10', type: 'likert', section: 'Bölüm A: Aile Ortamı', text: 'Ailem, başarısız olursam "emeklerinin boşa gideceğini" söyler.' },
+
+                // BÖLÜM B: BENLİK SAYGISI (abba_b)
+                { id: 'abba_b_1', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Kendimi genel olarak değerli ve sevilmeye layık bir insan olarak görüyorum.' },
+                { id: 'abba_b_2', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Başarısız olduğumda kendimi tamamen "işe yaramaz" hissederim.' },
+                { id: 'abba_b_3', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Hata yaptığımda kendimi affetmekte zorlanırım, sürekli kendimi suçlarım.' },
+                { id: 'abba_b_4', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Başkalarının benim hakkımdaki düşünceleri, kendi düşüncemden daha önemlidir.' },
+                { id: 'abba_b_5', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Zorluklarla karşılaştığımda pes etmek yerine mücadele gücünü kendimde bulurum.' },
+                { id: 'abba_b_6', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Kendimi fiziksel, sosyal ve kişisel özelliklerimle barışık hissederim.' },
+                { id: 'abba_b_7', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Sık sık "Keşke başka biri olsaydım" diye düşünürüm.' },
+                { id: 'abba_b_8', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Bir toplulukta fikirlerimi rahatça ifade edebilirim.' },
+                { id: 'abba_b_9', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Eleştirildiğimde aşırı savunmaya geçerim veya çok üzülürüm.' },
+                { id: 'abba_b_10', type: 'likert', section: 'Bölüm B: Öz Değer', text: 'Geleceğe dair umutluyum, hayatın kontrolünün elimde olduğuna inanırım.' },
+
+                // BÖLÜM C: AKADEMİK İNANÇ (abba_c)
+                { id: 'abba_c_1', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Yeterince çalışırsam her türlü konuyu öğrenebileceğime inanırım.' },
+                { id: 'abba_c_2', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Matematik/Fen gibi sayısal derslerde zihnimin "basmadığını" düşünürüm.' },
+                { id: 'abba_c_3', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Sınavlarda bildiğim soruları bile yapamayacağımdan korkarım.' },
+                { id: 'abba_c_4', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Sınıfımdaki diğer arkadaşlarımdan daha yavaş öğrendiğimi düşünüyorum.' },
+                { id: 'abba_c_5', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Yeni ve zor konular öğrenmek beni korkutmaz, aksine heyecanlandırır.' },
+                { id: 'abba_c_6', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Başarısız olursam bu "yeteneksizliğimden" değil, "yanlış çalışmamdan" kaynaklıdır.' },
+                { id: 'abba_c_7', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Öğretmenlerimin beni "başarılı bir öğrenci" olarak gördüğünü düşünürüm.' },
+                { id: 'abba_c_8', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Ders çalışırken dikkattim dağılsa bile tekrar odaklanmayı başarabilirim.' },
+                { id: 'abba_c_9', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Sınav anında heyecanımı kontrol edebilirim.' },
+                { id: 'abba_c_10', type: 'likert', section: 'Bölüm C: Akademik İnanç', text: 'Hedeflediğim üniversiteyi/liseyi kazanacak potansiyele sahibim.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
