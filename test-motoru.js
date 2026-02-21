@@ -787,6 +787,31 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AB-CTE (CÜMLE TAMAMLAMA) SONUÇ EKRANI ---
+            else if (testData.id === 'ab-cte') {
+                content = (
+                    <div className="space-y-6 mb-8 text-center">
+                        <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 shadow-sm">
+                            <div className="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-md mb-6">
+                                <span className="text-5xl">🧠</span>
+                            </div>
+                            <h3 className="text-2xl font-black text-indigo-900 mb-4">Bilinçaltı Verilerin Güvende!</h3>
+                            <p className="text-indigo-700 font-medium leading-relaxed mb-6">
+                                Bu analizin sayısal bir puanı veya geçme/kalma notu yoktur. İç dünyanı, sansürsüz düşüncelerini ve beklentilerini doğrudan veri tabanına aktardın. 
+                            </p>
+                            <div className="bg-white p-5 rounded-2xl border border-indigo-100 text-left">
+                                <h4 className="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
+                                    <span className="text-indigo-600">🔍</span> Şimdi Ne Olacak?
+                                </h4>
+                                <p className="text-slate-600 text-sm leading-relaxed">
+                                    Cevapların, senin "öğrenme psikolojini" anlamak için yapay zeka ve koçun tarafından bir bütün olarak incelenecek. Detaylı analizleri, gizli dirençlerini ve sana özel içgörüleri görmek için <strong>FocusON Asistan'a</strong> veya koçuna danışabilirsin.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
