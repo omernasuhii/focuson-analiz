@@ -722,6 +722,71 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AG-MOT (GELECEK VE MOTİVASYON) SONUÇ EKRANI ---
+            else if (testData.id === 'ag-mot') {
+                const reverseIds = ['ag_mot_16', 'ag_mot_17', 'ag_mot_18', 'ag_mot_19', 'ag_mot_20'];
+                let totalScore = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('ag_mot_')) {
+                        let val = parseInt(answers[key] || 0);
+                        if (reverseIds.includes(key) && val > 0) {
+                            val = 6 - val; // Ters puanlama (5->1, 1->5)
+                        }
+                        totalScore += val;
+                    }
+                });
+
+                let profile = {};
+                if (totalScore >= 70) {
+                    profile = {
+                        title: "🚨 YÜKSEK RİSK (Kırmızı Alarm)",
+                        desc: "Şu an zihnen 'şalteri indirmiş' durumdasın. Mükemmeliyetçilik ve felaket senaryoları seni öylesine dondurmuş ki, masaya otursan bile içindeki ses 'Zaten olmayacak' diyor. Bu bir öğrenilmiş çaresizlik hali.",
+                        color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200"
+                    };
+                } else if (totalScore >= 46) {
+                    profile = {
+                        title: "⚠️ ORTA RİSK (Sarı Alarm)",
+                        desc: "Sınava çok fazla 'hayat memat' anlamı yüklüyorsun. 'Ya hep ya hiç' tarzı düşünceler yavaş yavaş motivasyonunu kemirmeye başlamış. Koçunla hemen alternatif 'B Planlarını' konuşmalısın.",
+                        color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200"
+                    };
+                } else {
+                    profile = {
+                        title: "✅ NORMAL DÜZEY",
+                        desc: "Harika! Sınav kaygın son derece gerçekçi ve sağlıklı bir seviyede. Hedeflerin var ama sınavı hayatının tek anlamı haline getirmemişsin. Dayanıklılığın (Resilience) çok yüksek.",
+                        color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200"
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Bilişsel Çarpıtma ve Umutsuzluk Puanın</div>
+                            <div className={`text-6xl font-black ${profile.color} mb-3`}>{totalScore}<span className="text-2xl opacity-50">/100</span></div>
+                            <div className={`text-xl font-extrabold ${profile.color} mb-2`}>{profile.title}</div>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90`}>{profile.desc}</p>
+                        </div>
+                        
+                        {(totalScore >= 46) && (
+                            <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                                <h4 className="font-extrabold text-slate-800 mb-3 text-sm uppercase tracking-wider">💡 Zihin Hackleme: Bakış Açısını Değiştir</h4>
+                                <ul className="space-y-3">
+                                    <li className="flex gap-3 text-sm text-slate-700"><span>🔄</span> <div><strong>Ya Hep Ya Hiç Yerine:</strong> "İlk 10.000 harika olur ama 50.000 gelirse de bu bir başarısızlık değil, farklı ve güzel bir yoldur."</div></li>
+                                    <li className="flex gap-3 text-sm text-slate-700"><span>📉</span> <div><strong>Genelleme Yerine:</strong> "Bugün çalışamadın veya denemen kötü geçti diye yıl bitmedi. Önümüzde telafi edebileceğin kocaman bir zaman var."</div></li>
+                                    <li className="flex gap-3 text-sm text-slate-700"><span>🎭</span> <div><strong>Etiketleme Yerine:</strong> "Sen aptal veya tembel değilsin; sadece bu soruyu 'henüz' nasıl çözeceğini keşfetmedin."</div></li>
+                                </ul>
+                            </div>
+                        )}
+
+                        {totalScore >= 70 && parseInt(answers['ag_mot_1'] || 0) >= 4 && parseInt(answers['ag_mot_5'] || 0) >= 4 && (
+                            <div className="p-4 bg-slate-800 text-white rounded-xl text-sm font-medium leading-relaxed mt-4">
+                                🩺 <strong>Klinik Uyarı:</strong> Geleceğe dair bu kadar yoğun karanlık ve çaresizlik hissetmen sadece basit bir sınav stresi olmayabilir. Lütfen bu hislerini güvendiğin bir uzmana (psikolog/psikiyatrist) veya bize dürüstçe aç. Yalnız değilsin.
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
