@@ -636,7 +636,92 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+
+            // --- ABBA (AİLE VE BENLİK) SONUÇ EKRANI ---
+            else if (testData.id === 'abba') {
+                // Soru sıralamasına göre ters puanlanacak (olumsuz) maddelerin ID'leri
+                const reverseIds = [
+                    'abba_a_2', 'abba_a_3', 'abba_a_6', 'abba_a_7', 'abba_a_8', 'abba_a_10',
+                    'abba_b_2', 'abba_b_3', 'abba_b_4', 'abba_b_7', 'abba_b_9',
+                    'abba_c_2', 'abba_c_3', 'abba_c_4'
+                ];
                 
+                let scoreA = 0, scoreB = 0, scoreC = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    // Ters puanlama matematiği (5->1, 4->2, 3->3, 2->4, 1->5)
+                    if (reverseIds.includes(key) && val > 0) {
+                        val = 6 - val; 
+                    }
+                    
+                    if (key.startsWith('abba_a')) scoreA += val;
+                    if (key.startsWith('abba_b')) scoreB += val;
+                    if (key.startsWith('abba_c')) scoreC += val;
+                });
+
+                // 30 Puanı eşik değer (nötr) kabul ediyoruz. Altı riskli, üstü olumlu.
+                let profile = { 
+                    title: "DENGELİ VE SAĞLIKLI BÜTÜNLÜK", 
+                    desc: "Aile desteğin, öz değerin ve akademik inancın genel olarak çok sağlıklı bir dengede. Bu sağlam psikolojik zemin, sınav sürecinde en büyük gücün olacak.", 
+                    alert: false, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" 
+                };
+
+                if (scoreA < 30 && scoreB < 30) {
+                    profile = { 
+                        title: "🚩 CAM KULE SENDROMU", 
+                        desc: "Ailenin beklentisi/baskısı yüksekken, sende hata yapma korkusu ve öz değer eksikliği var. Sınavı bir 'sevilme veya onaylanma' aracı olarak görüyorsun, bu da sınav anı blokajı riskini artırıyor.", 
+                        alert: true, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200" 
+                    };
+                } else if (scoreA < 30 && scoreC >= 30) {
+                    profile = { 
+                        title: "🚩 GİZLİ CEVHER", 
+                        desc: "Kendine ve akademik kapasitene güveniyorsun ama evde yeterli desteği veya huzuru bulamıyorsun. Evdeki iletişim kopuklukları veya baskı, motivasyonunu düşürebilir.", 
+                        alert: true, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" 
+                    };
+                } else if (scoreA >= 30 && scoreC < 30) {
+                    profile = { 
+                        title: "🚩 SABİT ZİHNİYET", 
+                        desc: "Ailen seni çok destekliyor ve seviyor ama sen içten içe 'Ben yapamam, kafam basmıyor' diyerek kendini sınırlıyorsun. Destekleyici ortama rağmen kendi potansiyeline haksızlık ediyorsun.", 
+                        alert: true, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" 
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Bütüncül Analiz Teşhisi</div>
+                            <div className={`text-2xl font-black ${profile.color} mb-3`}>{profile.title}</div>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90`}>{profile.desc}</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center flex flex-col justify-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">AİLE DESTEĞİ</div>
+                                <div className={`text-3xl font-black ${scoreA >= 30 ? 'text-emerald-600' : 'text-rose-600'}`}>{scoreA}<span className="text-sm text-slate-400">/50</span></div>
+                                <div className="text-[10px] text-slate-400 mt-1 uppercase">{scoreA >= 30 ? 'Destekleyici' : 'Baskıcı/Otoriter'}</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center flex flex-col justify-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">BENLİK SAYGISI</div>
+                                <div className={`text-3xl font-black ${scoreB >= 30 ? 'text-emerald-600' : 'text-rose-600'}`}>{scoreB}<span className="text-sm text-slate-400">/50</span></div>
+                                <div className="text-[10px] text-slate-400 mt-1 uppercase">{scoreB >= 30 ? 'Yüksek Öz Değer' : 'Değersizlik Hissi'}</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center flex flex-col justify-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">AKADEMİK İNANÇ</div>
+                                <div className={`text-3xl font-black ${scoreC >= 30 ? 'text-emerald-600' : 'text-rose-600'}`}>{scoreC}<span className="text-sm text-slate-400">/50</span></div>
+                                <div className="text-[10px] text-slate-400 mt-1 uppercase">{scoreC >= 30 ? 'Gelişim Zihniyeti' : 'Çaresizlik İnancı'}</div>
+                            </div>
+                        </div>
+                        
+                        {profile.alert && (
+                            <div className="p-4 bg-slate-800 text-white rounded-xl text-sm font-medium leading-relaxed">
+                                💡 <strong>Koçluk Notu:</strong> Bu sonuçlar senin kişisel değerini değil, şu anki "inanç ve ev ortamı" dengeni gösterir. Koçunla birlikte hedeflerini, dışarıdan gelen baskıdan uzaklaştırıp tamamen senin potansiyeline uygun şekilde yeniden tasarlayacağız.
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
