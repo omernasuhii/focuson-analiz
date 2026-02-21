@@ -438,6 +438,42 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+
+            // --- ÖZ-AF SONUÇ EKRANI ---
+            else if (testData.id === 'oz-af') {
+                const wheelScores = {
+                    'Ders Başarısı': parseInt(answers['wheel_1'] || 0),
+                    'Uyku Düzeni': parseInt(answers['wheel_2'] || 0),
+                    'Aile İlişkileri': parseInt(answers['wheel_3'] || 0),
+                    'Arkadaş İlişkileri': parseInt(answers['wheel_4'] || 0),
+                    'Motivasyon/Ruh Hali': parseInt(answers['wheel_5'] || 0),
+                    'Fiziksel Sağlık/Beslenme': parseInt(answers['wheel_6'] || 0)
+                };
+                
+                let lowestArea = Object.keys(wheelScores).reduce((a, b) => wheelScores[a] < wheelScores[b] ? a : b);
+                let lowestScore = wheelScores[lowestArea];
+                let average = (Object.values(wheelScores).reduce((a, b) => a + b, 0) / 6).toFixed(1);
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl border bg-indigo-50 border-indigo-200 text-center shadow-sm">
+                            <div className="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-2">Yaşam Çarkı Ortalaman</div>
+                            <div className="text-6xl font-black text-indigo-700">{average}<span className="text-2xl opacity-50">/10</span></div>
+                            <p className="mt-4 text-indigo-800 font-medium text-sm leading-relaxed">
+                                Kendine ayna tuttun ve dürüst davrandın. Gelişimin ilk şartı mevcut durumu kabul etmektir. Kırmızı ışıkta (DUR) bıraktığın alışkanlıklar ve yeşil ışıkta (BAŞLA) aldığın yeni kararlar koçun tarafından titizlikle takip edilecek.
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-rose-100 shadow-sm">
+                            <h4 className="font-extrabold text-rose-600 mb-2 flex items-center gap-2">⚠️ Gelişim Alanın: {lowestArea} ({lowestScore}/10)</h4>
+                            <p className="text-slate-600 text-sm font-medium">Bu alanı güçlendirmek için kendi belirlediğin eylem planı:</p>
+                            <div className="mt-3 p-3 bg-rose-50 rounded-lg text-rose-800 italic text-sm border-l-4 border-rose-400">
+                                "{answers['wheel_action'] || 'Plan belirtilmedi.'}"
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
                 
             // --- DİĞER GENEL SONUÇ ---
             else {
