@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ADTE-20 Dikkat ve Hiperaktivite Tarama Ölçeği</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'adte-20',
+            title: 'ADTE-20 Dikkat Tarama Ölçeği',
+            description: 'Bu test, yaşadığın odaklanma sorunlarının kaynağını bulmamızı sağlar. Soruları "son 6 ay"ı ve hayatının genelini (okul+ev) düşünerek cevapla. Tıbbi bir tanı testi değildir.',
+            questions: [
+                // BÖLÜM A: DİKKAT EKSİKLİĞİ (adte_a)
+                { id: 'adte_a_1', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Ders çalışırken veya sınavlarda, soruyu tam okumadan işlem yapıp basit hatalar yaparım.' },
+                { id: 'adte_a_2', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Uzun paragrafları okurken veya dersi dinlerken dikkatimi sürdürmekte çok zorlanırım, zihnim kopar.' },
+                { id: 'adte_a_3', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Biri benimle doğrudan konuşurken bile aklım başka yerdeymiş gibi görünürüm.' },
+                { id: 'adte_a_4', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Ödevleri veya görevleri tamamlamadan yarım bırakıp başka bir işe geçerim.' },
+                { id: 'adte_a_5', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Çalışma masamı, çantamı veya zamanımı organize etmekte (planlamakta) büyük güçlük çekerim.' },
+                { id: 'adte_a_6', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Zihinsel çaba gerektiren (uzun testler, konu okuma) işlerden kaçınırım veya ertelerim.' },
+                { id: 'adte_a_7', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Sık sık eşyalarımı (kalem, silgi, kitap) kaybederim veya okulda unuturum.' },
+                { id: 'adte_a_8', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Dışarıdan gelen en ufak bir ses (kapı sesi, sinek) dikkatimi hemen dağıtır.' },
+                { id: 'adte_a_9', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Günlük rutin işlerimi (ödev teslimi, ilaç alma) sık sık unuturum.' },
+                { id: 'adte_a_10', type: 'likert_0_3', section: 'Bölüm A: Dalgınlık', text: 'Bir konuyu anlasam bile, detaylara inildiğinde sıkılır ve hata yaparım.' },
+
+                // BÖLÜM B: HİPERAKTİVİTE VE DÜRTÜSELLİK (adte_b)
+                { id: 'adte_b_1', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Ders çalışırken veya sınıfta otururken ellerim ayaklarım kıpır kıpırdır, yerimde duramam.' },
+                { id: 'adte_b_2', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Sınıfta veya oturmam gereken durumlarda (sinema vb.) sık sık kalkar dolaşırım.' },
+                { id: 'adte_b_3', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'İçimde sürekli bir "motor çalışıyormuş" gibi huzursuzluk ve hareket etme isteği hissederim.' },
+                { id: 'adte_b_4', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Sessizce durup kitap okumak veya sakince oturmak benim için zordur.' },
+                { id: 'adte_b_5', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Çok konuşurum, karşımdakinin sözünü bitirmesini bekleyemem.' },
+                { id: 'adte_b_6', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Sorulan soru daha bitmeden cevabı yapıştırırım (Düşünmeden atılırım).' },
+                { id: 'adte_b_7', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Sıra beklemek (kantin sırası vb.) benim için işkence gibidir.' },
+                { id: 'adte_b_8', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Başkalarının sözünü keserim veya konuşmalarına izinsiz dalarım.' },
+                { id: 'adte_b_9', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Sonunu düşünmeden ani kararlar alırım (Ani harcama, ani ders bırakma).' },
+                { id: 'adte_b_10', type: 'likert_0_3', section: 'Bölüm B: Hareketlilik', text: 'Çabuk öfkelenir, çabuk parlarım (Duygu kontrolüm zayıftır).' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
