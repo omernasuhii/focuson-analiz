@@ -400,6 +400,45 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+
+            // --- VGF-E SONUÇ EKRANI ---
+            else if (testData.id === 'vgf-e') {
+                let scoreA = 0, scoreB = 0, scoreC = 0;
+                Object.keys(answers).forEach(key => {
+                    if (key.startsWith('vgf_a')) scoreA += parseInt(answers[key] || 0);
+                    if (key.startsWith('vgf_b')) scoreB += parseInt(answers[key] || 0);
+                    if (key.startsWith('vgf_c')) scoreC += parseInt(answers[key] || 0);
+                });
+                const totalScore = scoreA + scoreB + scoreC;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl border bg-indigo-50 border-indigo-200 text-center shadow-sm">
+                            <div className="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-2">Genel Gözlem Puanınız</div>
+                            <div className="text-6xl font-black text-indigo-700">{totalScore}<span className="text-2xl opacity-50">/100</span></div>
+                            <p className="mt-4 text-indigo-800 font-medium text-sm leading-relaxed">
+                                Katkılarınız ve dürüst cevaplarınız için teşekkür ederiz. Bu veriler, öğrencimizin öz-değerlendirmesiyle karşılaştırılarak (Boşluk Analizi) size ve öğrencimize özel bir koçluk stratejisi oluşturmak için titizlikle kullanılacaktır.
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">AKADEMİK DİSİPLİN</div>
+                                <div className="text-2xl font-bold text-slate-700">{scoreA}<span className="text-sm text-slate-400">/35</span></div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">DUYGUSAL DURUM</div>
+                                <div className="text-2xl font-bold text-slate-700">{scoreB}<span className="text-sm text-slate-400">/35</span></div>
+                            </div>
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
+                                <div className="text-xs font-bold text-slate-400 mb-1">YAŞAM BECERİLERİ</div>
+                                <div className="text-2xl font-bold text-slate-700">{scoreC}<span className="text-sm text-slate-400">/30</span></div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+                
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
