@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - APK-S Sınav Kaygısı Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'apk-s',
+            title: 'APK-S Sınav Kaygısı Analizi',
+            description: 'Kaygı belirli bir seviyeye kadar seni uyanık tutar ve başarıya iter. Ancak aşırısı seni dondurabilir. Sınav anında ve ders çalışırken aşağıdaki durumları ne sıklıkla yaşadığını dürüstçe puanla.',
+            questions: [
+                // BOYUT A: BİLİŞSEL BELİRTİLER (Zihin)
+                { id: 'apks_a_1', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Sınav sırasında bildiğim konuları bile unutacağımı düşünüyorum (Zihinsel Blokaj).' },
+                { id: 'apks_a_2', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: '"Kazanamazsam aileme/çevreme ne derim?" düşüncesi aklımdan çıkmıyor.' },
+                { id: 'apks_a_3', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Sınav kitapçığını gördüğümde "Hiçbir şey bilmiyorum" hissine kapılıyorum.' },
+                { id: 'apks_a_4', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Başkalarının benden daha hızlı çözdüğünü görünce paniğe kapılıyorum.' },
+                { id: 'apks_a_5', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Sınavdan sonra sürekli yaptığım hataları düşünüp kendime kızıyorum.' },
+                { id: 'apks_a_6', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Geleceğimle ilgili sürekli en kötü senaryoları (felaketleri) hayal ediyorum.' },
+                { id: 'apks_a_7', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Okuduğum soruyu anlamayıp 3-4 kez tekrar okumak zorunda kalıyorum.' },
+                { id: 'apks_a_8', type: 'likert', section: 'Bölüm 1: Zihinsel Senaryolar', text: 'Sınav yaklaştıkça "Zaman yetmeyecek" korkusuyla uykularım kaçıyor.' },
+
+                // BOYUT B: FİZİKSEL BELİRTİLER (Beden)
+                { id: 'apks_b_1', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Sınavdan önce veya sınav anında kalbim yerinden çıkacakmış gibi çarpıyor.' },
+                { id: 'apks_b_2', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Sınav sırasında ellerim titriyor, terliyor veya buz kesiyor.' },
+                { id: 'apks_b_3', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Sınav sabahları midem bulanıyor, karın ağrısı veya kramp giriyor.' },
+                { id: 'apks_b_4', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Ders çalışırken veya sınavda nefes almakta zorlanıyorum (Göğüste baskı).' },
+                { id: 'apks_b_5', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Sık sık tuvalete gitme ihtiyacı hissediyorum.' },
+                { id: 'apks_b_6', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Kaslarımın (boyun, omuz, çene) kasıldığını ve ağrıdığını hissediyorum.' },
+                { id: 'apks_b_7', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Sınav anında ağzım kuruyor, yutkunmakta zorlanıyorum.' },
+                { id: 'apks_b_8', type: 'likert', section: 'Bölüm 2: Bedensel Tepkiler', text: 'Baş dönmesi veya göz kararması yaşıyorum.' },
+
+                // BOYUT C: DAVRANIŞSAL BELİRTİLER (Eylem/Kaçınma)
+                { id: 'apks_c_1', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Deneme sınavlarına girmekten kaçıyorum veya bahaneler buluyorum.' },
+                { id: 'apks_c_2', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Ders çalışmayı sürekli erteliyorum çünkü masaya oturmak beni geriyor.' },
+                { id: 'apks_c_3', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Sınavda zorlandığım bir soruyla karşılaşırsam hemen moralim bozulup testi bırakıyorum.' },
+                { id: 'apks_c_4', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Stresli olduğumda tırnak yeme, kalem ısırma veya ayak sallama gibi tiklerim artıyor.' },
+                { id: 'apks_c_5', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Sınavdan hemen sonra kitapçığı kontrol etmeye korkuyorum, atıp kaçıyorum.' },
+                { id: 'apks_c_6', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Çok hızlı çözüp (dikkatsizce) sınavdan bir an önce çıkmak istiyorum.' },
+                { id: 'apks_c_7', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Çalışırken sürekli mola veriyor, dikkati dağıtacak başka işlerle uğraşıyorum.' },
+                { id: 'apks_c_8', type: 'likert', section: 'Bölüm 3: Eylem ve Kaçınma', text: 'Ders çalışırken aşırı yemek yiyorum veya iştahım tamamen kesiliyor.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
