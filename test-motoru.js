@@ -812,6 +812,100 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- APK-S (SINAV KAYGISI) SONUÇ EKRANI ---
+            else if (testData.id === 'apk-s') {
+                let scoreA = 0, scoreB = 0, scoreC = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('apks_a')) scoreA += val;
+                    if (key.startsWith('apks_b')) scoreB += val;
+                    if (key.startsWith('apks_c')) scoreC += val;
+                });
+                
+                const totalScore = scoreA + scoreB + scoreC;
+
+                let profile = {};
+                if (totalScore >= 97) {
+                    profile = { title: "PANİK DÜZEYİ (Kırmızı Bölge)", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Sınav anında kilitlenme (donma) yaşanıyor. Bu seviyedeki kaygı performansı tamamen bloke eder." };
+                } else if (totalScore >= 73) {
+                    profile = { title: "YÜKSEK KAYGI (Alarm)", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200", desc: "Performansın ciddi şekilde etkileniyor. Fiziksel ve zihinsel belirtiler başlamış, acil müdahale şart." };
+                } else if (totalScore >= 49) {
+                    profile = { title: "ORTA KAYGI (Yönetilebilir)", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Streslisin ama kontrol edebilirsin. Doğru koçluk teknikleri, nefes egzersizleri ve planlama ile bu kaygıyı itici bir güce dönüştürebiliriz." };
+                } else {
+                    profile = { title: "DÜŞÜK KAYGI (Sağlıklı)", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Sınav ciddiyetinin farkındasın ama kaygın seni yönetmiyor. Sağlıklı ve optimum bir stres seviyesindesin." };
+                }
+
+                // En baskın boyutu bul
+                let maxDimScore = Math.max(scoreA, scoreB, scoreC);
+                let dominantDim = "";
+                let adviceTitle = "";
+                let adviceDesc = "";
+                let icon = "";
+
+                if (maxDimScore === scoreA) {
+                    dominantDim = "BİLİŞSEL (Zihinsel Kaygı)";
+                    icon = "🧠";
+                    adviceTitle = "Yeniden Çerçeveleme (Reframing)";
+                    adviceDesc = "Zihnindeki 'Kazanamazsam biterim' senaryosunu 'Kazanamazsam B planım var, hayat devam ediyor' şeklinde değiştirmeliyiz. Felaketleştirme yapıyorsun.";
+                } else if (maxDimScore === scoreB) {
+                    dominantDim = "FİZİKSEL (Bedensel Kaygı)";
+                    icon = "🫀";
+                    adviceTitle = "Nefes ve Gevşeme (4-7-8 Tekniği)";
+                    adviceDesc = "Sınav başlamadan önce veya blokaj anında: 4 saniye nefes al, 7 saniye tut, 8 saniye yavaşça ver. Bedenini sakinleştirirsen zihnin de sakinleşir.";
+                } else {
+                    dominantDim = "DAVRANIŞSAL (Kaçınma)";
+                    icon = "🏃";
+                    adviceTitle = "Sistematik Duyarsızlaştırma";
+                    adviceDesc = "Kaygıdan kaçarak kurtulamazsın. Deneme sınavlarını evinin konforunda değil, kütüphane gibi sessiz ve stresli 'gerçek sınav simülasyonu' ortamlarında çözmelisin.";
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Genel Kaygı Skorun</div>
+                            <div className={`text-6xl font-black ${profile.color} mb-3`}>{totalScore}<span className="text-2xl opacity-50">/120</span></div>
+                            <div className={`text-xl font-extrabold ${profile.color} mb-2`}>{profile.title}</div>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90`}>{profile.desc}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                            <div className={`bg-white p-3 rounded-xl border ${maxDimScore === scoreA ? 'border-indigo-400 ring-2 ring-indigo-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Zihinsel</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreA}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxDimScore === scoreB ? 'border-indigo-400 ring-2 ring-indigo-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Bedensel</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreB}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxDimScore === scoreC ? 'border-indigo-400 ring-2 ring-indigo-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Davranışsal</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreC}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                        </div>
+
+                        {totalScore >= 49 && (
+                            <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm mt-4">
+                                <h4 className="font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+                                    {icon} Baskın Kaygı Alanı: {dominantDim}
+                                </h4>
+                                <p className="text-slate-600 text-sm font-medium mb-3">Senin stresin daha çok bu kanaldan dışarı çıkıyor. Çözüm reçeten:</p>
+                                <div className="p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+                                    <strong className="text-indigo-700 block mb-1">{adviceTitle}</strong>
+                                    <span className="text-indigo-900 text-sm">{adviceDesc}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {totalScore >= 97 && scoreB >= 30 && (
+                            <div className="p-4 bg-slate-800 text-white rounded-xl text-sm font-medium leading-relaxed mt-4">
+                                🩺 <strong>Önemli Uyarı:</strong> Fiziksel belirtilerin (kalp çarpıntısı, mide bulantısı, nefes darlığı vb.) çok yüksek seviyede. Bedenin sürekli bir tehlike alarmı çalıyor. Bu durum sadece koçlukla çözülemez. Bir psikiyatrist veya klinik psikologdan destek alman sağlığın için son derece önemlidir.
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
