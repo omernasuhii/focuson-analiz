@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ÖZ-AF 360 Derece Farkındalık Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'oz-af',
+            title: 'ÖZ-AF Farkındalık Analizi',
+            description: 'Bu formda seni kimse yargılamayacak. Kendine karşı acımasız olma ama dürüst ol. Gelişimin ilk şartı, mevcut durumu kabul etmektir.',
+            questions: [
+                // BÖLÜM 1: KİŞİSEL SWOT ANALİZİ
+                { id: 'swot_s', type: 'textarea', section: '1. Aşama: SWOT Analizi', text: 'GÜÇLÜ YÖNLERİM: Bende var olan ve beni başarıya götüren özellikler neler?', placeholder: 'Örn: İnatçıyım, matematiğim iyi, hızlı okurum...' },
+                { id: 'swot_w', type: 'textarea', section: '1. Aşama: SWOT Analizi', text: 'ZAYIF YÖNLERİM: Bende olan ve beni yavaşlatan özellikler neler?', placeholder: 'Örn: Çabuk sıkılırım, telefona çok bakarım, uykuyu severim...' },
+                { id: 'swot_o', type: 'textarea', section: '1. Aşama: SWOT Analizi', text: 'FIRSATLARIM: Çevremde kullanabileceğim dış destekler neler?', placeholder: 'Örn: Odam sessiz, destekleyici bir ailem var, iyi bir kursum var...' },
+                { id: 'swot_t', type: 'textarea', section: '1. Aşama: SWOT Analizi', text: 'TEHDİTLERİM: Dışarıdan gelen ve beni engelleyen riskler neler?', placeholder: 'Örn: Arkadaş grubum çok geziyor, ev çok gürültülü...' },
+
+                // BÖLÜM 2: TRAFİK IŞIĞI YÖNTEMİ
+                { id: 'tl_stop', type: 'textarea', section: '2. Aşama: Trafik Işığı', text: '🔴 DUR (Stop): Şu andan itibaren yapmayı BIRAKMAM gereken kötü alışkanlık ne?', placeholder: 'Örn: Gece 02.00\'ye kadar telefonda vakit öldürmeyi bırakıyorum.' },
+                { id: 'tl_start', type: 'textarea', section: '2. Aşama: Trafik Işığı', text: '🟢 BAŞLA (Start): Bugüne kadar yapmadığım ama artık YAPMAM GEREKEN yeni şey ne?', placeholder: 'Örn: Her sabah 20 paragraf sorusu çözmeye başlıyorum.' },
+                { id: 'tl_continue', type: 'textarea', section: '2. Aşama: Trafik Işığı', text: '🟡 DEVAM ET (Continue): Hangi huyum/yöntemim çok iyi ve bunu KORUMALIYIM?', placeholder: 'Örn: Derste not tutma alışkanlığımı aynen sürdüreceğim.' },
+
+                // BÖLÜM 3: AKADEMİK YAŞAM ÇARKI
+                { id: 'wheel_1', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Ders Başarısına şu anki durumuna göre 1 ile 10 arasında kaç puan verirsin?' },
+                { id: 'wheel_2', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Uyku Düzenine 1 ile 10 arasında kaç puan verirsin?' },
+                { id: 'wheel_3', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Aile İlişkilerine 1 ile 10 arasında kaç puan verirsin?' },
+                { id: 'wheel_4', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Arkadaş İlişkilerine 1 ile 10 arasında kaç puan verirsin?' },
+                { id: 'wheel_5', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Motivasyon ve Ruh Haline 1 ile 10 arasında kaç puan verirsin?' },
+                { id: 'wheel_6', type: 'scale10', section: '3. Aşama: Yaşam Çarkı', text: 'Fiziksel Sağlık ve Beslenme durumuna 1 ile 10 arasında kaç puan verirsin?' },
+                
+                { id: 'wheel_action', type: 'textarea', section: 'Son Adım: Eylem Planı', text: 'Az önce verdiğin puanları düşün. En düşük puan verdiğin alanı 1 puan artırmak için hemen bugün ne yapabilirsin?', placeholder: 'Aksiyon planını buraya yaz...' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
