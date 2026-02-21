@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - AG-MOT Motivasyon Blokajları Ölçeği</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'ag-mot',
+            title: 'AG-MOT Gelecek ve Motivasyon Analizi',
+            description: 'Bu soruların doğru veya yanlış cevabı yok, sadece şu anki hislerini ve düşüncelerini merak ediyoruz. İçinden gelen en dürüst puanı ver.',
+            questions: [
+                // BÖLÜM A: UMUTSUZLUK VE ÇARESİZLİK
+                { id: 'ag_mot_1', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Geleceğe baktığımda karanlık ve belirsiz bir tablodan başka bir şey göremiyorum.' },
+                { id: 'ag_mot_2', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Ne kadar çalışırsam çalışayım, istediğim sonucu asla alamayacağıma inanıyorum.' },
+                { id: 'ag_mot_3', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Benim dışımdaki herkesin benden daha şanslı ve başarılı olduğunu düşünüyorum.' },
+                { id: 'ag_mot_4', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Hayallerime ulaşmak benim için imkansız görünüyor, boşuna kürek çekiyorum.' },
+                { id: 'ag_mot_5', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Sınavdan sonra hayatımın daha iyi olacağına dair hiçbir umudum yok.' },
+                { id: 'ag_mot_6', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Zaman geçtikçe konular yetişmeyecek ve ben başarısız olacağım hissi artıyor.' },
+                { id: 'ag_mot_7', type: 'likert', section: 'Bölüm A: Gelecek Algısı', text: 'Çevremdekilerin bana olan inancı boşa çıkacak ve onları hayal kırıklığına uğratacağım.' },
+
+                // BÖLÜM B: BİLİŞSEL ÇARPITMALAR
+                { id: 'ag_mot_8', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Eğer ilk 10.000\'e giremezsem (veya X okulunu kazanamazsam) hayatım tamamen mahvolur.' },
+                { id: 'ag_mot_9', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Bir denemede başarısız olursam, bu benim tamamen yetersiz biri olduğumu gösterir.' },
+                { id: 'ag_mot_10', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Sınav anında kesinlikle elim ayağım birbirine dolaşacak ve her şeyi batıracağım.' },
+                { id: 'ag_mot_11', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Kazanamazsam ailemin yüzüne bakamam, toplumda rezil olurum.' },
+                { id: 'ag_mot_12', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Öğretmenlerimin ve arkadaşlarımın içten içe "Bu çocuk yapamaz" dediğini biliyorum.' },
+                { id: 'ag_mot_13', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Matematikte bir konuyu anlamadıysam, diğerlerini de asla anlayamayacağım demektir.' },
+                { id: 'ag_mot_14', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Kendimi başarısız hissediyorum, demek ki ben başarısız biriyim.' },
+                { id: 'ag_mot_15', type: 'likert', section: 'Bölüm B: Düşünce Hataları', text: 'Ben "tembel" veya "kapasitesiz" biriyim, bu benim karakterim.' },
+
+                // BÖLÜM C: OLUMLU GELECEK (Ters Puanlanan Maddeler)
+                { id: 'ag_mot_16', type: 'likert', section: 'Bölüm C: Dayanıklılık', text: 'Başarısız olsam bile hayatımda mutlu olabileceğim başka yollar bulabilirim.' },
+                { id: 'ag_mot_17', type: 'likert', section: 'Bölüm C: Dayanıklılık', text: 'Gelecek için beni heyecanlandıran planlarım var.' },
+                { id: 'ag_mot_18', type: 'likert', section: 'Bölüm C: Dayanıklılık', text: 'Yeterince çabalarsam durumumu değiştirebileceğime inanıyorum.' },
+                { id: 'ag_mot_19', type: 'likert', section: 'Bölüm C: Dayanıklılık', text: 'Zorluklar karşısında pes etmek yerine çözüm ararım.' },
+                { id: 'ag_mot_20', type: 'likert', section: 'Bölüm C: Dayanıklılık', text: 'Kendimi geliştirebilecek güce sahibim.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
