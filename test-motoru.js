@@ -474,6 +474,94 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+
+            // --- ADT-Ö SONUÇ EKRANI ---
+            else if (testData.id === 'adt-o') {
+                // Kritik dersleri bul (5 ve altı puan)
+                const lessons = {
+                    'Matematik': parseInt(answers['adt_m1'] || 10),
+                    'Geometri': parseInt(answers['adt_m2'] || 10),
+                    'Türkçe': parseInt(answers['adt_t1'] || 10),
+                    'Fizik': parseInt(answers['adt_f1'] || 10),
+                    'Kimya': parseInt(answers['adt_f2'] || 10),
+                    'Biyoloji': parseInt(answers['adt_f3'] || 10),
+                    'Tarih': parseInt(answers['adt_s1'] || 10),
+                    'Coğrafya': parseInt(answers['adt_s2'] || 10)
+                };
+
+                const criticalLessons = Object.keys(lessons).filter(k => lessons[k] <= 5);
+                
+                // Teşhis Puanları (4 veya 5 verilen cevaplar 'Katılıyorum' sayılır)
+                const isAgree = (id) => parseInt(answers[id] || 0) >= 4 ? 1 : 0;
+                
+                const temelEksikligi = isAgree('adt_b1_4') + isAgree('adt_b1_5'); // Max 2
+                const ogretmenOnyargi = isAgree('adt_b1_1') + isAgree('adt_b2_5'); // Max 2
+                const kacinmaKorku = isAgree('adt_b1_3') + isAgree('adt_b2_1') + isAgree('adt_b3_1'); // Max 3
+
+                let teshisTitle = "GENEL İSTEKSİZLİK";
+                let teshisDesc = "Belirgin bir fobi veya temel eksikliği yok ancak ders çalışma disiplininde motivasyon artışına ihtiyaç var.";
+                let bgColor = "bg-slate-50"; let borderColor = "border-slate-200"; let textColor = "text-slate-700";
+
+                if (temelEksikligi >= ogretmenOnyargi && temelEksikligi >= kacinmaKorku && temelEksikligi > 0) {
+                    teshisTitle = "TEMEL EKSİKLİĞİ (Anlamıyorum)";
+                    teshisDesc = "Dersi sevmiyor değilsin, sadece aradaki basamaklar eksik. Koçunla birlikte derhal bir alt seviyeden, daha kolay kaynaklarla temel atma kampına başlamalısın.";
+                    bgColor = "bg-blue-50"; borderColor = "border-blue-200"; textColor = "text-blue-700";
+                } else if (ogretmenOnyargi > temelEksikligi && ogretmenOnyargi >= kacinmaKorku) {
+                    teshisTitle = "ÖĞRETMEN / ÖNYARGI (Soğudum)";
+                    teshisDesc = "Senin kavgan dersin kendisiyle değil, onu anlatan kişiyle veya dersin imajıyla. O derse farklı bir hocadan (örn: alternatif YouTube kanallarından) sıfırdan bir şans vermelisin.";
+                    bgColor = "bg-amber-50"; borderColor = "border-amber-200"; textColor = "text-amber-700";
+                } else if (kacinmaKorku > temelEksikligi && kacinmaKorku > ogretmenOnyargi) {
+                    teshisTitle = "KAÇINMA / KORKU (Yapamıyorum)";
+                    teshisDesc = "Ders sana bir fobiye dönüşmüş ve 'öğrenilmiş çaresizlik' yaşıyorsun. İnanç kalıplarını yıkmak için koçunla 'İnanç ve Zihniyet Çalışması' yapmalısın.";
+                    bgColor = "bg-rose-50"; borderColor = "border-rose-200"; textColor = "text-rose-700";
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        {criticalLessons.length > 0 ? (
+                            <div className="p-4 rounded-xl bg-white border border-rose-100 shadow-sm">
+                                <h4 className="font-bold text-rose-600 mb-2 flex items-center gap-2">🚨 Direnç Gösterdiğin Dersler</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {criticalLessons.map(l => (
+                                        <span key={l} className="px-3 py-1 bg-rose-50 text-rose-700 rounded-full text-sm font-semibold border border-rose-200">{l} ({lessons[l]}/10)</span>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold shadow-sm text-center">
+                                Harika! Bariz bir şekilde direnç gösterdiğin veya nefret ettiğin bir branş yok.
+                            </div>
+                        )}
+
+                        <div className={`p-6 rounded-2xl border ${bgColor} ${borderColor} shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Gizli Direnç Teşhisi</div>
+                            <div className={`text-2xl font-black ${textColor} mb-3`}>{teshisTitle}</div>
+                            <p className={`${textColor} font-medium leading-relaxed opacity-90`}>{teshisDesc}</p>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                            <h4 className="font-extrabold text-slate-800 mb-4 uppercase tracking-wider text-sm">💡 FocusON Taktik Odası</h4>
+                            <ul className="space-y-3">
+                                {criticalLessons.includes('Matematik') || criticalLessons.includes('Geometri') ? (
+                                    <li className="flex gap-3 text-sm text-slate-700"><span className="text-xl">📐</span> <div><strong>Matematik/Geometri:</strong> Sloganımız "Kalemle düşün". Soruyu zihinden çözmeye çalışma, sadece verilenleri yaz ve şekli çiz.</div></li>
+                                ) : null}
+                                {criticalLessons.includes('Fizik') || criticalLessons.includes('Kimya') ? (
+                                    <li className="flex gap-3 text-sm text-slate-700"><span className="text-xl">🧪</span> <div><strong>Fizik/Kimya:</strong> Sloganımız "Formülü değil, olayı anla". Olayı günlük hayatla (arabanın freni, çayın kaynaması) bağdaştır.</div></li>
+                                ) : null}
+                                {criticalLessons.includes('Tarih') || criticalLessons.includes('Coğrafya') ? (
+                                    <li className="flex gap-3 text-sm text-slate-700"><span className="text-xl">🌍</span> <div><strong>Sosyal Bilimler:</strong> Sloganımız "Hikayeleştir". Ezber yapma, olayları film senaryosu gibi anlat.</div></li>
+                                ) : null}
+                                {criticalLessons.includes('Türkçe') ? (
+                                    <li className="flex gap-3 text-sm text-slate-700"><span className="text-xl">📖</span> <div><strong>Türkçe/Paragraf:</strong> Sloganımız "Dedektiflik yap". Metni okurken yazarın hatasını veya sana verdiği gizli mesajı bulmaya çalış.</div></li>
+                                ) : null}
+                                {criticalLessons.length === 0 ? (
+                                    <li className="text-sm text-slate-500 italic">Dirençli dersin olmadığı için mevcut temponda genel tekrarlara devam edebilirsin.</li>
+                                ) : null}
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
                 
             // --- DİĞER GENEL SONUÇ ---
             else {
