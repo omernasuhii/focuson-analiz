@@ -97,7 +97,7 @@ const DopaInteractiveTask = ({ onComplete }) => {
             <div className="text-2xl font-black text-rose-600 mb-6 flex items-center gap-2 bg-rose-50 px-6 py-2 rounded-full border border-rose-100 shadow-sm">
                 ⏱️ {timeLeft} Saniye
             </div>
-            <div className="bg-white p-3 md:p-6 rounded-2xl shadow-inner border border-slate-200 w-full max-w-lg">
+            <div className="bg-white p-3 md:p-6 rounded-2xl shadow-inner border border-slate-200 w-full max-w-lg overflow-y-auto max-h-[50vh] overscroll-contain pb-10">
                 <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: '6px' }} className="select-none">
                     {grid.map((char, idx) => (
                         <div 
