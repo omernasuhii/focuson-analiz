@@ -562,6 +562,80 @@ const FocusON_Engine = () => {
                     </div>
                 );
             }
+
+            // --- AS-EQ (DUYGUSAL ZEKÂ) SONUÇ EKRANI ---
+            else if (testData.id === 'as-eq') {
+                let scores = {
+                    'Öz-Bilinç': 0, 'Öz-Yönetim': 0, 'Motivasyon': 0, 'Empati': 0, 'Sosyal Beceriler': 0
+                };
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('aseq_1')) scores['Öz-Bilinç'] += val;
+                    if (key.startsWith('aseq_2')) scores['Öz-Yönetim'] += val;
+                    if (key.startsWith('aseq_3')) scores['Motivasyon'] += val;
+                    if (key.startsWith('aseq_4')) scores['Empati'] += val;
+                    if (key.startsWith('aseq_5')) scores['Sosyal Beceriler'] += val;
+                });
+
+                const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+
+                let profile = {};
+                if (totalScore >= 100) {
+                    profile = { title: "YÜKSEK DUYGUSAL ZEKÂ", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Lider ruhlusun, stres yönetimin çok iyi. Akademik başarı potansiyelin oldukça yüksek çünkü duyguların seni değil, sen onları yönetiyorsun." };
+                } else if (totalScore >= 75) {
+                    profile = { title: "ORTA DUYGUSAL ZEKÂ", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "İyi yoldasın ama gelişime açıksın. Duygusal zekâ bir kas gibidir ve bazı alt boyutlarda (örneğin stres anında) bu kasını biraz daha güçlendirmen gerekiyor." };
+                } else {
+                    profile = { title: "DÜŞÜK DUYGUSAL ZEKÂ", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Duyguların sık sık mantığının önüne geçiyor. Sınav kaygısı veya sosyal uyumsuzluk nedeniyle akademik potansiyelini harcama riskin var. Hemen aksiyon almalıyız." };
+                }
+
+                // En düşük boyutu ve tavsiyesini bul
+                let lowestDim = Object.keys(scores).reduce((a, b) => scores[a] < scores[b] ? a : b);
+                let exerciseTitle = "";
+                let exerciseDesc = "";
+
+                if (lowestDim === 'Öz-Yönetim' || lowestDim === 'Öz-Bilinç') {
+                    exerciseTitle = "Trafik Işığı Tekniği";
+                    exerciseDesc = "Kırmızı: Dur! (Duyguyu hisset ama tepki verme). Sarı: Düşün! (Bu duygu bana ne söylüyor?). Yeşil: Yap! (En mantıklı ve yapıcı seçeneği uygula).";
+                } else if (lowestDim === 'Motivasyon') {
+                    exerciseTitle = "Başarı Günlüğü";
+                    exerciseDesc = "Her akşam o gün başardığın en küçük şeyi bile not al (Örn: Bugün 10 sayfa okudum). Bu beynindeki dopamin salgısını artırarak pes etmeni engelleyecek.";
+                } else {
+                    exerciseTitle = "Onun Ayakkabıları";
+                    exerciseDesc = "Bir dahaki sefere biriyle tartıştığında onun yerine geç ve olayı 'Ben' diliyle değil, 'O' diliyle (onun gözünden) içinden tekrar anlat.";
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-sm font-bold uppercase tracking-widest opacity-70 mb-2">Genel EQ Skorun</div>
+                            <div className={`text-6xl font-black ${profile.color}`}>{totalScore}<span className="text-2xl opacity-50">/125</span></div>
+                            <div className={`text-xl font-extrabold ${profile.color} mt-2`}>{profile.title}</div>
+                            <p className="mt-4 text-slate-700 font-medium text-sm leading-relaxed">{profile.desc}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {Object.entries(scores).map(([name, score]) => (
+                                <div key={name} className={`bg-white p-3 rounded-xl border ${name === lowestDim ? 'border-rose-300 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">{name}</div>
+                                    <div className={`text-xl font-bold ${name === lowestDim ? 'text-rose-600' : 'text-slate-700'}`}>{score}<span className="text-xs text-slate-400">/25</span></div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+                                🎯 Antrenman: {lowestDim} Alanı
+                            </h4>
+                            <p className="text-slate-600 text-sm font-medium mb-3">En düşük puanı bu alandan aldın. Duygusal kasını güçlendirmek için koçunun sana önerisi:</p>
+                            <div className="p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+                                <strong className="text-indigo-700 block mb-1">{exerciseTitle}</strong>
+                                <span className="text-indigo-900 text-sm">{exerciseDesc}</span>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
                 
             // --- DİĞER GENEL SONUÇ ---
             else {
