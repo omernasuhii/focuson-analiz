@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ADDE-20 Aile Destek Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'adde-20',
+            title: 'ADDE-20 Aile Destek Analizi',
+            description: 'Başarı bir takım işidir ve takımın en önemli üyesi ailendir. Bu test, evdeki çalışma ortamını ve aldığın desteği anlamamızı sağlayacak. Cevapların ailene birebir iletilmeyecektir, dürüstçe yanıtla.',
+            questions: [
+                // BOYUT A: DUYGUSAL DESTEK
+                { id: 'adde_a_1', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ailem, sınav sonucum ne olursa olsun beni seveceğini hissettirir.' },
+                { id: 'adde_a_2', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Sınav stresimi veya korkularımı ailemle rahatça konuşabilirim.' },
+                { id: 'adde_a_3', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Başarısız olduğumda beni yargılamak yerine moral verirler.' },
+                { id: 'adde_a_4', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ailem bana güvendiğini sözleriyle ve davranışlarıyla belli eder.' },
+                { id: 'adde_a_5', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ders çalışmadığım zamanlarda bile bana değer verirler.' },
+                { id: 'adde_a_6', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ailem beni başkalarının çocuklarıyla (kuzen, komşu vb.) kıyaslamaz.' },
+                { id: 'adde_a_7', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Sınav kaygısı yaşadığımda ailem beni sakinleştirir.' },
+                { id: 'adde_a_8', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Evde huzurlu ve sevgi dolu bir ortam olduğunu hissederim.' },
+                { id: 'adde_a_9', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ailem kararlarıma (hedef, bölüm seçimi vb.) saygı duyar.' },
+                { id: 'adde_a_10', type: 'likert', section: 'Bölüm 1: Duygusal Ortam', text: 'Ailemle vakit geçirmek beni dinlendirir ve motive eder.' },
+
+                // BOYUT B: AKADEMİK DESTEK
+                { id: 'adde_b_1', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Ailem bana evde sessiz ve düzenli bir ders çalışma ortamı sağlar.' },
+                { id: 'adde_b_2', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'İhtiyacım olan kitap, kaynak veya eğitim desteğini karşılarlar.' },
+                { id: 'adde_b_3', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Deneme sınavı sonuçlarımı takip ederler ancak baskı yapmazlar.' },
+                { id: 'adde_b_4', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Ailem sınav sistemi (LGS/YKS) ve derslerim hakkında bilgi sahibidir.' },
+                { id: 'adde_b_5', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Ders çalışırken dikkatimi dağıtmamaya (TV sesi, misafir vb.) özen gösterirler.' },
+                { id: 'adde_b_6', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Okul/Dershane toplantılarına düzenli katılır ve öğretmenlerimle iletişim kurarlar.' },
+                { id: 'adde_b_7', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Uyku ve beslenme düzenime dikkat etmem için bana yardımcı olurlar.' },
+                { id: 'adde_b_8', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Gelecek planlarım hakkında benimle mantıklı ve yapıcı sohbetler ederler.' },
+                { id: 'adde_b_9', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Ailem, çözemediğim sorunlarda (okul, arkadaş) bana rehberlik eder.' },
+                { id: 'adde_b_10', type: 'likert', section: 'Bölüm 2: Akademik Ortam', text: 'Evdeki sorumluluklarımı (ev işleri vb.) ders programıma göre ayarlarlar.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
