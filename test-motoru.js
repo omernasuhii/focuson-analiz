@@ -1344,6 +1344,85 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- DART (HEDEF YÖNETİMİ) SONUÇ EKRANI ---
+            else if (testData.id === 'dart') {
+                const macro = answers['dart_macro'] || 'Belirtilmedi';
+                const mezo = answers['dart_mezo'] || 'Belirtilmedi';
+                const micro = answers['dart_micro'] || 'Belirtilmedi';
+                const obstacle = answers['dart_woop_obs'] || 'Belirtilmedi';
+                const bPlan = answers['dart_woop_plan'] || 'Belirtilmedi';
+                
+                const targetQ = parseInt(answers['dart_target_q']) || 0;
+                const realQ = parseInt(answers['dart_realized_q']) || 0;
+                
+                let kpi = 0;
+                if (targetQ > 0) {
+                    kpi = Math.round((realQ / targetQ) * 100);
+                } else if (realQ > 0) {
+                    kpi = 100;
+                }
+
+                let kpiZone = {};
+                if (kpi >= 100) {
+                    kpiZone = { title: "ŞAMPİYON MODU", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200", desc: "Mükemmel! Ancak tükenmişlik riskine karşı dinlenmeyi ve hedeflerini kademeli artırmayı unutma." };
+                } else if (kpi >= 80) {
+                    kpiZone = { title: "İDEAL BÖLGE", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Sürdürülebilir başarı seviyesi. Plan tıkır tıkır işliyor, bu tempoyu koru." };
+                } else if (kpi >= 50) {
+                    kpiZone = { title: "RİSKLİ BÖLGE", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Planlama hatası veya dikkat dağınıklığı var. Hedefleri küçültüp daha ulaşılabilir hale getirmeliyiz." };
+                } else {
+                    kpiZone = { title: "ALARM BÖLGESİ", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Hedefler şu an senin için hiç gerçekçi değil veya eyleme geçemiyorsun. Büyük resmi bırak, sadece bugüne odaklan." };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        {targetQ > 0 && (
+                            <div className={`p-6 rounded-2xl border ${kpiZone.bg} ${kpiZone.border} text-center shadow-sm flex flex-col md:flex-row items-center justify-between gap-4`}>
+                                <div className="text-left">
+                                    <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Haftalık Hedef Tutturma Oranı</div>
+                                    <div className={`text-xl font-black ${kpiZone.color}`}>{kpiZone.title}</div>
+                                    <div className={`text-sm font-medium opacity-90 mt-1 ${kpiZone.color}`}>{kpiZone.desc}</div>
+                                </div>
+                                <div className={`text-6xl font-black ${kpiZone.color}`}>%{kpi}</div>
+                            </div>
+                        )}
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <div className="absolute top-1/2 right-0 transform -translate-y-1/2 p-4 text-8xl opacity-5">🎯</div>
+                            <h4 className="font-extrabold text-blue-400 mb-4 text-sm uppercase tracking-wider">Senin Dart Tahtan</h4>
+                            
+                            <div className="space-y-4">
+                                <div className="border-l-2 border-blue-500 pl-3">
+                                    <div className="text-[10px] text-blue-300 uppercase font-bold tracking-widest">Dış Halka (Vizyon)</div>
+                                    <div className="text-sm font-medium mt-1">"{macro}"</div>
+                                </div>
+                                <div className="border-l-2 border-amber-500 pl-3">
+                                    <div className="text-[10px] text-amber-300 uppercase font-bold tracking-widest">Orta Halka (Aylık)</div>
+                                    <div className="text-sm font-medium mt-1">"{mezo}"</div>
+                                </div>
+                                <div className="border-l-4 border-rose-500 pl-3 bg-slate-800/50 py-2 rounded-r-lg">
+                                    <div className="text-[10px] text-rose-400 uppercase font-bold tracking-widest">🎯 Tam Merkez (Bugün)</div>
+                                    <div className="text-base font-bold mt-1 text-white">"{micro}"</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-slate-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🛡️ Güvenlik Protokolü (WOOP)
+                            </h4>
+                            <div className="bg-rose-50 p-3 rounded-lg mb-2 border border-rose-100">
+                                <span className="text-[10px] font-bold text-rose-600 uppercase">Tehdit:</span>
+                                <p className="text-sm text-rose-900 mt-1">"{obstacle}"</p>
+                            </div>
+                            <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                <span className="text-[10px] font-bold text-emerald-600 uppercase">Savunma (B Planı):</span>
+                                <p className="text-sm text-emerald-900 font-bold mt-1">"{bPlan}"</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
