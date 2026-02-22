@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - AMİD İnanç Değişim Protokolü</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'amid',
+            title: 'AMİD Beyin Kodlama Operasyonu',
+            description: 'Beynin bir bilgisayar ekranı gibidir. Şimdi seninle, seni durduran o "Yapamam" inancının görüntü ve ses ayarlarıyla (parlaklık, kontrast) oynayacağız ve yerine yeni bir yazılım kuracağız.',
+            questions: [
+                { 
+                    id: 'amid_old', type: 'text', section: 'Adım 1: Virüsü Bul', 
+                    text: 'Değiştirmek istediğin, seni yavaşlatan o KISITLAYICI İNANÇ (Eski düşünce) nedir?', 
+                    placeholder: 'Örn: Geometriyi asla anlayamayacağım...' 
+                },
+                { 
+                    id: 'amid_new', type: 'text', section: 'Adım 2: Yeni Yazılım', 
+                    text: 'Bunun yerine beynine yüklemek istediğin GÜÇLENDİRİCİ İNANÇ (Yeni düşünce) nedir?', 
+                    placeholder: 'Örn: Pratik yaparsam geometriyi çözebilirim...' 
+                },
+                { 
+                    id: 'amid_pre_score', type: 'scale10', section: 'Adım 3: İnanç Metre', 
+                    text: 'Şu an ilk yazdığın o ESKİ inancına (Yapamam düşüncesine) ne kadar güçlü inanıyorsun? (1: Hiç inanmıyorum - 10: Kesinlikle doğru)' 
+                },
+                { 
+                    id: 'amid_nlp', type: 'multiple_choice', section: 'Adım 4: Zihin Hackleme (Gözlerini Kapat)', 
+                    text: 'Şimdi eski düşünceni siyah-beyaz, bulanık ve uzak bir fotoğraf gibi hayal et. Giderek küçülsün. Sonra Yeni düşünceni DEV, çok parlak, net ve renkli bir sinema perdesi gibi yakınına getir. İçine en sevdiğin motive edici müziği ekle. Bu dev ekrana bakarken, o küçük siyah-beyaz eski fotoğrafa dönüp baktığında sana nasıl görünüyor?', 
+                    options: [
+                        { label: 'A) Artık komik, anlamsız ve zayıf geliyor.', value: 'Koptu' },
+                        { label: 'B) Etkisi azaldı ama tamamen gitmedi.', value: 'Azaldı' },
+                        { label: 'C) Hayal edemedim, hala eski düşünceme inanıyorum.', value: 'Direnç' }
+                    ]
+                },
+                { 
+                    id: 'amid_post_score', type: 'scale10', section: 'Adım 5: Sistem Güncellemesi', 
+                    text: 'Son soru: Zihnindeki o yeni, devasa ve parlak ekranı "Kaydet" tuşuna basarak sabitle. Şimdi ilk baştaki o eski (Yapamam) inancına tekrar 1 ile 10 arasında puan ver. İnancın kaça düştü?' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
