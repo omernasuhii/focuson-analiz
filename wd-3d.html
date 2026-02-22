@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - WD-3D Walt Disney Planlama</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'wd-3d',
+            title: 'WD-3D Yaratıcı Planlama',
+            description: 'Walt Disney gibi düşüneceğiz! Bir odada hayal et, diğerinde planla, ötekinde eleştir. Asla üçünü aynı anda yapma. Şimdi sırayla bu 3 koltuğa oturacaksın.',
+            questions: [
+                { 
+                    id: 'wd_dreamer', type: 'textarea', section: 'Aşama 1: Hayalperest Koltuğu', 
+                    text: 'Şu an her şey mümkün. Bütçe, puan, zaman sınırı yok. Sadece ne istediğine odaklan. Gerçekten ne istiyorsun ve bu gerçekleştiğinde ne hissedeceksin?', 
+                    placeholder: 'Örn: Üniversitenin bahçesinde oturduğumu hayal ediyorum, harika bir özgürlük hissi...' 
+                },
+                { 
+                    id: 'wd_realist', type: 'textarea', section: 'Aşama 2: Gerçekçi Koltuğu', 
+                    text: 'Şimdi filmi durdur ve "Yönetmen" koltuğuna geç. Bu hayali gerçekleştirmek için ne zaman başlamalısın, hangi kaynaklara ihtiyacın var ve adım adım planın ne?', 
+                    placeholder: 'Örn: Günde 5 saat çalışmalıyım, matematikten şu 3 kaynağı bitirmeliyim. Yarın sabah başlıyorum...' 
+                },
+                { 
+                    id: 'wd_critic', type: 'textarea', section: 'Aşama 3: Eleştirmen Koltuğu', 
+                    text: 'Şimdi "Kalite Kontrol Uzmanı"sın. Kendini değil, SADECE PLANI eleştir! Bu planda eksik ne var? Hangi aksilikler çıkabilir ve zayıf halka neresi?', 
+                    placeholder: 'Örn: Günde 5 saat çok iddialı, 3. gün yorulabilirim. Ayrıca deneme çözme vakti eklememişim...' 
+                },
+                { 
+                    id: 'wd_decision', type: 'multiple_choice', section: 'Aşama 4: Karar Anı', 
+                    text: 'Tüm bu aşamalardan sonra Eleştirmen olarak bu planın mevcut haline ONAY veriyor musun, yoksa planın REVİZE edilmesi (Gerçekçi koltuğuna dönmesi) mi gerekiyor?', 
+                    options: [
+                        { label: '✅ Onaylıyorum. Plan risklere karşı korunaklı ve uygulanabilir.', value: 'Onay' },
+                        { label: '🔄 Revize Edilmeli. Planda riskler yüksek, değiştirilmesi gerek.', value: 'Revize' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
