@@ -2182,6 +2182,100 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- HİRAT (HEDEF İZLEME VE RİSK ANALİZİ) SONUÇ EKRANI ---
+            else if (testData.id === 'hirat') {
+                const matT = parseInt(answers['hirat_mat_t']) || 0;
+                const matR = parseInt(answers['hirat_mat_r']) || 0;
+                const turT = parseInt(answers['hirat_tur_t']) || 0;
+                const turR = parseInt(answers['hirat_tur_r']) || 0;
+                const konT = parseInt(answers['hirat_kon_t']) || 0;
+                const konR = parseInt(answers['hirat_kon_r']) || 0;
+                const denT = parseInt(answers['hirat_den_t']) || 0;
+                const denR = parseInt(answers['hirat_den_r']) || 0;
+
+                // Her kategorinin gerçekleşme yüzdesini bulup ortalamasını alıyoruz
+                let percentages = [];
+                if (matT > 0) percentages.push(Math.min(matR / matT, 1.5)); // Maksimum %150 ile sınırla ki ortalamayı bozmasın
+                if (turT > 0) percentages.push(Math.min(turR / turT, 1.5));
+                if (konT > 0) percentages.push(Math.min(konR / konT, 1.5));
+                if (denT > 0) percentages.push(Math.min(denR / denT, 1.5));
+
+                let hpp = 0;
+                if (percentages.length > 0) {
+                    let sum = percentages.reduce((a, b) => a + b, 0);
+                    hpp = Math.round((sum / percentages.length) * 100);
+                } else if (matR > 0 || turR > 0 || konR > 0 || denR > 0) {
+                    hpp = 100; // Hedef yok ama iş yapılmış
+                }
+
+                let profile = {};
+                if (hpp >= 110) {
+                    profile = { title: "MAVİ BÖLGE (Aşırı Yükleme)", icon: "🔵", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Hedefin çok üzerine çıkıldı. Mükemmel bir efor ancak tükenmişlik (Burnout) riski taşıyorsun. Hedeflerin kapasitenin altında (çok kolay) kalmış olabilir, vitesi büyütmeliyiz." };
+                } else if (hpp >= 90) {
+                    profile = { title: "YEŞİL BÖLGE (Sistem Kusursuz)", icon: "🟢", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Hedef tuttu! Planlarına sadık kaldın ve sistem tıkır tıkır işliyor. Aşırı özgüven rehavetine kapılmadan bu ideal tempoyu korumaya devam et." };
+                } else if (hpp >= 70) {
+                    profile = { title: "SARI BÖLGE (Kısmi Başarı)", icon: "🟡", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Ufak sapmalar var. Dikkat dağınıklığı veya hafif motivasyon düşüklüğü başlamış olabilir ancak toparlanabilir bir seviyedesin. Mikro takip gerekiyor." };
+                } else {
+                    profile = { title: "KIRMIZI BÖLGE (Kritik Başarısızlık)", icon: "🔴", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Hedeflenen konular yetişmeyecek! Konu yığılması (Backlog) ve sınavdan kopuş riski çok yüksek. Yeni konu eklemeyi bırakıp eksikleri temizleme haftası ilan etmeliyiz." };
+                }
+
+                const renderBar = (target, realized, label) => {
+                    if (target === 0) return null;
+                    let perc = Math.round((realized / target) * 100);
+                    let barColor = perc >= 90 ? 'bg-emerald-500' : perc >= 70 ? 'bg-amber-500' : 'bg-rose-500';
+                    let wPerc = Math.min(perc, 100);
+                    
+                    return (
+                        <div className="mb-3">
+                            <div className="flex justify-between text-xs font-bold text-slate-300 mb-1">
+                                <span>{label}</span>
+                                <span>{realized} / {target} (%{perc})</span>
+                            </div>
+                            <div className="w-full bg-slate-800 rounded-full h-2">
+                                <div className={`${barColor} h-2 rounded-full transition-all duration-500`} style={{width: `${wPerc}%`}}></div>
+                            </div>
+                        </div>
+                    );
+                };
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm flex flex-col md:flex-row items-center justify-between gap-4`}>
+                            <div className="text-left">
+                                <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 flex items-center gap-2">
+                                    {profile.icon} Haftalık Performans Puanı (HPP)
+                                </div>
+                                <div className={`text-xl font-black ${profile.color}`}>{profile.title}</div>
+                                <div className={`text-sm font-medium opacity-90 mt-1 ${profile.color}`}>{profile.desc}</div>
+                            </div>
+                            <div className={`text-6xl font-black ${profile.color}`}>%{hpp}</div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-slate-100 mb-4 text-sm uppercase tracking-wider">
+                                📊 Kategori Bazlı Metrikler
+                            </h4>
+                            {renderBar(matT, matR, 'Sayısal Soru Çözümü')}
+                            {renderBar(turT, turR, 'Sözel Soru Çözümü')}
+                            {renderBar(konT, konR, 'Konu / Video (Dakika)')}
+                            {renderBar(denT, denR, 'Deneme Sınavı (Adet)')}
+                        </div>
+
+                        {hpp < 70 && (
+                            <div className="bg-white p-4 rounded-xl border border-rose-200 shadow-sm mt-4 text-sm">
+                                <span className="font-bold text-rose-700 uppercase text-xs flex items-center gap-2 mb-2">🔍 Kök Neden Analizi</span>
+                                <p className="text-slate-600 mb-2">Kırmızı bölgedesin. Lütfen başarısızlığın kök nedenini koçunla dürüstçe değerlendir:</p>
+                                <ul className="space-y-1 text-slate-500 list-disc pl-4 text-xs">
+                                    <li><strong>Hedef Hatası mı?</strong> Gerçekçi olmayan yüksek bir hedef mi koyduk?</li>
+                                    <li><strong>Zaman Yönetimi mi?</strong> Masada oturup telefona mı daldın?</li>
+                                    <li><strong>Konu Zorluğu mu?</strong> Konu beklenenden zor çıktı ve süre mi yetmedi?</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
