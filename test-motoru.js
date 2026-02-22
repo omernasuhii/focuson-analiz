@@ -906,6 +906,101 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- ZS-ODÖ (ZİHİNSEL SABOTAJ) SONUÇ EKRANI ---
+            else if (testData.id === 'zs-odo') {
+                let scores = {
+                    'Ya Hep Ya Hiç': 0,
+                    'Felaketleştirme': 0,
+                    'Zihin Okuma': 0,
+                    'Etiketleme': 0,
+                    '-Meli / -Malı': 0
+                };
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('zs_1')) scores['Ya Hep Ya Hiç'] += val;
+                    if (key.startsWith('zs_2')) scores['Felaketleştirme'] += val;
+                    if (key.startsWith('zs_3')) scores['Zihin Okuma'] += val;
+                    if (key.startsWith('zs_4')) scores['Etiketleme'] += val;
+                    if (key.startsWith('zs_5')) scores['-Meli / -Malı'] += val;
+                });
+
+                // En yüksek puanlı tuzağı bul (Baskın Düşünce Virüsü)
+                let traps = [
+                    { 
+                        name: 'Ya Hep Ya Hiç', score: scores['Ya Hep Ya Hiç'], icon: '⚫⚪',
+                        desc: 'Mükemmeliyetçilik sorunu. "Gri alanları" görmüyorsun.',
+                        fake: '"100 alamazsam başarısızım."',
+                        real: '"85 almak başarısızlık değil, sadece gelişmesi gereken bir sonuçtur. Mükemmel olmasa da yeterince iyidir."'
+                    },
+                    { 
+                        name: 'Felaketleştirme', score: scores['Felaketleştirme'], icon: '🌋',
+                        desc: 'Kaygı bozukluğu eğilimi. Geleceği her zaman karanlık görüyorsun.',
+                        fake: '"Sınavda kesin bayılacağım veya her şeyi unutacağım."',
+                        real: '"Daha önce girdiğim denemelerde bayılmadım. Heyecanlanabilirim ama bu, sınavı yönetemeyeceğim anlamına gelmez."'
+                    },
+                    { 
+                        name: 'Zihin Okuma', score: scores['Zihin Okuma'], icon: '🔮',
+                        desc: 'Sosyal onay ihtiyacı ve özgüven eksikliği yaşıyorsun.',
+                        fake: '"Hoca veya ailem benim aptal/tembel olduğumu düşünüyor."',
+                        real: '"İnsanların zihnini okuyamam. Muhtemelen benimle değil, kendi işleriyle meşguller. Bu sadece benim kuruntum."'
+                    },
+                    { 
+                        name: 'Etiketleme', score: scores['Etiketleme'], icon: '🏷️',
+                        desc: 'Öz-şefkat eksikliği. Kendine düşmanca davranıyorsun.',
+                        fake: '"Ben aptalım, tembelim, yeteneksizim."',
+                        real: '"Ben aptal değilim, sadece bu konuda hata yapan akıllı biriyim. Davranışım hatalı olabilir ama kişiliğim değil."'
+                    },
+                    { 
+                        name: '-Meli / -Malı (Zorunluluklar)', score: scores['-Meli / -Malı'], icon: '⛓️',
+                        desc: 'Yüksek baskı ve tükenmişlik riski. Kendine esnemez kurallar dayatıyorsun.',
+                        fake: '"Asla yorulmamalıyım, hep birinci olmalıyım."',
+                        real: '"Ben bir insanım, robot değilim. Yorulmak suç değil, dinlenmek haktır. Dinlenirsem daha iyi çalışırım."'
+                    }
+                ];
+
+                // Puanlara göre büyükten küçüğe sırala
+                traps.sort((a, b) => b.score - a.score);
+                let dominantTrap = traps[0];
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl border bg-indigo-50 border-indigo-200 text-center shadow-sm">
+                            <div className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-2">Baskın Düşünce Virüsün</div>
+                            <div className="text-5xl mb-2">{dominantTrap.icon}</div>
+                            <div className="text-2xl font-black text-indigo-700 mb-3">{dominantTrap.name}</div>
+                            <p className="text-indigo-900 font-medium leading-relaxed opacity-90">{dominantTrap.desc}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                            {traps.map(t => (
+                                <div key={t.name} className={`bg-white p-2 rounded-xl border ${t.name === dominantTrap.name ? 'border-indigo-400 ring-2 ring-indigo-100 bg-indigo-50/50' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-500 mb-1 leading-tight">{t.name}</div>
+                                    <div className={`text-xl font-bold ${t.name === dominantTrap.name ? 'text-indigo-600' : 'text-slate-700'}`}>{t.score}<span className="text-[10px] text-slate-400">/15</span></div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-emerald-100 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-emerald-700 mb-3 flex items-center gap-2">
+                                💊 Zihin Hackleme: Panzehir Cümlesi
+                            </h4>
+                            <div className="space-y-3">
+                                <div className="p-3 bg-rose-50 rounded-lg border-l-4 border-rose-400">
+                                    <div className="text-xs font-bold text-rose-600 mb-1 uppercase tracking-wider">İçindeki Yalan Ses:</div>
+                                    <div className="text-sm text-rose-900 line-through opacity-70">{dominantTrap.fake}</div>
+                                </div>
+                                <div className="p-3 bg-emerald-50 rounded-lg border-l-4 border-emerald-400">
+                                    <div className="text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wider">Gerçek ve Sağlıklı Ses:</div>
+                                    <div className="text-sm text-emerald-900 font-medium">{dominantTrap.real}</div>
+                                </div>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-4 italic text-center">Bu panzehir cümlesini bir post-it'e yaz ve masana yapıştır. İçindeki o acımasız ses konuştuğunda bu cümleyi ona yüksek sesle oku.</p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
