@@ -2039,6 +2039,81 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- İM-OM (İÇSEL MOTOR VE OTO-MOTİVASYON) SONUÇ EKRANI ---
+            else if (testData.id === 'im-om') {
+                let totalScore = 0;
+                let aScores = {
+                    'Mükemmeliyetçi': parseInt(answers['imom_a1'] || 0),
+                    'Kaygılı': parseInt(answers['imom_a2'] || 0),
+                    'Hayalperest': parseInt(answers['imom_a3'] || 0),
+                    'İsyankar': parseInt(answers['imom_a4'] || 0),
+                    'Hazcı': parseInt(answers['imom_a5'] || 0)
+                };
+
+                Object.keys(answers).forEach(key => {
+                    totalScore += parseInt(answers[key] || 0);
+                });
+
+                // Motor Durumu Belirleme
+                let motorProfile = {};
+                if (totalScore >= 40) {
+                    motorProfile = { title: "MOTOR BOZUK (Atalet Hali)", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Tam bir eylemsizlik halindesin. Kendi başına kalkıp harekete geçmen çok zor görünüyor. Acilen en küçük vitesle (en kolay adımla) başlaman lazım." };
+                } else if (totalScore >= 25) {
+                    motorProfile = { title: "MARŞ BASMIYOR (Ateşleme Sorunu)", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "İçinde bir çalışma isteği var ama eyleme dökemiyorsun. Başlama direncini kırmak için ufak bir iteklemeye ihtiyacın var." };
+                } else {
+                    motorProfile = { title: "MOTOR ÇALIŞIYOR (Oto-Motivasyon)", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! İçsel motivasyonun yüksek. Dışarıdan bir ittirmeye ihtiyaç duymadan kendi motorunu kendin ateşleyebiliyorsun." };
+                }
+
+                // En Baskın Erteleme Türünü Bulma
+                let sortedTypes = Object.keys(aScores).sort((a, b) => aScores[b] - aScores[a]);
+                let dominantType = sortedTypes[0];
+
+                let strategy = {};
+                if (dominantType === 'Mükemmeliyetçi') {
+                    strategy = { name: "İsviçre Peyniri Yöntemi", desc: "İşi baştan sona sırayla yapmaya çalışma. Peynirdeki delikler gibi, işin rastgele kolay yerlerinden başla. Bütünlük bozulunca işin korkutuculuğu azalır." };
+                } else if (dominantType === 'Kaygılı') {
+                    strategy = { name: "Salami Dilimleme Tekniği", desc: "Bütün bir salamı tek lokmada yiyemezsin. Hedefi o kadar küçült ki, 'Hayır' demek imkansız olsun. Sadece '1 test çözeceğim' diyerek otur." };
+                } else if (dominantType === 'Hazcı') {
+                    strategy = { name: "Fragman Tekniği (Sadece 5 Dakika)", desc: "Kendine şunu de: 'Sadece 5 dakika çalışıp bırakacağım.' Başlama sürtünmesini yenersen, beyin genellikle devam etme eğiliminde olacaktır (Zeigarnik Etkisi)." };
+                } else {
+                    strategy = { name: "5 Saniye Kuralı (Roket Kalkışı)", desc: "Aklına 'Çalışmalıyım' fikri geldiği an, beynin bahaneler üretmeden içinden geriye doğru say: 5-4-3-2-1-KALK! Düşünme, sadece kendini masaya fırlat." };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${motorProfile.bg} ${motorProfile.border} text-center shadow-sm flex flex-col md:flex-row items-center justify-between gap-4`}>
+                            <div className="text-left">
+                                <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Mevcut Sistem Durumu</div>
+                                <div className={`text-xl font-black ${motorProfile.color}`}>{motorProfile.title}</div>
+                                <div className={`text-sm font-medium opacity-90 mt-1 ${motorProfile.color}`}>{motorProfile.desc}</div>
+                            </div>
+                            <div className={`text-6xl font-black ${motorProfile.color}`}>{totalScore}<span className="text-xl opacity-50">/50</span></div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-blue-400 mb-2 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🧠 Teşhis: {dominantType} Erteleme
+                            </h4>
+                            <p className="text-slate-300 text-sm mb-4">Senin erteleme türüne en uygun ateşleme stratejisi aşağıdadır:</p>
+                            
+                            <div className="bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500">
+                                <div className="font-bold text-blue-300 uppercase tracking-widest text-xs mb-1">Reçete: {strategy.name}</div>
+                                <div className="text-sm font-medium text-white">{strategy.desc}</div>
+                            </div>
+                        </div>
+
+                        <div className="bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-amber-800 mb-3 text-sm uppercase tracking-wider text-center">
+                                ✍️ Motivasyon Kontratı
+                            </h4>
+                            <p className="text-amber-900 text-sm italic font-medium text-center leading-relaxed">
+                                "Biliyorum ki motivasyon bir 'his' değil, bir 'eylem' sonucudur. İlham perisi gelmeyecek. Canımın istemesi önemli değil. Ben hedeflerime, anlık duygularımdan daha fazla saygı duyuyorum. Bugün, şimdi, 5 saniye içinde başlıyorum."
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
