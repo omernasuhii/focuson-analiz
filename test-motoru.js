@@ -1470,6 +1470,69 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- T-LINE (ZAMAN ÇİZGİSİ) SONUÇ EKRANI ---
+            else if (testData.id === 't-line') {
+                const futureVision = answers['tl_future_vision'] || 'Belirtilmedi';
+                const pastSuccess = answers['tl_past_success'] || 'Belirtilmedi';
+                const presentAction = answers['tl_present_action'] || 'Belirtilmedi';
+                const profileCheck = answers['tl_profile_check'] || 'Dengeli';
+
+                let profileZone = {};
+
+                if (profileCheck === 'GecmisOdakli') {
+                    profileZone = { title: "GEÇMİŞ ODAKLI (Bataklık Riski)", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Zihinsel enerjinin büyük kısmını geçmişteki hatalarına veya eksiklerine harcıyorsun. Geçmiş sadece ders almak içindir, yaşamak için değil. Geçmişindeki başarılarına odaklan." };
+                } else if (profileCheck === 'GelecekOdakli') {
+                    profileZone = { title: "GELECEK ODAKLI (Sisli Yol Riski)", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Gelecekle ilgili sürekli kaygı yaşıyorsun. Korku filmi izlemeyi bırakıp kendi hayatının belgeselini çekmeye başlamalısın. Gelecekteki vizyonunu netleştir." };
+                } else if (profileCheck === 'SimdiOdakli') {
+                    profileZone = { title: "ŞİMDİ ODAKLI (Kör Nokta Riski)", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Anlık hedeflere ve keyiflere yöneliyor, uzun vadeli vizyonunu kaçırıyorsun. Hedeflerinin bedelini ve ödülünü bugüne taşıyarak motivasyonunu tazelemelisin." };
+                } else {
+                    profileZone = { title: "DENGELİ ZAMAN ALGISI", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Geçmişten güç alıyor, geleceğin ışığına doğru yürüyor ve bugünün eylemlerini kontrol edebiliyorsun. Bu zihinsel dengeyi koru." };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profileZone.bg} ${profileZone.border} text-center shadow-sm`}>
+                            <div className="text-4xl mb-3">⏳</div>
+                            <div className={`text-xs font-bold uppercase tracking-widest opacity-70 mb-1`}>Zaman Algısı Profilin</div>
+                            <h3 className={`text-xl font-black ${profileZone.color} mb-2`}>{profileZone.title}</h3>
+                            <p className={`${profileZone.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profileZone.desc}
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-slate-100 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🌲 Senin Zaman Ağacın
+                            </h4>
+                            
+                            <div className="space-y-4 relative z-10">
+                                <div className="border-l-2 border-emerald-500 pl-3">
+                                    <div className="text-[10px] text-emerald-300 uppercase font-bold tracking-widest flex items-center gap-1"><span>🍎</span> Meyveler (Gelecek Vizyonun)</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300 italic">"{futureVision}"</div>
+                                </div>
+                                <div className="border-l-2 border-amber-500 pl-3">
+                                    <div className="text-[10px] text-amber-300 uppercase font-bold tracking-widest flex items-center gap-1"><span>🪵</span> Kökler (Geçmiş Gücün)</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300">"{pastSuccess}"</div>
+                                </div>
+                                <div className="border-l-4 border-indigo-500 pl-3 bg-slate-800/50 py-2 rounded-r-lg">
+                                    <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-widest flex items-center gap-1"><span>🌳</span> Gövde (Bugünkü Eylemin)</div>
+                                    <div className="text-sm font-bold mt-1 text-white">"{presentAction}"</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {profileCheck !== 'Dengeli' && (
+                             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-4 text-sm">
+                                <span className="font-bold text-slate-800 uppercase text-xs">💡 Koçluk Notu:</span>
+                                <p className="text-slate-600 mt-2">
+                                     Zihnin, o anki ihtiyacına göre zaman algını değiştirebilir. Ancak geçmişte kaybolmak veya gelecekte kaygılanmak bugünü kaçırmana neden olur. Kendi oluşturduğun vizyon ve eylem planına sadık kal.
+                                </p>
+                             </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
