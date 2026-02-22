@@ -1053,6 +1053,58 @@ const FocusON_Engine = () => {
                 );
             }
 
+// --- Sİ-GÖZ (SİHİRLİ GÖZLÜKLER) SONUÇ EKRANI ---
+            else if (testData.id === 'si-goz') {
+                const eventText = answers['sg_event'] || 'Belirtilmedi';
+                const blackText = answers['sg_black'] || 'Belirtilmedi';
+                const clearText = answers['sg_clear'] || 'Belirtilmedi';
+                const magicText = answers['sg_magic'] || 'Belirtilmedi';
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-r from-violet-50 to-fuchsia-50 border border-violet-100 text-center shadow-sm">
+                            <div className="text-4xl mb-3">🌈</div>
+                            <h3 className="text-2xl font-black text-violet-800 mb-2">Bakış Açın Değişti!</h3>
+                            <p className="text-violet-900 font-medium leading-relaxed opacity-90 text-sm">
+                                Aynı olaya baktın ama farklı bir anlam çıkardın. Olayı değiştiremeyiz ama ona vereceğimiz tepkiyi biz seçeriz. İşte zihnindeki o muazzam dönüşüm:
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative">
+                            <div className="absolute top-0 right-0 p-3 text-2xl opacity-50">📌</div>
+                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2">Yaşanan Olay</h4>
+                            <p className="text-slate-600 text-sm italic">"{eventText}"</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-2 right-2 text-4xl opacity-10">🕶️</div>
+                                <h4 className="font-bold text-slate-700 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">Siyah Gözlük <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">Problem</span></h4>
+                                <p className="text-slate-600 text-sm line-through opacity-70">"{blackText}"</p>
+                            </div>
+
+                            <div className="bg-fuchsia-50 p-5 rounded-xl border border-fuchsia-200 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-2 right-2 text-4xl opacity-10">🌈</div>
+                                <h4 className="font-bold text-fuchsia-700 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">Sihirli Gözlük <span className="text-[10px] bg-fuchsia-200 text-fuchsia-800 px-2 py-0.5 rounded-full">Fırsat</span></h4>
+                                <p className="text-fuchsia-900 text-sm font-semibold">"{magicText}"</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-emerald-100 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-emerald-700 mb-2 flex items-center gap-2 text-sm uppercase tracking-wider">
+                                🔑 FocusON Sihirli Soruları
+                            </h4>
+                            <p className="text-slate-600 text-sm mb-3">Bir dahaki sefere kendini karanlıkta hissettiğinde, hemen bu soruları kendine sor:</p>
+                            <ul className="space-y-2 text-sm text-slate-700">
+                                <li>🎁 <strong>Hediye Sorusu:</strong> "Bu kötü olayın içinde paketlenmiş gizli hediye ne olabilir?"</li>
+                                <li>🧑‍🏫 <strong>Öğretmen Sorusu:</strong> "Bu sorun bana ne öğretmeye geldi? (Sabır mı, dikkat mi?)"</li>
+                                <li>⏳ <strong>Zaman Makinesi:</strong> "Bu olay sayesinde gelecekteki hangi büyük hatayı önlemiş oldum?"</li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
