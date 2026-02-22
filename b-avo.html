@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - B-AVO Anti-Virüs Operasyonu</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'b-avo',
+            title: 'B-AVO Sistem Taraması',
+            description: 'Beynin süper güçlü bir bilgisayardır. Ama şu an arka planda çalışan bazı virüsler (korkular) sistemi yavaşlatıyor ve odaklanmanı bozuyor. Şimdi seninle bir "Sistem Taraması" yapacağız ve bu virüsleri sileceğiz.',
+            questions: [
+                { 
+                    id: 'bavo_virus', type: 'textarea', section: 'Adım 1: Virüsü Tespit Et', 
+                    text: 'Şu an seni ders çalışmaktan alıkoyan, modunu düşüren o olumsuz düşünceyi (Otomatik Negatif Düşünce) aynen buraya yaz.', 
+                    placeholder: 'Örn: Denemede süre yetmedi, ben asla bu sınavı yetiştiremeyeceğim...' 
+                },
+                { 
+                    id: 'bavo_type', type: 'multiple_choice', section: 'Adım 1: Virüsü Tespit Et', 
+                    text: 'Sence bu düşüncen hangi "Virüs Türüne" (Algı Hatasına) giriyor?', 
+                    options: [
+                        { label: 'Aşırı Genelleme (Bir hatayı her şeye yaymak)', value: 'Genelleme' },
+                        { label: 'Ya Hep Ya Hiç (Mükemmel olmazsa hiç olmasın)', value: 'Ya Hep Ya Hiç' },
+                        { label: 'Felaketleştirme (En kötü senaryoyu yazmak)', value: 'Felaketleştirme' },
+                        { label: 'Zihin Okuma (Başkalarının ne düşündüğünü varsaymak)', value: 'Zihin Okuma' },
+                        { label: 'Etiketleme (Kendine "aptal", "tembel" demek)', value: 'Etiketleme' }
+                    ]
+                },
+                { 
+                    id: 'bavo_pre_belief', type: 'scale10', section: 'Adım 2: Duygu Termometresi', 
+                    text: 'Şu an bu olumsuz düşünceye (Virüse) ne kadar inanıyorsun? (1: Hiç inanmıyorum - 10: Kesinlikle doğru)' 
+                },
+                { 
+                    id: 'bavo_antivirus', type: 'textarea', section: 'Adım 3: Anti-Virüs Yükleme', 
+                    text: 'Şimdi bu düşünceyi çürütüyoruz! En sevdiğin arkadaşın aynı durumda olsa, ona ne derdin? Bu virüsü silecek GERÇEKÇİ ve İŞLEVSEL yeni düşünceni (Anti-Virüs) yaz.', 
+                    placeholder: 'Örn: Bu sadece bir denemeydi. Süre yönetiminde hata yaptım ama nerede oyalandığımı bulursam düzeltebilirim.' 
+                },
+                { 
+                    id: 'bavo_post_belief', type: 'scale10', section: 'Adım 4: Sistem Durumu', 
+                    text: 'Harika! Kendi yazdığın bu yeni Anti-Virüs cümlesini içinden 2 kez oku. Şimdi ilk baştaki o olumsuz düşünceye inancın kaça düştü?' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
