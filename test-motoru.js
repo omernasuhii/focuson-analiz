@@ -1423,6 +1423,53 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- WD-3D (WALT DISNEY PLANLAMA) SONUÇ EKRANI ---
+            else if (testData.id === 'wd-3d') {
+                const dreamer = answers['wd_dreamer'] || 'Belirtilmedi';
+                const realist = answers['wd_realist'] || 'Belirtilmedi';
+                const critic = answers['wd_critic'] || 'Belirtilmedi';
+                const decision = answers['wd_decision'] || 'Revize';
+
+                const isApproved = decision === 'Onay';
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isApproved ? 'bg-emerald-50 border-emerald-200' : 'bg-blue-50 border-blue-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isApproved ? '🎬' : '🔄'}</div>
+                            <h3 className={`text-2xl font-black ${isApproved ? 'text-emerald-800' : 'text-blue-800'} mb-2`}>
+                                {isApproved ? 'Motor! Plan Onaylandı' : 'Plan Revizyon Döngüsünde'}
+                            </h3>
+                            <p className={`${isApproved ? 'text-emerald-900' : 'text-blue-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isApproved 
+                                    ? 'Harika! Hayalperest vizyonu çizdi, Gerçekçi adımları belirledi, Eleştirmen ise riskleri onayladı. Artık kusursuz bir yol haritan var, eyleme geçme vakti!' 
+                                    : 'Eleştirmen bu planın zayıf yönlerini buldu. Bu harika bir şey! Plan iptal olmadı, sadece güçlenmesi için "Gerçekçi" masasına geri gönderildi. Koçunla bu riskleri çözerek planı güncelleyin.'}
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-slate-100 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🏰 Walt Disney Yönetim Kurulu Özeti
+                            </h4>
+                            
+                            <div className="space-y-4 relative z-10">
+                                <div className="border-l-2 border-fuchsia-500 pl-3">
+                                    <div className="text-[10px] text-fuchsia-300 uppercase font-bold tracking-widest flex items-center gap-1"><span>💭</span> Hayalperestin Vizyonu</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300 italic">"{dreamer}"</div>
+                                </div>
+                                <div className="border-l-2 border-amber-500 pl-3">
+                                    <div className="text-[10px] text-amber-300 uppercase font-bold tracking-widest flex items-center gap-1"><span>📝</span> Gerçekçinin Planı</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300">"{realist}"</div>
+                                </div>
+                                <div className="border-l-2 border-rose-500 pl-3 bg-slate-800/50 py-2 rounded-r-lg">
+                                    <div className="text-[10px] text-rose-400 uppercase font-bold tracking-widest flex items-center gap-1"><span>🔍</span> Eleştirmenin Raporu</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300">"{critic}"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
