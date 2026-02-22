@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - MPÇ Mercek Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'mpc',
+            title: 'MPÇ Mercek Analizi',
+            description: 'Bazen bir soruna çok yakından baktığımız için çözümü göremeyiz. Şimdi seninle "Zihinsel Optik" laboratuvarına giriyoruz ve o canını sıkan soruna 6 farklı mercekten bakıyoruz.',
+            questions: [
+                { 
+                    id: 'mpc_problem', type: 'textarea', section: 'Başlangıç: Sorunu Tanımla', 
+                    text: 'Şu an zihnini meşgul eden, sana "çözümsüz" veya "felaket" gibi görünen o sorunu kısaca yaz.', 
+                    placeholder: 'Örn: Deneme netlerim bir türlü artmıyor, çok moralim bozuk...' 
+                },
+                { 
+                    id: 'mpc_pre_score', type: 'scale10', section: 'Başlangıç: Duygu Yükü', 
+                    text: 'Bu sorun sana ŞU AN 1-10 üzerinden ne kadar yük/stres veriyor? (10: Taşınamayacak kadar ağır)' 
+                },
+                { 
+                    id: 'mpc_microscope', type: 'textarea', section: 'Mercek 1: 🔬 Mikroskop', 
+                    text: 'Bu sorunu bir bilim insanı gibi incelesek, elindeki SOMUT KANITLAR neler? (Sayısal veri veya gerçek var mı, yoksa sadece senin yorumun mu?)', 
+                    placeholder: 'Örn: Sadece son 2 denemede düşüş var, ondan öncekiler yükselişteydi...' 
+                },
+                { 
+                    id: 'mpc_telescope', type: 'textarea', section: 'Mercek 2: 🔭 Teleskop', 
+                    text: 'Zaman algını uzat. Bu olaydan 5 yıl sonra, üniversitedeyken bahsettiğimizi düşün. Bu sorun o gün ne kadar önemli olacak? 10 yıl sonraki "Sen" sana ne tavsiye verirdi?', 
+                    placeholder: 'Örn: 5 yıl sonra bu netleri hatırlamayacağım bile. "Sadece çalışmaya devam et" derdim...' 
+                },
+                { 
+                    id: 'mpc_helicopter', type: 'textarea', section: 'Mercek 3: 🚁 Helikopter (Drone)', 
+                    text: 'Olaya yukarıdan bak. Olayın içinde olmayan tarafsız bir gazeteci bu olayı haber yapsa DUYGUSUZ MANŞETİ ne olurdu? Kontrol edebileceğin ve edemeyeceğin kısımlar neler?', 
+                    placeholder: 'Örn: Manşet: Bir öğrenci dalgalı netler yaşıyor. Sınavın zorluğunu kontrol edemem ama çalışma süremi edebilirim...' 
+                },
+                { 
+                    id: 'mpc_reverse', type: 'textarea', section: 'Mercek 4: 👓 Ters Açı', 
+                    text: 'Eğer bu sorunda başka insanlar (öğretmen, veli vb.) varsa, şimdi onların koltuğuna otur. O şu an ne düşünüyor? Onun da bir stresi veya kendi doğrusu olabilir mi?', 
+                    placeholder: 'Örn: Ailem muhtemelen benim iyiliğimi istiyor, onlar da kendi çapında kaygılanıyor...' 
+                },
+                { 
+                    id: 'mpc_filter', type: 'textarea', section: 'Mercek 5: 🌞 Fırsat Filtresi', 
+                    text: 'Bu kötü olay sana ne öğretti? Bu sorunun içinde gizlenmiş, sana ileride fayda sağlayacak o "hediye" ne olabilir?', 
+                    placeholder: 'Örn: Bu stres bana kriz anında nasıl sakin kalacağımı öğretiyor, eksiklerimi gösteriyor...' 
+                },
+                { 
+                    id: 'mpc_trash', type: 'textarea', section: 'Mercek 6: 🗑️ Çöp Kutusu', 
+                    text: 'Bu sorunun hangi kısmını ASLA değiştiremezsin? Değiştiremeyeceğin bu kısmı şimdi hayali bir çöp kutusuna atsan (kabullensen) nasıl hissederdin?', 
+                    placeholder: 'Örn: Geçmişteki hatalarımı değiştiremem. Onları çöpe atarsam omuzlarımdan büyük bir yük kalkar...' 
+                },
+                { 
+                    id: 'mpc_post_score', type: 'scale10', section: 'Bitiş: Yeni Duygu Yükü', 
+                    text: 'Harika bir zihin egzersiziydi. Tüm bu 6 farklı mercekten baktıktan sonra... Başta yazdığın bu sorunun sana verdiği yük/stres ŞİMDİ kaç?' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
