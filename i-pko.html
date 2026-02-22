@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - İ-PKÖ Çoklu Zekâ Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'i-pko',
+            title: 'Potansiyelimi Keşfediyorum',
+            description: 'Her çocuk farklı bir renktir. Çocuğunuzun öğrenme stilini bulmak için lütfen aşağıdaki soruları ona sesli okuyarak veya birlikte okuyarak en uygun emojiyi seçin.',
+            questions: [
+                // SÖZEL
+                { id: 'ipko_soz_1', type: 'likert_3', section: '📚 Kelimelerin Efendisi', text: 'Kitap okumayı veya bana masal anlatılmasını çok severim.' },
+                { id: 'ipko_soz_2', type: 'likert_3', section: '📚 Kelimelerin Efendisi', text: 'Yeni kelimeler öğrenmek ve bunların anlamlarını sormak hoşuma gider.' },
+                { id: 'ipko_soz_3', type: 'likert_3', section: '📚 Kelimelerin Efendisi', text: 'Tekerlemeleri, şiirleri ve bilmeceleri kolayca ezberlerim.' },
+                
+                // MANTIKSAL
+                { id: 'ipko_man_1', type: 'likert_3', section: '🔢 Sayı Dedektifi', text: 'Eşyaları saymayı, gruplandırmayı veya renklerine göre ayırmayı severim.' },
+                { id: 'ipko_man_2', type: 'likert_3', section: '🔢 Sayı Dedektifi', text: '"Bu neden böyle?" veya "Nasıl çalışıyor?" gibi çok fazla soru sorarım.' },
+                { id: 'ipko_man_3', type: 'likert_3', section: '🔢 Sayı Dedektifi', text: 'Satranç, dama veya bulmaca gibi zekâ oyunlarında başarılıyımdır.' },
+
+                // GÖRSEL
+                { id: 'ipko_gor_1', type: 'likert_3', section: '🎨 Hayal Tasarımcısı', text: 'Resim yaparken renkleri karıştırmayı ve ilginç şekiller çizmeyi severim.' },
+                { id: 'ipko_gor_2', type: 'likert_3', section: '🎨 Hayal Tasarımcısı', text: 'Lego, yapboz veya bloklarla kuleler/evler yapmaktan çok hoşlanırım.' },
+                { id: 'ipko_gor_3', type: 'likert_3', section: '🎨 Hayal Tasarımcısı', text: 'Gittiğim yolları veya gördüğüm resimlerdeki detayları unutmam.' },
+
+                // BEDENSEL
+                { id: 'ipko_bed_1', type: 'likert_3', section: '⚽ Hareketli Yıldız', text: 'Bir yerde uzun süre sessizce oturmak beni çok yorar; hareket etmek isterim.' },
+                { id: 'ipko_bed_2', type: 'likert_3', section: '⚽ Hareketli Yıldız', text: 'Takla atmak, koşmak, dans etmek veya spor yapmak en sevdiğim işlerdir.' },
+                { id: 'ipko_bed_3', type: 'likert_3', section: '⚽ Hareketli Yıldız', text: 'Bir şeyi sadece izlemek yerine ona dokunmak ve parçalarını kurcalamak isterim.' },
+
+                // MÜZİKSEL
+                { id: 'ipko_muz_1', type: 'likert_3', section: '🎵 Ritim Ustası', text: 'Reklam müziklerini veya duyduğum melodileri hemen mırıldanmaya başlarım.' },
+                { id: 'ipko_muz_2', type: 'likert_3', section: '🎵 Ritim Ustası', text: 'Ders çalışırken veya oyun oynarken masaya/yere ritim tutarım.' },
+                { id: 'ipko_muz_3', type: 'likert_3', section: '🎵 Ritim Ustası', text: 'Bir şarkının sözlerini ve müziğini çok çabuk hatırlarım.' },
+
+                // SOSYAL
+                { id: 'ipko_sos_1', type: 'likert_3', section: '👥 Takım Kaptanı', text: 'Tek başıma oynamaktansa arkadaşlarımla grup halinde oynamayı tercih ederim.' },
+                { id: 'ipko_sos_2', type: 'likert_3', section: '👥 Takım Kaptanı', text: 'Arkadaşım üzüldüğünde bunu hemen anlarım ve onu teselli etmeye çalışırım.' },
+                { id: 'ipko_sos_3', type: 'likert_3', section: '👥 Takım Kaptanı', text: 'Oyunlarda genellikle kuralları ben koyarım veya liderlik yaparım.' },
+
+                // İÇSEL
+                { id: 'ipko_ics_1', type: 'likert_3', section: '🧘 Düşünce Gezgini', text: 'Bazen kendi başıma kalıp hayal kurmaktan veya düşünmekten hoşlanırım.' },
+                { id: 'ipko_ics_2', type: 'likert_3', section: '🧘 Düşünce Gezgini', text: 'Hangi işlerde iyi olduğumu veya neyi sevmediğimi çok iyi bilirim.' },
+                { id: 'ipko_ics_3', type: 'likert_3', section: '🧘 Düşünce Gezgini', text: 'Kendime ait bir günlüğümün veya özel eşyalarımın olması benim için önemlidir.' },
+
+                // DOĞACI
+                { id: 'ipko_dog_1', type: 'likert_3', section: '🌿 Doğa Kaşifi', text: 'Hayvanlarla vakit geçirmeyi, onları beslemeyi veya incelemeyi çok severim.' },
+                { id: 'ipko_dog_2', type: 'likert_3', section: '🌿 Doğa Kaşifi', text: 'Çiçekleri, böcekleri veya taşları toplamak ve biriktirmek ilgimi çeker.' },
+                { id: 'ipko_dog_3', type: 'likert_3', section: '🌿 Doğa Kaşifi', text: 'Dışarıda, doğada (parkta, ormanda, bahçede) vakit geçirmek beni çok mutlu eder.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
