@@ -2114,6 +2114,74 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SD-SYE (SOSYAL DURUŞ VE SINIR YÖNETİMİ) SONUÇ EKRANI ---
+            else if (testData.id === 'sd-sye') {
+                let totalScore = 0;
+                Object.keys(answers).forEach(key => {
+                    totalScore += parseInt(answers[key] || 0);
+                });
+
+                let profile = {};
+                if (totalScore >= 66) {
+                    profile = { title: "PASİF / BOYUN EĞİCİ (Kırmızı Alarm)", icon: "🛑", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Kendi hayatını başkalarının yönetmesine izin veriyorsun. 'Hayır' diyemediğin için hem zamanın hem de duygusal enerjin sömürülüyor. Kendi sınırlarını çizmeyi acilen öğrenmelisin." };
+                } else if (totalScore >= 41) {
+                    profile = { title: "AŞIRI KİBAR / RİSKLİ", icon: "⚠️", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Çoğu zaman uyumlusun ancak kritik anlarda kendi hakkını yiyorsun. Sosyal onay ihtiyacın yüksek olduğu için bazen istemediğin şeylere 'Evet' diyebiliyorsun." };
+                } else {
+                    profile = { title: "GÜVENGEN VE SAĞLAM", icon: "🛡️", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Sınırlarını korumayı biliyorsun. Hem kendine hem başkalarına saygılısın. İstemediğin durumlarda net bir şekilde 'Hayır' diyebiliyor ve kendi önceliklerini savunabiliyorsun." };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{profile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">İletişim Tarzı Profilin</div>
+                            <h3 className={`text-2xl font-black ${profile.color} mb-3`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc}
+                            </p>
+                        </div>
+                        
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center w-full max-w-xs">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Sınır İhlali Puanın</div>
+                                <div className={`text-5xl font-black ${totalScore >= 66 ? 'text-rose-500' : totalScore >= 41 ? 'text-amber-500' : 'text-emerald-500'}`}>{totalScore}<span className="text-lg opacity-50 text-slate-400">/100</span></div>
+                            </div>
+                        </div>
+
+                        {totalScore >= 41 && (
+                            <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                                <h4 className="font-extrabold text-blue-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    💬 Taktik: Sandviç Tekniği
+                                </h4>
+                                <p className="text-slate-300 text-xs mb-3">
+                                    İnsanları kırmadan "Hayır" demenin en kolay yolu Sandviç Tekniğidir[cite: 1341]. Arkadaşın ders çalışırken seni dışarı çağırdığında şunu kullan:
+                                </p>
+                                <div className="space-y-2 relative z-10">
+                                    <div className="bg-emerald-900/40 p-2 rounded border border-emerald-500/30 text-sm">
+                                        <span className="font-bold text-emerald-400">1. Ekmek (Olumlu):</span> "Davetin için teşekkürler, beni düşünmen çok hoş." [cite: 1342]
+                                    </div>
+                                    <div className="bg-rose-900/40 p-2 rounded border border-rose-500/30 text-sm">
+                                        <span className="font-bold text-rose-400">2. Malzeme (Red):</span> "Ancak şu an ders programımı bitirmem gerekiyor, gelemem." [cite: 1343]
+                                    </div>
+                                    <div className="bg-emerald-900/40 p-2 rounded border border-emerald-500/30 text-sm">
+                                        <span className="font-bold text-emerald-400">3. Ekmek (Olumlu):</span> "Başka zaman telafi ederiz, iyi eğlenceler." [cite: 1344]
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {totalScore >= 66 && (
+                            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-4 text-sm">
+                                <span className="font-bold text-slate-800 uppercase text-xs flex items-center gap-2 mb-2">🛡️ "Ben Dili" Eğitimi</span>
+                                <p className="text-slate-600">
+                                    Çatışmadan kaçmak için susma. Biri seni rahatsız ettiğinde saldırganlaşmadan durumu ifade et. Örneğin; "Beni sürekli bölüyorsun!" demek yerine, "Sözüm kesildiğinde kendimi değersiz hissediyorum ve fikrimi anlatamıyorum" diyerek [cite: 1353-1354] duygularını karşı tarafa net bir şekilde iletebilirsin.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
