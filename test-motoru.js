@@ -1587,6 +1587,56 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- Ç-MOD (ÇİKOLATA MODELİ) SONUÇ EKRANI ---
+            else if (testData.id === 'c-mod') {
+                const incName = answers['cmod_inc1'] || 'Belirtilmedi';
+                const incVal = answers['cmod_inc1_val'] || '0';
+                const expName = answers['cmod_exp1'] || 'Belirtilmedi';
+                const expVal = answers['cmod_exp1_val'] || '0';
+                
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 text-center shadow-sm">
+                            <div className="text-5xl mb-3">🏦</div>
+                            <h3 className="text-2xl font-black text-amber-800 mb-2">
+                                Ödül Bankan Aktif Edildi!
+                            </h3>
+                            <p className="text-amber-900 font-medium leading-relaxed opacity-90 text-sm">
+                                Harika bir anlaşma! Artık kendi iradeni kendin yönetiyorsun. Hazzı erteleyenler, geleceği yönetirler. Sistemine hoş geldin, Patron!
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-amber-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                📜 FocusON Çikolata Borsası Fiyat Listesi
+                            </h4>
+                            
+                            <div className="grid grid-cols-2 gap-4 relative z-10">
+                                <div className="border border-emerald-500/30 bg-emerald-900/20 p-3 rounded-lg">
+                                    <div className="text-[10px] text-emerald-400 uppercase font-bold tracking-widest flex items-center gap-1 mb-2"><span>📈</span> Gelir Kapısı</div>
+                                    <div className="text-sm font-medium text-slate-300">"{incName}"</div>
+                                    <div className="mt-2 text-xl font-black text-emerald-400">+ {incVal} ÇP</div>
+                                </div>
+                                <div className="border border-rose-500/30 bg-rose-900/20 p-3 rounded-lg">
+                                    <div className="text-[10px] text-rose-400 uppercase font-bold tracking-widest flex items-center gap-1 mb-2"><span>📉</span> Lüks Gideri</div>
+                                    <div className="text-sm font-medium text-slate-300">"{expName}"</div>
+                                    <div className="mt-2 text-xl font-black text-rose-400">- {expVal} ÇP</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-4 text-sm">
+                            <span className="font-bold text-slate-800 uppercase text-xs flex items-center gap-2 mb-2">⚠️ Kırmızı Çizgilerimiz</span>
+                            <ul className="space-y-2 text-slate-600">
+                                <li>• Bakiye sıfırsa veya yetersizse, o ödül <strong>ASLA</strong> alınamaz.</li>
+                                <li>• "Yarın çalışıp öderim" diyerek eksiye düşmek (Kredi Çekmek) kesinlikle yasaktır. Önce hak edilecek.</li>
+                                <li>• Eğer hile yaparsan, gerçek sınavda sahte paralar geçmez ve iflas edersin. Tek denetçi kendi vicdanındır.</li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
