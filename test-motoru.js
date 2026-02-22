@@ -1637,6 +1637,70 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- K-E-A (KARTOPU ETKİSİ) SONUÇ EKRANI ---
+            else if (testData.id === 'k-e-a') {
+                const mat = answers['kea_mat'] || 'Sadece 1 soru çözmek';
+                const par = answers['kea_par'] || 'Sadece 1 paragraf okumak';
+                const vid = answers['kea_vid'] || 'Sadece ilk 2 dakikayı izlemek';
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 text-center shadow-sm">
+                            <div className="text-5xl mb-3">⛄</div>
+                            <h3 className="text-2xl font-black text-blue-800 mb-2">
+                                Kartopu Yuvarlanmaya Başladı!
+                            </h3>
+                            <p className="text-blue-900 font-medium leading-relaxed opacity-90 text-sm">
+                                Harika bir başlangıç! Artık hedeflerin beynini korkutamayacak kadar küçük. Amacımız soru çözmek değil, iradeni eğitmek ve eylemsizliği yenmek. 
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-cyan-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🎯 Senin Mikro Görevlerin
+                            </h4>
+                            <div className="space-y-3 relative z-10">
+                                <div className="bg-slate-800/50 p-3 rounded-lg border-l-4 border-blue-500">
+                                    <div className="text-[10px] text-blue-300 uppercase font-bold tracking-widest">Matematik</div>
+                                    <div className="text-sm font-bold text-white mt-1">"{mat}"</div>
+                                </div>
+                                <div className="bg-slate-800/50 p-3 rounded-lg border-l-4 border-emerald-500">
+                                    <div className="text-[10px] text-emerald-300 uppercase font-bold tracking-widest">Türkçe / Paragraf</div>
+                                    <div className="text-sm font-bold text-white mt-1">"{par}"</div>
+                                </div>
+                                <div className="bg-slate-800/50 p-3 rounded-lg border-l-4 border-amber-500">
+                                    <div className="text-[10px] text-amber-300 uppercase font-bold tracking-widest">Konu Çalışması</div>
+                                    <div className="text-sm font-bold text-white mt-1">"{vid}"</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mt-4">
+                            <h4 className="font-bold text-slate-800 uppercase text-xs flex items-center gap-2 mb-4">
+                                🔗 Zinciri Kırma Puan Sistemi
+                            </h4>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">1 Günlük Zincir</span>
+                                    <span className="text-sm font-black text-indigo-600">+10 Puan</span>
+                                </div>
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">3 Günlük Zincir (Bonus)</span>
+                                    <span className="text-sm font-black text-emerald-600">+50 Puan</span>
+                                </div>
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">7 Günlük Zincir (Haftanın Yıldızı)</span>
+                                    <span className="text-sm font-black text-amber-500">+150 Puan</span>
+                                </div>
+                            </div>
+                            <div className="mt-4 p-3 bg-rose-50 rounded-lg text-rose-700 text-xs font-bold text-center border border-rose-100">
+                                ⚠️ DİKKAT: Zincir koparsa puan sıfırlanır ve 1. günden başlanır!
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
