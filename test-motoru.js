@@ -1157,6 +1157,76 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AİD-Y (ZİHİNSEL YENİDEN YAPILANDIRMA) SONUÇ EKRANI ---
+            else if (testData.id === 'aid-y') {
+                const oldBelief = answers['aid_old_belief'] || 'Belirtilmedi';
+                const newBelief = answers['aid_new_belief'] || 'Belirtilmedi';
+                const actionPlan = answers['aid_action'] || 'Plan yok';
+                const preScore = parseInt(answers['aid_pre_score'] || 10);
+                const postScore = parseInt(answers['aid_post_score'] || 10);
+                
+                const isSuccessful = postScore < 5 && postScore < preScore;
+                const dropAmount = preScore - postScore;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isSuccessful ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">⚖️</div>
+                            <div className={`text-2xl font-black ${isSuccessful ? 'text-emerald-700' : 'text-amber-700'} mb-2`}>
+                                {isSuccessful ? 'Davayı Kazandın!' : 'Direnç Devam Ediyor'}
+                            </div>
+                            <p className={`${isSuccessful ? 'text-emerald-900' : 'text-amber-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isSuccessful 
+                                    ? `Mükemmel bir zihinsel savunma! Kendi içindeki o negatif sesi çapraz sorguya aldın ve onun yalan olduğunu kanıtladın. İnancını ${dropAmount} puan kadar kırdın.` 
+                                    : `Eski inancının gücünde bir miktar sarsılma olsa da hala ona tutunmaya devam ediyorsun (Puanın 5'in altına düşmeliydi). Koçunla bu 'Sabit Zihniyet' bariyerini seanslarda daha derinlemesine konuşmalısın.`}
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">📝 Mahkeme Tutanakları (Dönüşüm)</h4>
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider bg-rose-50 px-2 py-1 rounded">İptal Edilen İnanç:</span>
+                                    <p className="text-slate-500 text-sm italic line-through mt-1">"{oldBelief}"</p>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-2 py-1 rounded">Kabul Edilen Yeni İnanç:</span>
+                                    <p className="text-slate-800 text-base font-bold mt-1">"{newBelief}"</p>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-1 rounded">Bugünkü Eylem Hükmü:</span>
+                                    <p className="text-indigo-800 text-sm font-semibold mt-1">"👉 {actionPlan}"</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4">
+                            <h4 className="font-extrabold text-indigo-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                💬 FocusON Dil Kalıpları
+                            </h4>
+                            <p className="text-slate-300 text-sm mb-4">Sözcükler beyni programlar. Bugünden itibaren bu kelimeleri lügatından çıkarıyoruz:</p>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex justify-between items-center border-b border-slate-700 pb-2">
+                                    <span className="text-rose-400 line-through">"Yapamıyorum"</span>
+                                    <span>➡️</span>
+                                    <span className="text-emerald-400 font-bold">"HENÜZ yapamıyorum"</span>
+                                </li>
+                                <li className="flex justify-between items-center border-b border-slate-700 pb-2">
+                                    <span className="text-rose-400 line-through">"Hata yaptım, bittim"</span>
+                                    <span>➡️</span>
+                                    <span className="text-emerald-400 font-bold">"Hata yaptım, ÖĞRENİYORUM"</span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-rose-400 line-through">"Ben böyleyim"</span>
+                                    <span>➡️</span>
+                                    <span className="text-emerald-400 font-bold">"Ben GELİŞİYORUM"</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
