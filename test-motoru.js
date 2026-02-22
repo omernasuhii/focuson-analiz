@@ -1533,6 +1533,60 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- MPÇ (MERCEK) SONUÇ EKRANI ---
+            else if (testData.id === 'mpc') {
+                const problem = answers['mpc_problem'] || 'Belirtilmedi';
+                const preScore = parseInt(answers['mpc_pre_score'] || 10);
+                const postScore = parseInt(answers['mpc_post_score'] || 10);
+                
+                const dropAmount = preScore - postScore;
+                const isSuccessful = dropAmount >= 3;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isSuccessful ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isSuccessful ? '🧠' : '👁️'}</div>
+                            <h3 className={`text-2xl font-black ${isSuccessful ? 'text-emerald-800' : 'text-amber-800'} mb-2`}>
+                                {isSuccessful ? 'Bakış Açın Esnedi!' : 'Tünel Bakışı Devam Ediyor'}
+                            </h3>
+                            <p className={`${isSuccessful ? 'text-emerald-900' : 'text-amber-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isSuccessful 
+                                    ? `Muazzam bir bilişsel esneklik gösterdin! Soruna farklı merceklerden bakmak, omuzlarındaki stres yükünü ${dropAmount} puan hafifletti. Sorunu değiştirmedin ama ona verdiğin tepkiyi değiştirdin.` 
+                                    : `Stres puanında yeterli bir düşüş sağlanamadı (En az 3 puanlık bir düşüş bekliyorduk). Soruna çok yakından bakmaya ve duygusal olarak ona tutunmaya devam ediyorsun. Bu konuyu koçunla daha derinlemesine konuşmalısın.`}
+                            </p>
+                        </div>
+
+                        <div className="flex justify-around items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">İlk Stres Yükü</div>
+                                <div className="text-4xl font-black text-rose-500">{preScore}<span className="text-base opacity-50 text-slate-400">/10</span></div>
+                            </div>
+                            <div className="text-3xl text-slate-200">➡️</div>
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Son Stres Yükü</div>
+                                <div className="text-4xl font-black text-emerald-500">{postScore}<span className="text-base opacity-50 text-slate-400">/10</span></div>
+                            </div>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden mt-4">
+                            <h4 className="font-extrabold text-blue-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🔍 Zihinsel Optik Raporun
+                            </h4>
+                            <div className="space-y-4 relative z-10">
+                                <div className="border-l-2 border-rose-500 pl-3">
+                                    <div className="text-[10px] text-rose-300 uppercase font-bold tracking-widest">İncelenen Problem</div>
+                                    <div className="text-sm font-medium mt-1 text-slate-300 italic">"{problem}"</div>
+                                </div>
+                                <div className="border-l-2 border-emerald-500 pl-3">
+                                    <div className="text-[10px] text-emerald-300 uppercase font-bold tracking-widest">Fırsat (Gelecek) Çıktısı</div>
+                                    <div className="text-sm font-bold mt-1 text-white">"{answers['mpc_filter'] || 'Belirtilmedi'}"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
