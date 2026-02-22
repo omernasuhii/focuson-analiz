@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - AT-ÇM Akıllı Tuş Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'at-cm',
+            title: 'AT-ÇM Akıllı Tuş Kurulumu',
+            description: 'Vücudunda kimsenin bilmediği, sadece sana özel bir "Akıllı Tuş" oluşturacağız. Sınavda paniklediğinde bu tuşa basarak beynine otomatik "Odaklan" komutu göndereceksin.',
+            questions: [
+                { 
+                    id: 'atcm_button', type: 'text', section: 'Adım 1: Donanım (Tuş) Seçimi', 
+                    text: 'Sınav anında kimseye fark ettirmeden yapabileceğin, GÜNLÜK HAYATTA SIK KULLANMADIĞIN (sana özel) o fiziksel hareket ne olacak?', 
+                    placeholder: 'Örn: Sol elimin baş parmağıyla yüzük parmağını birleştirmek, saatimin kayışına dokunmak...' 
+                },
+                { 
+                    id: 'atcm_emotion', type: 'text', section: 'Adım 2: Yazılım (Duygu) Seçimi', 
+                    text: 'Sınav anında veya deneme çözerken EN ÇOK hangi duyguya (yazılıma) ihtiyacın var?', 
+                    placeholder: 'Örn: Çelik gibi bir odaklanma, hiç bitmeyen bir cesaret, sakinlik...' 
+                },
+                { 
+                    id: 'atcm_memory', type: 'textarea', section: 'Adım 3: Kaynak Dosyayı Bul', 
+                    text: 'Geçmişte bu duyguyu (örn: odaklanmayı) İLİKLERİNE KADAR hissettiğin, dünyayı unuttuğun o zirve anını hatırla. Bu anı neydi? Kısaca yaz.', 
+                    placeholder: 'Örn: Geçen yaz o çok zor video oyununun son bölümünü geçerken hissettiğim odaklanma...' 
+                },
+                { 
+                    id: 'atcm_loading', type: 'multiple_choice', section: 'Adım 4: Beyne Yükleme (Gözlerini Kapat)', 
+                    text: 'Şimdi gözlerini kapat ve o anın içine gir. Görüntüyü netleştir, sesleri duy. O duygu vücudunda zirveye ulaştığı an ŞİMDİ O SEÇTİĞİN TUŞA BAS (Hareketini yap). 10 saniye basılı tut ve bırak. Sonra gözlerini açıp derin bir nefes al. Yaptın mı?', 
+                    options: [
+                        { label: 'Evet, yaptım ve gözlerimi açtım.', value: 'Tamam' }
+                    ]
+                },
+                { 
+                    id: 'atcm_test', type: 'multiple_choice', section: 'Adım 5: Sistem Testi', 
+                    text: 'Şimdi sistemi test ediyoruz. Herhangi bir şey düşünmeden, az önce kurduğumuz o "AKILLI TUŞA" tekrar bas. Ne hissettin?', 
+                    options: [
+                        { label: '🟢 İçime bir sıcaklık/enerji geldi, duygu geri çağrıldı!', value: 'Basarili' },
+                        { label: '🟡 Biraz hissettim ama çok güçlü değildi.', value: 'Zayif' },
+                        { label: '🔴 Hiçbir şey hissetmedim, sadece parmaklarıma dokundum.', value: 'Basarisiz' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
