@@ -1897,6 +1897,95 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SP-BE (STRES PROFİLİ) SONUÇ EKRANI ---
+            else if (testData.id === 'sp-be') {
+                let scoreA = 0, scoreB = 0, scoreC = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('spbe_a')) scoreA += val;
+                    if (key.startsWith('spbe_b')) scoreB += val;
+                    if (key.startsWith('spbe_c')) scoreC += val;
+                });
+
+                let maxScore = Math.max(scoreA, scoreB, scoreC);
+                let profile = {};
+
+                if (maxScore === scoreA) {
+                    profile = { 
+                        title: "VOLKAN TİPİ (Hiper-Uyarılmış)", icon: "🌋", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", 
+                        desc: "Stres altındayken savaş moduna geçiyorsun. Enerji patlaması, öfke ve sabırsızlık yaşıyorsun. Sana 'Hadi çalış' denmez, önce bu fazla enerjiyi güvenli bir şekilde deşarj etmen gerekir.",
+                        tips: [
+                            "🏃‍♂️ Fiziksel Deşarj: Koşu yap, yastığa yumruk at, zıpla. Enerjiyi vücuttan at.",
+                            "🫁 4-7-8 Nefesi: 4 saniye al, 7 tut, 8 ver. Nabzını düşür.",
+                            "🧊 Soğuk Su: Yüzünü buz gibi suyla yıka (Kalbi yavaşlatır).",
+                            "✍️ Yazı Yazmak: Zihnindeki öfkeyi kağıda kus ve sonra kağıdı yırt."
+                        ]
+                    };
+                } else if (maxScore === scoreB) {
+                    profile = { 
+                        title: "BUZDAĞI TİPİ (Hipo-Uyarılmış)", icon: "🧊", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", 
+                        desc: "Stres altındayken donma moduna geçiyorsun. Enerji çöküşü, kaçış ve uyuşma yaşıyorsun. Sana 'Sakin ol' denmez, çünkü zaten donmuş durumdasın. Acilen harekete geçip canlanman gerekiyor.",
+                        tips: [
+                            "⏳ 5 Dakika Kuralı: 'Sadece 5 dakika çalışıp bırakacağım' diyerek masaya otur.",
+                            "🤸 Hareket: Olduğun yerde zıpla, esneme hareketi yap. Vücut ısınırsa beyin açılır.",
+                            "🎵 Müzik: Hareketli (Up-beat) müzikler dinle.",
+                            "🚪 Ortam Değişimi: O odadan çık, balkona veya kütüphaneye git. Mekan değişirse mod değişir."
+                        ]
+                    };
+                } else {
+                    profile = { 
+                        title: "HALTERCİ TİPİ (Aşırı Kontrol)", icon: "🏋️", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", 
+                        desc: "Stres altındayken mükemmeliyetçi ve kontrolcü moda geçiyorsun. Başkalarını memnun etme çabası ve duygusal yük altında eziliyorsun. Sana 'Mükemmelsin' denmez, 'Olduğu kadar' demeyi öğrenmen gerekir.",
+                        tips: [
+                            "⚖️ Yeterli Mantığı: '%100 değil, %70 başarı bugün için yeterli' cümlesini tekrarla.",
+                            "🛋️ Mola İzni: Kendine suçluluk duymadan dinlenme izni ver.",
+                            "🛑 Hayır Demek: Başkalarının beklentilerini filtrele ve gerektiğinde sınır koy.",
+                            "💆 Kas Gevşetme: Omuzlarını serbest bırak, sıcak duş al."
+                        ]
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-6xl mb-3">{profile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Baskın Stres Tepkin</div>
+                            <h3 className={`text-2xl font-black ${profile.color} mb-3`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc}
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreA ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Volkan Puanı</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreA}<span className="text-xs text-slate-400">/30</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreB ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Buzdağı Puanı</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreB}<span className="text-xs text-slate-400">/30</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreC ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-100'} shadow-sm text-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Halterci Puanı</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreC}<span className="text-xs text-slate-400">/30</span></div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                            <h4 className="font-extrabold text-emerald-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                💊 Acil Müdahale Reçetesi
+                            </h4>
+                            <ul className="space-y-3 relative z-10 text-sm text-slate-300">
+                                {profile.tips.map((tip, idx) => (
+                                    <li key={idx} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700">{tip}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
