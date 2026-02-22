@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - SD-SYE Sosyal Duruş Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'sd-sye',
+            title: 'SD-SYE Sosyal Duruş Analizi',
+            description: 'Bazen en büyük zaman hırsızı kendi diyemediğimiz "Hayır" kelimesidir. Kibar olmak ile kendi haklarını ezdirmek farklı şeylerdir. Lütfen aşağıdaki durumlara ne sıklıkla düştüğünü dürüstçe işaretle.',
+            questions: [
+                // BÖLÜM A: AKRAN İLİŞKİLERİ
+                { id: 'sdsye_a1', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Ders çalışırken arkadaşlarım aradığında veya mesaj attığında, bakmazsam ayıp olur diye düşünürüm.' },
+                { id: 'sdsye_a2', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Arkadaşlarım ısrar ettiğinde, istemesem bile planımı bozar onlara katılırım.' },
+                { id: 'sdsye_a3', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Bir arkadaşım benden notlarımı veya ödevimi istediğinde, vermezsem bana küser diye korkarım.' },
+                { id: 'sdsye_a4', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Arkadaş grubunda fikrim sorulduğunda, "Fark etmez, siz ne isterseniz o olsun" derim.' },
+                { id: 'sdsye_a5', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Biri bana kaba davrandığında veya şaka yollu hakaret ettiğinde, gülüp geçerim (tepki veremem).' },
+                { id: 'sdsye_a6', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Hoşlanmadığım bir lakap takıldığında bile itiraz edemem.' },
+                { id: 'sdsye_a7', type: 'likert', section: 'Bölüm 1: Arkadaş Baskısı', text: 'Ödünç verdiğim bir eşyayı (kalem, kitap) geri istemeye çekinirim.' },
+
+                // BÖLÜM B: OTORİTE İLİŞKİLERİ
+                { id: 'sdsye_b1', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Öğretmenden dersi anlamadığımda soru sormaya çekinirim, "kızar" veya "aptal sanır" diye korkarım.' },
+                { id: 'sdsye_b2', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Ailem benim adıma bir karar verdiğinde (kurs, bölüm vb.), istemesem de "Peki" derim.' },
+                { id: 'sdsye_b3', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Sınavda haksız yere puanım kırılsa bile öğretmenin yanına gidip hakkımı arayamam.' },
+                { id: 'sdsye_b4', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Ailemi hayal kırıklığına uğratmamak için kendi hayallerimden vazgeçerim.' },
+                { id: 'sdsye_b5', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Otorite figürleri (büyükler) konuştuğunda, haklı olsam bile susmayı tercih ederim.' },
+                { id: 'sdsye_b6', type: 'likert', section: 'Bölüm 2: Otorite İlişkileri', text: 'Başkalarından yardım istemek bana "yük oluyormuşum" gibi hissettirir.' },
+
+                // BÖLÜM C: İÇSEL DUYGULAR
+                { id: 'sdsye_c1', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: '"Hayır" dediğimde kendimi çok suçlu ve kötü hissederim.' },
+                { id: 'sdsye_c2', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'Bir tartışma çıkmasındansa, haksız olmayı kabul ederim (Çatışmadan kaçınma).' },
+                { id: 'sdsye_c3', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'Başkaları ne der, hakkımda ne düşünür diye sürekli endişe ederim (Sosyal Onay).' },
+                { id: 'sdsye_c4', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'Kendi isteklerimi dile getirmek bana "bencillik" gibi gelir.' },
+                { id: 'sdsye_c5', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'İnsanlar beni sevsin diye sürekli özür dilerim.' },
+                { id: 'sdsye_c6', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'Öfkemi dışarı yansıtamam, içime atarım ve sonra kendime kızarım.' },
+                { id: 'sdsye_c7', type: 'likert', section: 'Bölüm 3: İçsel Çatışmalar', text: 'Başkalarının işlerini yapmaktan (ödevine yardım vb.) kendi işime zaman kalmaz.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
