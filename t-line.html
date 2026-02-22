@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - T-LINE Zaman Çizgisi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 't-line',
+            title: 'T-LINE Zaman Çizgisi Analizi',
+            description: 'Zaman bir düşman değil, en büyük müttefikindir. Şimdi seninle zihinsel bir yolculuğa çıkıyoruz. Geçmişteki başarılarını cebine alacak, gelecekteki hedeflerine doğru yürürken şimdiki zamanı nasıl şekillendireceğine odaklanacağız. Adımları takip et.',
+            questions: [
+                { 
+                    id: 'tl_future_vision', type: 'textarea', section: 'Adım 1: Gelecek (Meyveler)', 
+                    text: 'Şu andan ileriye, hedefine ulaştığın o muhteşem anı hayal et. Neredesin? Ne görüyorsun, duyuyorsun ve hissediyorsun?', 
+                    placeholder: 'Örn: Üniversitenin kapısındayım, kabul belgemi almışım, gurur duyuyorum...' 
+                },
+                { 
+                    id: 'tl_future_message', type: 'textarea', section: 'Adım 1: Gelecek (Mesaj)', 
+                    text: 'Gelecekteki o başarılı sen, şu anda masada ders çalışmakta olan, bazen yorulan ve streslenen SANA (şimdiki haline) ne söylemek isterdi?', 
+                    placeholder: 'Örn: Sakin ol, bu zorluklar geçecek ve verdiğin emeğe kesinlikle değecek...' 
+                },
+                { 
+                    id: 'tl_past_success', type: 'textarea', section: 'Adım 2: Geçmiş (Kökler)', 
+                    text: 'Şimdi geçmişe, daha önce çok zorlandığın ama sonunda başardığın bir anıya dön. O zorluğu aşarken hangi gücünü, hangi kaynağını (sabır, zeka, inat vb.) kullandın?', 
+                    placeholder: 'Örn: O çok zor problemi inatla uğraşarak çözmüştüm. Pes etmemek benim gücüm...' 
+                },
+                { 
+                    id: 'tl_past_lesson', type: 'textarea', section: 'Adım 2: Geçmiş (Ders)', 
+                    text: 'Geçmişte başarısız olduğunu düşündüğün bir anıyı hatırla. O olay sana ne öğretti? Bugün daha güçlü olman için sana hangi dersi verdi?', 
+                    placeholder: 'Örn: O sınavı kaybetmeseydim, bugün bu kadar hırslı çalışmazdım. Hatalarımdan öğrenmeyi anladım...' 
+                },
+                { 
+                    id: 'tl_present_action', type: 'textarea', section: 'Adım 3: Şimdi (Gövde)', 
+                    text: 'Geçmişteki o gücü hisset. Gelecekteki o muhteşem hedefine ulaşmak için, BUGÜN, tam olarak ŞİMDİ ne yapmalısın? Hangi somut adımı atacaksın?', 
+                    placeholder: 'Örn: Masama oturup, dikkatimi dağıtan her şeyi uzaklaştırarak belirlediğim testleri çözeceğim...' 
+                },
+                { 
+                    id: 'tl_obstacle', type: 'textarea', section: 'Adım 3: Şimdi (Engel)', 
+                    text: 'Şu an seni bu eylemi yapmaktan alıkoyan şey ne? Bu engel, gelecekteki o muhteşem hedefine ulaşmaktan daha mı değerli?', 
+                    placeholder: 'Örn: Telefonum... Hayır, geleceğim telefonumdan çok daha değerli.' 
+                },
+                { 
+                    id: 'tl_profile_check', type: 'multiple_choice', section: 'Adım 4: Öz Değerlendirme', 
+                    text: 'Bu yolculuğun sonunda, zaman algını nasıl değerlendiriyorsun? Hangi durum sana daha çok uyuyor?', 
+                    options: [
+                        { label: 'Geçmişe takılıp kalıyorum. "Keşke zamanında çalışsaydım" diyorum.', value: 'GecmisOdakli' },
+                        { label: 'Geleceği düşünüp sürekli kaygılanıyorum. "Ya olmazsa" korkusu yaşıyorum.', value: 'GelecekOdakli' },
+                        { label: 'Şu ana odaklanıyorum ama hedefim yok, anlık keyiflere yöneliyorum.', value: 'SimdiOdakli' },
+                        { label: 'Geçmişten ders aldım, hedeflerim net ve bugünümün kontrolü bende.', value: 'Dengeli' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
