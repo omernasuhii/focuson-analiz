@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - DART Hedef ve Eylem Planı</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'dart',
+            title: 'DART Hedef Yönetimi',
+            description: 'Uzak ve büyük hedefler kaygı yaratır. Biz büyük resmi küçük parçalara bölecek ve sadece bugünkü atışımıza odaklanacağız. Şimdi "Dart Tahtası"nı dolduralım.',
+            questions: [
+                // DART TAHTASI
+                { 
+                    id: 'dart_macro', type: 'textarea', section: 'Adım 1: Dış Halka (Vizyon)', 
+                    text: 'Yıl sonundaki büyük MAKRO hedefin ne? Hangi okul, hangi bölüm, kaç net veya sıralama istiyorsun?', 
+                    placeholder: 'Örn: ODTÜ Endüstri Müh. İlk 5.000. TYT 105, AYT 75 net...' 
+                },
+                { 
+                    id: 'dart_mezo', type: 'textarea', section: 'Adım 2: Orta Halka (Dönemlik)', 
+                    text: 'Bu büyük hedefe ulaşmak için önümüzdeki 1 AY İÇİNDE (Mezo hedef) nerede olmalısın? Hangi konular bitmeli?', 
+                    placeholder: 'Örn: TYT Matematik tamamen bitmiş olmalı, netlerim 85 bandına oturmalı...' 
+                },
+                { 
+                    id: 'dart_micro', type: 'textarea', section: 'Adım 3: Tam Merkez (Bugün/Hafta)', 
+                    text: 'Şimdi büyük resmi unut! Sadece bugüne ve bu haftaya odaklan (Mikro hedef). 12\'den vurmak için BUGÜN masada tam olarak ne yapacaksın?', 
+                    placeholder: 'Örn: Okuldan gelince 16.00-18.00 arası oturup 50 Türev sorusu çözeceğim...' 
+                },
+
+                // WOOP (ENGEL VE B PLANI)
+                { 
+                    id: 'dart_woop_obs', type: 'textarea', section: 'Adım 4: Risk Analizi', 
+                    text: 'Harika bir plan yaptık. Peki bugünkü hedefini gerçekleştirmeni engelleyecek o EN BÜYÜK RİSK (Tuzak) nedir?', 
+                    placeholder: 'Örn: Telefonumun yanımda olması, uykumun gelmesi, arkadaşımın çağırması...' 
+                },
+                { 
+                    id: 'dart_woop_plan', type: 'textarea', section: 'Adım 5: B Planı (WOOP)', 
+                    text: 'Bu risk gerçekleşirse (Eğer ... olursa), o an tam olarak ne yapacaksın (... yapacağım)? B Planını yaz.', 
+                    placeholder: 'Örn: Eğer telefonumdan bildirim gelirse, onu hemen yandaki odaya bırakıp 25 dk daha masadan kalkmayacağım.' 
+                },
+
+                // KPI: PERFORMANS ÖLÇÜMÜ
+                { 
+                    id: 'dart_target_q', type: 'number', section: 'Adım 6: Performans Karnesi (KPI)', 
+                    text: 'Sistemimizin senin performansını ölçmesi için; GEÇEN HAFTA kendi kendine çözmeyi hedeflediğin toplam soru sayısını (veya dakika) gir:', 
+                    placeholder: 'Örn: 1000' 
+                },
+                { 
+                    id: 'dart_realized_q', type: 'number', section: 'Adım 6: Performans Karnesi (KPI)', 
+                    text: 'Peki geçen hafta GERÇEKTE kaç soru çözebildin? (Dürüst ol, analiz için şart)', 
+                    placeholder: 'Örn: 750' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
