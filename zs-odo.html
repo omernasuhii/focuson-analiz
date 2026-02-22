@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ZS-ODÖ Zihinsel Sabotaj Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'zs-odo',
+            title: 'ZS-ODÖ Zihinsel Sabotaj Analizi',
+            description: 'Bazen en büyük düşmanımız kendi iç sesimizdir. Lütfen aşağıdaki düşüncelerin zihninden ne sıklıkla geçtiğini dürüstçe işaretle.',
+            questions: [
+                // TUZAK 1: YA HEP YA HİÇ
+                { id: 'zs_1_1', type: 'likert', section: 'Tuzak 1', text: 'Bir denemede istediğim neti yapamazsam, o günkü tüm çalışmam boşa gitmiş sayılır.' },
+                { id: 'zs_1_2', type: 'likert', section: 'Tuzak 1', text: 'İlk 1000\'e (veya hedefime) giremezsem, sınavı kazanmamın hiçbir anlamı yok.' },
+                { id: 'zs_1_3', type: 'likert', section: 'Tuzak 1', text: 'Konunun en ufak bir yerini anlamadıysam, "Ben bu dersi bilmiyorum" derim.' },
+
+                // TUZAK 2: FELAKETLEŞTİRME
+                { id: 'zs_2_1', type: 'likert', section: 'Tuzak 2', text: 'Sınavda kesinlikle elim ayağım titreyecek ve her şeyi unutacağım.' },
+                { id: 'zs_2_2', type: 'likert', section: 'Tuzak 2', text: 'Bu konuyu şimdi anlamadıysam, sınavda da yapamayacağım ve üniversiteyi kazanamayacağım.' },
+                { id: 'zs_2_3', type: 'likert', section: 'Tuzak 2', text: 'Hoca bana soru sorduğunda bilemezsem herkese rezil olurum.' },
+
+                // TUZAK 3: ZİHİN OKUMA
+                { id: 'zs_3_1', type: 'likert', section: 'Tuzak 3', text: 'Düşük not aldığımda öğretmenimin veya ailemin içinden "Ne kadar tembel" dediğini hissederim.' },
+                { id: 'zs_3_2', type: 'likert', section: 'Tuzak 3', text: 'Arkadaşlarım benden daha başarılı, kesin bana acıyarak bakıyorlar.' },
+                { id: 'zs_3_3', type: 'likert', section: 'Tuzak 3', text: 'Soru sorarsam herkesin benimle dalga geçeceğini düşünüyorum.' },
+
+                // TUZAK 4: ETİKETLEME
+                { id: 'zs_4_1', type: 'likert', section: 'Tuzak 4', text: 'Bir hata yaptığımda kendime "Ne kadar aptalım/sakarım" derim.' },
+                { id: 'zs_4_2', type: 'likert', section: 'Tuzak 4', text: 'Ben "sayısalcı kafasına" sahip değilim, o yüzden asla yapamam.' },
+                { id: 'zs_4_3', type: 'likert', section: 'Tuzak 4', text: 'Ben "iradesiz" biriyim, asla düzenli çalışamam.' },
+
+                // TUZAK 5: -MELİ / -MALI
+                { id: 'zs_5_1', type: 'likert', section: 'Tuzak 5', text: 'Her zaman en yüksek notu almalıyım, hata yapma lüksüm yok.' },
+                { id: 'zs_5_2', type: 'likert', section: 'Tuzak 5', text: 'Ailemi asla hayal kırıklığına uğratmamalıyım.' },
+                { id: 'zs_5_3', type: 'likert', section: 'Tuzak 5', text: 'Hiç yorulmadan, robot gibi ders çalışmalıyım.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
