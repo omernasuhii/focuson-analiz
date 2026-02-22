@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - Sİ-GÖZ Sihirli Gözlükler Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'si-goz',
+            title: 'Sİ-GÖZ Bilişsel Çerçeveleme',
+            description: 'Yaşadığın kötü bir olayı değiştiremeyebiliriz ama ona yüklediğin anlamı değiştirebiliriz. Şimdi seninle "Gözlük Değiştirme" oyunu oynayacağız. Lütfen sorulara içtenlikle cevap ver.',
+            questions: [
+                { 
+                    id: 'sg_event', type: 'textarea', section: 'Adım 1: Olay', 
+                    text: 'Son zamanlarda canını sıkan, motivasyonunu düşüren veya kendini başarısız hissettiren o GÜNCEL OLAYI kısaca yaz.', 
+                    placeholder: 'Örn: Son denemede netlerim 10 puan düştü ve çok moralim bozuk...' 
+                },
+                { 
+                    id: 'sg_black', type: 'textarea', section: 'Adım 2: 🕶️ Siyah Gözlük', 
+                    text: 'Şimdi SİYAH (Karamsar) gözlüğü tak. Bu olaya kurban psikolojisiyle baksaydın (kendini en kötü hissedecek şekilde) ne derdin?', 
+                    placeholder: 'Örn: Ben aptalım. Asla kazanamayacağım. Emeklerim boşa gitti...' 
+                },
+                { 
+                    id: 'sg_clear', type: 'textarea', section: 'Adım 3: 👓 Şeffaf Gözlük', 
+                    text: 'Şimdi ŞEFFAF (Objektif) gözlüğü tak. Olayı duygularından arındırıp, sadece veri toplayan bir robot/kamera gibi anlatsaydın ne derdin?', 
+                    placeholder: 'Örn: Geçen sınav 80 netti, bu sınav 70 net. Matematikte 5 boşum var. Olay bundan ibaret.' 
+                },
+                { 
+                    id: 'sg_magic', type: 'textarea', section: 'Adım 4: 🌈 Sihirli Gözlük', 
+                    text: 'Şimdi SİHİRLİ (Fırsat) gözlüğü tak! Cevapla: Bu kötü olayın içinde paketlenmiş GİZLİ HEDİYE ne olabilir? Bu sorun sana ne öğretmeye geldi?', 
+                    placeholder: 'Örn: Harika! Sınavdan önce eksik olduğum 5 konuyu tespit ettim. Bu düşüş, bana eksiklerimi hediye etti...' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
