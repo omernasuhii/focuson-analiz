@@ -1227,6 +1227,64 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- MÇ-ZP (MÜKEMMELLİK ÇEMBERİ) SONUÇ EKRANI ---
+            else if (testData.id === 'mc-zp') {
+                const emotion = answers['mczp_emotion'] || 'Özgüven';
+                const circle = answers['mczp_circle'] || 'Parlak Çember';
+                const anchor = answers['mczp_anchor'] || 'Fiziksel Çapa';
+                const postScore = parseInt(answers['mczp_test'] || 10);
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 text-center shadow-sm">
+                            <div className="text-5xl mb-3">⭕</div>
+                            <h3 className="text-2xl font-black text-amber-800 mb-2">Çapa Başarıyla Kuruldu!</h3>
+                            <p className="text-amber-900 font-medium leading-relaxed opacity-90 text-sm">
+                                Muazzam bir zihin kontrolü! Beynine yeni bir nörolojik kısayol ekledin. Artık sınav anında çaresiz değilsin; kendi kurduğun bu "Özgüven Butonu" her zaman yanında.
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 text-4xl opacity-10">⚓</div>
+                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Senin Zirve Profilin</h4>
+                            
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">1</div>
+                                    <div>
+                                        <div className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Çağrılan Duygu</div>
+                                        <div className="text-sm font-bold text-slate-700 capitalize">{emotion}</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold">2</div>
+                                    <div>
+                                        <div className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Koruma Kalkanı</div>
+                                        <div className="text-sm font-semibold text-slate-700 italic">"{circle}"</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">3</div>
+                                    <div>
+                                        <div className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ateşleme Butonu (Tetikleyici)</div>
+                                        <div className="text-sm font-black text-emerald-700 uppercase">{anchor}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4">
+                            <h4 className="font-extrabold text-amber-400 mb-2 flex items-center gap-2 text-sm uppercase tracking-wider">
+                                📌 Ev Ödevi: Çapayı Güçlendir
+                            </h4>
+                            <p className="text-slate-300 text-xs leading-relaxed">
+                                Nörolojik bağlar tekrar edildikçe bir kas gibi güçlenir. Gerçek sınava girene kadar, evdeki her deneme sınavı öncesinde zihninde o <strong>{circle}</strong> çemberini hayal et ve <strong>{anchor}</strong> hareketini yap. Sen bu hareketi yaptıkça, beynin o zirve anındaki <strong>{emotion}</strong> duygusunu otomatik olarak kanına pompalayacaktır! [cite: 1341-1344]
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
