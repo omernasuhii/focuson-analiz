@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - İM-OM Oto-Motivasyon Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'im-om',
+            title: 'İM-OM Oto-Motivasyon Analizi',
+            description: 'Motivasyonun gelmesini beklersen, çok beklersin! İlham perileri sadece çalışanlara uğrar. Neden ertelediğini bulalım ve içindeki o motoru "5 Saniye Kuralı" ile ateşleyelim.',
+            questions: [
+                // BÖLÜM A: ERTELEME TÜRÜ
+                { id: 'imom_a1', type: 'likert', section: 'Bölüm 1: Erteleme Teşhisi', text: 'Mükemmel olmayacaksa hiç başlamamayı tercih ederim.' },
+                { id: 'imom_a2', type: 'likert', section: 'Bölüm 1: Erteleme Teşhisi', text: 'Yapılacak işin büyüklüğü gözümü korkutuyor, nereden başlayacağımı bilemiyorum.' },
+                { id: 'imom_a3', type: 'likert', section: 'Bölüm 1: Erteleme Teşhisi', text: '"Daha çok zamanım var, son gece hallederim" diye kendimi kandırırım.' },
+                { id: 'imom_a4', type: 'likert', section: 'Bölüm 1: Erteleme Teşhisi', text: 'Biri bana "Ders çalış" dediğinde inadına çalışasım gelmiyor.' },
+                { id: 'imom_a5', type: 'likert', section: 'Bölüm 1: Erteleme Teşhisi', text: 'Masaya oturduğumda canım sıkılıyor ve hemen başka şeylerle ilgileniyorum.' },
+
+                // BÖLÜM B: MOTİVASYON BARİYERLERİ
+                { id: 'imom_b1', type: 'likert', section: 'Bölüm 2: Bariyer Ölçümü', text: 'Sabahları yataktan kalkmak ve güne başlamak bana çok zor geliyor.' },
+                { id: 'imom_b2', type: 'likert', section: 'Bölüm 2: Bariyer Ölçümü', text: 'Çalışmaya başladığımda enerjimin hemen tükendiğini hissediyorum.' },
+                { id: 'imom_b3', type: 'likert', section: 'Bölüm 2: Bariyer Ölçümü', text: 'Hedefim beni heyecanlandırmıyor, sadece "mecbur olduğum için" çalışıyorum.' },
+                { id: 'imom_b4', type: 'likert', section: 'Bölüm 2: Bariyer Ölçümü', text: 'Başarısız olmaktan o kadar korkuyorum ki denemek bile istemiyorum.' },
+                { id: 'imom_b5', type: 'likert', section: 'Bölüm 2: Bariyer Ölçümü', text: 'Kendi kendime söz veriyorum ama sözümü tutamıyorum (İrade Zayıflığı).' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
