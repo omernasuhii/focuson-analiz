@@ -1705,6 +1705,73 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- İ-PKÖ (İLKÖĞRETİM ÇOKLU ZEKÂ) SONUÇ EKRANI ---
+            else if (testData.id === 'i-pko') {
+                const scores = {
+                    'Sözel': parseInt(answers['ipko_soz_1']||0) + parseInt(answers['ipko_soz_2']||0) + parseInt(answers['ipko_soz_3']||0),
+                    'Mantıksal': parseInt(answers['ipko_man_1']||0) + parseInt(answers['ipko_man_2']||0) + parseInt(answers['ipko_man_3']||0),
+                    'Görsel': parseInt(answers['ipko_gor_1']||0) + parseInt(answers['ipko_gor_2']||0) + parseInt(answers['ipko_gor_3']||0),
+                    'Bedensel': parseInt(answers['ipko_bed_1']||0) + parseInt(answers['ipko_bed_2']||0) + parseInt(answers['ipko_bed_3']||0),
+                    'Müziksel': parseInt(answers['ipko_muz_1']||0) + parseInt(answers['ipko_muz_2']||0) + parseInt(answers['ipko_muz_3']||0),
+                    'Sosyal': parseInt(answers['ipko_sos_1']||0) + parseInt(answers['ipko_sos_2']||0) + parseInt(answers['ipko_sos_3']||0),
+                    'İçsel': parseInt(answers['ipko_ics_1']||0) + parseInt(answers['ipko_ics_2']||0) + parseInt(answers['ipko_ics_3']||0),
+                    'Doğacı': parseInt(answers['ipko_dog_1']||0) + parseInt(answers['ipko_dog_2']||0) + parseInt(answers['ipko_dog_3']||0)
+                };
+
+                const profiles = {
+                    'Sözel': { icon: '📚', tipsEv: 'Ona bol bol sesli kitap okutun. Kelime oyunları oynayın.', tipsDers: 'Konuları hikayeleştirerek çalışmalı.' },
+                    'Mantıksal': { icon: '🔢', tipsEv: 'Mutfakta ölçüm yaptırın, bloklarla örüntü kurun.', tipsDers: 'Adım adım listeler yaparak öğrenmeli.' },
+                    'Görsel': { icon: '🎨', tipsEv: 'Notlarını resimleyerek tutmasını isteyin.', tipsDers: 'Renkli kalemler ve zihin haritaları kullanmalı.' },
+                    'Bedensel': { icon: '⚽', tipsEv: 'Çalışırken hareket etmesine (ayakta durma, yürüme) izin verin.', tipsDers: 'Sayı sayarken zıplamak gibi oyunlarla öğrenmeli.' },
+                    'Müziksel': { icon: '🎵', tipsEv: 'Bilgileri tekerleme veya şarkı haline getirin.', tipsDers: 'Ritim tutarak veya arka planda müzikle çalışabilir.' },
+                    'Sosyal': { icon: '👥', tipsEv: 'Arkadaşlarıyla birlikte ders çalışmasını teşvik edin.', tipsDers: 'Bir başkasına anlatarak (öğretmencilik oynayarak) öğrenmeli.' },
+                    'İçsel': { icon: '🧘', tipsEv: 'Kendini ifade etmesi için ona bir günlük alın.', tipsDers: 'Sessiz ve kendi belirlediği bir köşede çalışmalı.' },
+                    'Doğacı': { icon: '🌿', tipsEv: 'Bahçede veya balkonda bitki yetiştirmesini sağlayın.', tipsDers: 'Fen derslerini doğada gözlem yaparak çalışmalı.' }
+                };
+
+                let sortedAreas = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+                let topArea = sortedAreas[0];
+                let topProfile = profiles[topArea[0]];
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 text-center shadow-sm">
+                            <div className="text-5xl mb-3">{topProfile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-1">Baskın Öğrenme Stili</div>
+                            <h3 className="text-2xl font-black text-indigo-800 mb-2">{topArea[0]} Zekâ</h3>
+                            <p className="text-indigo-900 font-medium leading-relaxed opacity-90 text-sm">
+                                Çocuğunuz dünyayı daha çok bu pencereden algılıyor. Bu onun süper gücü. Zorlandığı dersleri bu dile çevirdiğinizde harikalar yaratacaktır.
+                            </p>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h4 className="font-extrabold text-slate-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                💡 {topArea[0]} Zekâ İçin Taktikler
+                            </h4>
+                            <div className="space-y-3">
+                                <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
+                                    <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Evde Ne Yapmalı? (Veliye)</span>
+                                    <p className="text-sm text-amber-900 font-medium mt-1">{topProfile.tipsEv}</p>
+                                </div>
+                                <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Nasıl Çalışmalı? (Öğrenciye)</span>
+                                    <p className="text-sm text-emerald-900 font-bold mt-1">{topProfile.tipsDers}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+                            {sortedAreas.map((area, idx) => (
+                                <div key={area[0]} className={`p-2 rounded-xl border text-center ${idx === 0 ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-white border-slate-100'}`}>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase">{area[0]}</div>
+                                    <div className={`text-lg font-black ${idx === 0 ? 'text-indigo-600' : 'text-slate-700'}`}>{area[1]}<span className="text-[10px] text-slate-400 font-normal">/9</span></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
@@ -1769,6 +1836,22 @@ const FocusON_Engine = () => {
                         {currentQ.type === 'likert' && (
                             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                                 {['1: Hiç', '2: Nadiren', '3: Bazen', '4: Sıklıkla', '5: Her Zaman'].map((opt, i) => {
+                                    const val = i + 1;
+                                    const isSelected = answers[currentQ.id] === val;
+                                    return (
+                                        <button key={val} onClick={() => { handleAnswer(val); setTimeout(nextStep, 400); }} className={`flex-1 py-4 px-2 rounded-xl border-2 font-bold text-sm md:text-base transition-all transform hover:-translate-y-1 flex flex-col items-center gap-2 ${isSelected ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300'}`}>
+                                            <div className={`w-8 h-8 rounded-md flex items-center justify-center text-xs ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{val}</div>
+                                            {opt.split(': ')[1]}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* LİKERT 3'LÜ EMOJİ (İ-PKÖ İÇİN) */}
+                        {currentQ.type === 'likert_3' && (
+                            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                                {['1: ☹️ Hiç Uygun Değil', '2: 😐 Biraz Uygun', '3: 🙂 Tam Anlatıyor'].map((opt, i) => {
                                     const val = i + 1;
                                     const isSelected = answers[currentQ.id] === val;
                                     return (
