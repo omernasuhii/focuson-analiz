@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - MÇ-ZP Mükemmellik Çemberi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'mc-zp',
+            title: 'MÇ-ZP Mükemmellik Çemberi',
+            description: 'Bu bir sınav veya test değil, bir zihinsel antrenmandır. Zihninde, ihtiyaç duyduğun anda basabileceğin bir "Özgüven Butonu" oluşturacağız. Lütfen hayal gücünü serbest bırak ve adımları takip et.',
+            questions: [
+                { 
+                    id: 'mczp_emotion', type: 'text', section: 'Adım 1: Kaynak Belirleme', 
+                    text: 'Sınav anında veya ders çalışırken şu an EN ÇOK hangi duyguya ihtiyacın var?', 
+                    placeholder: 'Örn: Cesaret, Sakinlik, Odaklanma, Yenilmezlik...' 
+                },
+                { 
+                    id: 'mczp_memory', type: 'textarea', section: 'Adım 2: Zirve Anı', 
+                    text: 'Gözlerini kapat. Geçmişte bu duyguyu EN GÜÇLÜ hissettiğin, çok başarılı olduğun o zirve anını hatırla. Bu anı neydi? Kısaca yaz.', 
+                    placeholder: 'Örn: Geçen yıl o çok zor matematik sorusunu tek başıma çözdüğüm an...' 
+                },
+                { 
+                    id: 'mczp_circle', type: 'text', section: 'Adım 3: Çemberi İnşa Et', 
+                    text: 'Şimdi önünde yerde hayali bir güç çemberi olduğunu düşün. O zirve anındaki coşkuyu bu çembere doldur. Bu çember ne renk ve nasıl bir enerjisi var?', 
+                    placeholder: 'Örn: Altın sarısı, çok parlak ve sıcak bir çember...' 
+                },
+                { 
+                    id: 'mczp_anchor', type: 'multiple_choice', section: 'Adım 4: Çapalama (Kilitleme)', 
+                    text: 'Zihninde bu çemberin içine adım at. O muazzam duygu tüm vücudunu sararken, bunu beynine KİTLEYECEK bir "Fiziksel Hareket" (Çapa) belirle ve tam şu an yap.', 
+                    options: [
+                        { label: '✊ Sağ yumruğumu sıkmak', value: 'Yumruk Sıkmak' },
+                        { label: '❤️ Sağ elimi kalbime koymak', value: 'Eli Kalbe Koymak' },
+                        { label: '🫁 Derin bir nefes alıp omuzları dikleştirmek', value: 'Dik Duruş ve Nefes' },
+                        { label: '🤏 Parmak şıklatmak', value: 'Parmak Şıklatmak' }
+                    ]
+                },
+                { 
+                    id: 'mczp_test', type: 'scale10', section: 'Adım 5: Gelecek Testi', 
+                    text: 'Mükemmel! Şimdi gelecekteki çok zorlu bir sınavı hayal et. Stres geliyor... Hemen az önce belirlediğin hareketi yap ve o altın çembere gir! Şu an özgüvenin 1 ile 10 arasında kaç?' 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
