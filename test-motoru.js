@@ -1001,6 +1001,58 @@ const FocusON_Engine = () => {
                 );
             }
 
+// --- B-AVO (ANTİ-VİRÜS OPERASYONU) SONUÇ EKRANI ---
+            else if (testData.id === 'b-avo') {
+                const preBelief = parseInt(answers['bavo_pre_belief'] || 0);
+                const postBelief = parseInt(answers['bavo_post_belief'] || 0);
+                const virusType = answers['bavo_type'] || 'Bilinmeyen Virüs';
+                const antiVirusText = answers['bavo_antivirus'] || '';
+                
+                const isSuccessful = postBelief < preBelief;
+                const dropAmount = preBelief - postBelief;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isSuccessful ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isSuccessful ? '🛡️' : '⚠️'}</div>
+                            <div className={`text-2xl font-black ${isSuccessful ? 'text-emerald-700' : 'text-amber-700'} mb-2`}>
+                                {isSuccessful ? 'Sistem Başarıyla Temizlendi!' : 'Dirençli Virüs Tespit Edildi!'}
+                            </div>
+                            <p className={`${isSuccessful ? 'text-emerald-900' : 'text-amber-900'} font-medium leading-relaxed opacity-90`}>
+                                {isSuccessful 
+                                    ? `Harika bir iş çıkardın! Kendi iç görünü kullanarak "${virusType}" virüsünün etkisini zihninde ${dropAmount} puan kadar zayıflattın.` 
+                                    : `Virüs hala arka planda çalışmaya devam ediyor. Bu düşünce sana fayda sağlamadığı halde ona inanmaya devam ediyorsun. Koçunla bu "Dirençli Karamsarlığı" konuşmalısın.`}
+                            </p>
+                        </div>
+                        
+                        <div className="flex justify-around items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Önceki Kaygı</div>
+                                <div className="text-3xl font-black text-rose-500">{preBelief}<span className="text-sm opacity-50">/10</span></div>
+                            </div>
+                            <div className="text-2xl text-slate-300">➡️</div>
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Sonraki Kaygı</div>
+                                <div className="text-3xl font-black text-emerald-500">{postBelief}<span className="text-sm opacity-50">/10</span></div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm mt-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 text-5xl">💻</div>
+                            <h4 className="font-extrabold text-emerald-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🟢 Aktif Anti-Virüs Yazılımın
+                            </h4>
+                            <p className="text-slate-200 text-sm italic border-l-2 border-emerald-500 pl-3 py-1">
+                                "{antiVirusText}"
+                            </p>
+                            <p className="text-xs text-slate-500 mt-4 mt-4">
+                                Ne zaman o eski düşünce (Virüs) zihnine girmeye çalışsa, bu ekranı hatırla ve kendi yazdığın bu şifreyi (Anti-Virüs'ü) tekrar et. Olaylar bizi üzmez, olaylara yüklediğimiz anlamlar bizi üzer.
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
