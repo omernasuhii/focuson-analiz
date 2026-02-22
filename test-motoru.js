@@ -199,6 +199,10 @@ const FocusON_Engine = () => {
                     handleAnswer(parseInt(e.key));
                     setTimeout(nextStep, 300); 
                 }
+                if (currentQ.type === 'likert_3' && ['1','2','3'].includes(e.key)) {
+                    handleAnswer(parseInt(e.key));
+                    setTimeout(nextStep, 300); 
+                }
                 if (currentQ.type === 'likert_0_3' && ['0','1','2','3'].includes(e.key)) {
                     handleAnswer(parseInt(e.key));
                     setTimeout(nextStep, 300); 
