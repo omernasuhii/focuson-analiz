@@ -1772,6 +1772,67 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- ADDE-20 (AİLE DESTEK ÖLÇEĞİ) SONUÇ EKRANI ---
+            else if (testData.id === 'adde-20') {
+                let scoreA = 0; // Duygusal
+                let scoreB = 0; // Akademik
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('adde_a')) scoreA += val;
+                    if (key.startsWith('adde_b')) scoreB += val;
+                });
+
+                let profile = {};
+                if (scoreA >= 40 && scoreB >= 40) {
+                    profile = { title: "İDEAL DENGELİ DESTEK", icon: "🏰", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Evin senin için bir 'kale' gibi. Ailen hem fiziksel imkanlarını sağlıyor hem de seni koşulsuz destekliyor. Bu ortamda başarı kaçınılmazdır." };
+                } else if (scoreA < 25 && scoreB >= 40) {
+                    profile = { title: "PROJE ÇOCUK SENDROMU", icon: "📊", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Ailen sana her türlü maddi imkanı (kitap, oda, ders) sağlıyor ama duygusal bağ zayıf. Üzerinde 'Ya emeklerini boşa çıkarırsam' baskısı var. Bu durumu koçun ailenle diplomatik bir şekilde konuşacak." };
+                } else if (scoreA >= 40 && scoreB < 25) {
+                    profile = { title: "SEVGİ DOLU AMA YETERSİZ", icon: "❤️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", desc: "Ailen seni çok seviyor ve değer veriyor ama evde akademik bir çalışma ortamı (sessizlik, planlama) kurmakta zorlanıyorsunuz. Koçunla evdeki fiziksel düzeni yeniden tasarlamalısınız." };
+                } else if (scoreA < 25 && scoreB < 25) {
+                    profile = { title: "KOPUK / İHMALKAR İLETİŞİM", icon: "🧊", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Evde kendini yalnız veya baskı altında hissediyorsun. Hem fiziksel çalışma ortamı eksik hem de iletişim zayıf. Motivasyonunu dışarıdan değil, içinden (kendi hedeflerinden) almak zorundasın." };
+                } else {
+                    profile = { title: "GELİŞİME AÇIK DESTEK", icon: "⚖️", color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-200", desc: "Ailen genel olarak yanında ama bazı noktalarda (iletişim veya çalışma ortamı) ince ayarlar yapılması gerekiyor. Koçun sana bu sınırları nasıl çizeceğini öğretecek." };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{profile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">AİLE ORTAMI PROFİLİ</div>
+                            <h3 className={`text-2xl font-black ${profile.color} mb-2`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc}
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-center items-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Duygusal Destek (Sevgi/Güven)</div>
+                                <div className={`text-4xl font-black ${scoreA >= 40 ? 'text-emerald-500' : scoreA < 25 ? 'text-rose-500' : 'text-amber-500'}`}>{scoreA}<span className="text-lg opacity-50 text-slate-400">/50</span></div>
+                                <div className="text-xs text-slate-500 mt-2 text-center">
+                                    {scoreA >= 40 ? 'Seni koşulsuz seviyorlar.' : scoreA < 25 ? 'İletişim kopuklukları var.' : 'İletişim dalgalı.'}
+                                </div>
+                            </div>
+                            <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-center items-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Akademik Destek (İmkan/Ortam)</div>
+                                <div className={`text-4xl font-black ${scoreB >= 40 ? 'text-emerald-500' : scoreB < 25 ? 'text-rose-500' : 'text-amber-500'}`}>{scoreB}<span className="text-lg opacity-50 text-slate-400">/50</span></div>
+                                <div className="text-xs text-slate-500 mt-2 text-center">
+                                    {scoreB >= 40 ? 'Her türlü imkanı sağlıyorlar.' : scoreB < 25 ? 'Çalışma ortamı yetersiz.' : 'Ortam iyileştirilebilir.'}
+                                </div>
+                            </div>
+                        </div>
+
+                        {parseInt(answers['adde_a_6'] || 0) <= 2 && (
+                            <div className="p-4 bg-slate-800 text-white rounded-xl text-sm font-medium mt-4">
+                                🛡️ <strong>Kalkan Protokolü:</strong> Başkalarıyla kıyaslandığını hissediyorsun. Ailen kıyaslama yaptığında öfkelenmek yerine, <em>"Herkesin yolu farklı, ben kendi hedefime odaklıyım"</em> cümlesini sakin bir şekilde kurarak kendi sınırını çizmeyi unutma. [cite: 3195-3197]
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
