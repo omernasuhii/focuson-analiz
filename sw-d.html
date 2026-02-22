@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - SW-D Zihinsel İmge Dönüştürme</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'sw-d',
+            title: 'SWISH Zihinsel Dönüşüm',
+            description: 'Beynin kelimelerden çok görüntülerle çalışır. Sınav anına dair zihninde kurduğun o korkutucu filmi, seni motive edecek gişe rekorları kıran bir başarı filmine dönüştüreceğiz. Hazır mısın?',
+            questions: [
+                { 
+                    id: 'swd_negative', type: 'textarea', section: 'Adım 1: Negatif İmge (Tetikleyici)', 
+                    text: 'Ders çalışırken veya sınavı düşünürken seni durduran, modunu düşüren o "kötü görüntü" nedir? (Örn: Sınav sonucunun düşük geldiği ekran)', 
+                    placeholder: 'Aklına gelen o olumsuz kareyi yaz...' 
+                },
+                { 
+                    id: 'swd_neg_details', type: 'textarea', section: 'Adım 1: Görüntü Ayarları', 
+                    text: 'Bu kötü görüntü zihninde nasıl duruyor? (Parlak mı, karanlık mı? Yakın mı, uzak mı? Renkli mi, siyah-beyaz mı?)', 
+                    placeholder: 'Örn: Çok büyük, karanlık ve sanki tam karşımda duruyor...' 
+                },
+                { 
+                    id: 'swd_positive', type: 'textarea', section: 'Adım 2: Pozitif İmge (İdeal Benlik)', 
+                    text: 'Şimdi o filmi durdur. Hedefine ulaşmış, özgüvenli, mutlu olduğun o "İdeal Kareyi" tasarla. Ne görüyorsun? Bu yeni görüntüyü devasa ve çok parlak yap.', 
+                    placeholder: 'Örn: Üniversitenin kapısından gururla giriyorum, güneş parlıyor...' 
+                },
+                { 
+                    id: 'swd_action', type: 'multiple_choice', section: 'Adım 3: SWISH Operasyonu (Gözlerini Kapat)', 
+                    text: 'Zihninde o devasa NEGATİF ekranı aç. Sağ alt köşesine minicik, pul kadar bir POZİTİF imge koy. Şimdi "SWISH" sesiyle o küçük pozitif imgeyi saniyenin onda biri hızında devasa yaparken, negatif olanı küçültüp yok et! Ekranı bembeyaz yap. Bunu arka arkaya hızlanarak 5 kez tekrarla.', 
+                    options: [
+                        { label: '🌬️ SWISH! 5 kez tekrarladım ve zihnimdeki ekranı değiştirdim.', value: 'Tamam' }
+                    ]
+                },
+                { 
+                    id: 'swd_eval1', type: 'multiple_choice', section: 'Adım 4: Kontrol (Test)', 
+                    text: 'Şimdi o eski "olumsuz görüntüyü" zihninde tekrar canlandırmaya çalış. Ne hissediyorsun?', 
+                    options: [
+                        { label: '🌫️ Görüntü silikleşti / Uzaklaştı', value: 'Silik' },
+                        { label: '📉 Duygusu eskisi kadar ağır değil', value: 'Azaldi' },
+                        { label: '🚫 Görüntüyü getirmekte zorlanıyorum', value: 'Gelmiyor' },
+                        { label: '👁️ Görüntü hala çok net ve rahatsız edici', value: 'Ayni' }
+                    ]
+                },
+                { 
+                    id: 'swd_eval2', type: 'multiple_choice', section: 'Adım 5: Gelecek Projeksiyonu', 
+                    text: 'Şu an geleceği düşündüğünde aklına ilk hangi görüntü geliyor?', 
+                    options: [
+                        { label: '✨ Tasarladığım Pozitif/Başarılı imge', value: 'Pozitif' },
+                        { label: '🌑 Hala o eski Negatif imge', value: 'Negatif' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
