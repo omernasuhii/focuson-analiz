@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - K-E-A Kartopu Etkisi Modülü</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'k-e-a',
+            title: 'K-E-A Kartopu Modülü',
+            description: 'Büyük bir yangını başlatmak için önce küçük bir kıvılcım gerekir. Amacımız mükemmel çalışmak değil, "masaya oturma" alışkanlığı kazanmak. Şimdi seninle "gülünç derecede küçük" hedefler belirleyeceğiz.',
+            questions: [
+                { 
+                    id: 'kea_mat', type: 'text', section: 'Adım 1: Matematik Çekirdeği', 
+                    text: 'Matematik için başlangıç (mikro) hedefin ne? (Hedef o kadar küçük olmalı ki üşenmeye bile vakit bulamamalısın)', 
+                    placeholder: 'Örn: Sadece 1 problem sorusu çözmek...' 
+                },
+                { 
+                    id: 'kea_par', type: 'text', section: 'Adım 2: Paragraf Çekirdeği', 
+                    text: 'Türkçe/Paragraf için mikro hedefin ne?', 
+                    placeholder: 'Örn: Sadece 1 paragraf sorusu okumak...' 
+                },
+                { 
+                    id: 'kea_vid', type: 'text', section: 'Adım 3: Konu Çekirdeği', 
+                    text: 'Konu çalışmak veya Video izlemek için mikro hedefin ne?', 
+                    placeholder: 'Örn: Sadece videonun ilk 2 dakikasını izlemek...' 
+                },
+                { 
+                    id: 'kea_rule', type: 'multiple_choice', section: 'Adım 4: Kesin Sözleşme', 
+                    text: 'KURAL: En kötü, en yorgun, en isteksiz gününde bile sıfır çekmek yok. Sadece 1 soru da olsa o masaya oturulacak. Çünkü masaya oturursan devamı kendiliğinden gelecektir. Zinciri kırmamaya söz veriyor musun?', 
+                    options: [
+                        { label: '🔥 Söz veriyorum! Kartopu küçük başlayacak ama hiç durmayacak.', value: 'Kabul' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
