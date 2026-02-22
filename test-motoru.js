@@ -1105,6 +1105,58 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AMİD (İNANÇ DEĞİŞİM PROTOKOLÜ) SONUÇ EKRANI ---
+            else if (testData.id === 'amid') {
+                const oldBelief = answers['amid_old'] || 'Belirtilmedi';
+                const newBelief = answers['amid_new'] || 'Belirtilmedi';
+                const preScore = parseInt(answers['amid_pre_score'] || 10);
+                const postScore = parseInt(answers['amid_post_score'] || 10);
+                const nlpResult = answers['amid_nlp'] || 'Direnç';
+                
+                const isSuccessful = postScore < 5 && postScore < preScore;
+                const dropAmount = preScore - postScore;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isSuccessful ? 'bg-indigo-50 border-indigo-200' : 'bg-slate-50 border-slate-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isSuccessful ? '🧬' : '⚙️'}</div>
+                            <div className={`text-2xl font-black ${isSuccessful ? 'text-indigo-700' : 'text-slate-700'} mb-2`}>
+                                {isSuccessful ? 'Nörolojik Bağ Koptu!' : 'Sürücü Direnci Tespit Edildi'}
+                            </div>
+                            <p className={`${isSuccessful ? 'text-indigo-900' : 'text-slate-600'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isSuccessful 
+                                    ? `Muazzam bir zihin kontrolü! Eski kısıtlayıcı inancının beynindeki görüntü kodlarını değiştirerek, onun sana verdiği korku hissini ${dropAmount} puan kadar yok ettin. Yeni yazılım başarıyla yüklendi.` 
+                                    : `İnancında bir miktar düşüş olsa da hala tam olarak kırılmamış (Puanın 5'in altına düşmeliydi). Demek ki senin beynini değiştiren 'Sürücü (Driver)' görsel değil, belki de işitsel veya dokunsal bir kanal. Bunu koçunla seansta detaylıca çözeceğiz.`}
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-rose-400"></div>
+                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 ml-3">🗑️ Silinen Eski Yazılım</h4>
+                            <p className="text-slate-500 text-sm italic line-through ml-3">"{oldBelief}"</p>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-emerald-400"></div>
+                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 ml-3">✨ Yüklenen Yeni Yazılım</h4>
+                            <p className="text-emerald-700 text-lg font-bold ml-3">"{newBelief}"</p>
+                        </div>
+
+                        <div className="flex justify-around items-center bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-sm text-white">
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Eski İnanç Gücü</div>
+                                <div className="text-3xl font-black text-rose-500">{preScore}<span className="text-sm opacity-50 text-slate-500">/10</span></div>
+                            </div>
+                            <div className="text-2xl text-slate-600">➡️</div>
+                            <div className="text-center">
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Yeni İnanç Gücü</div>
+                                <div className="text-3xl font-black text-emerald-400">{postScore}<span className="text-sm opacity-50 text-slate-500">/10</span></div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
