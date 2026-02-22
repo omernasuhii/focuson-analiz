@@ -1986,6 +1986,59 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SW-D (SWISH ZİHİNSEL İMGE DÖNÜŞTÜRME) SONUÇ EKRANI ---
+            else if (testData.id === 'sw-d') {
+                const eval1 = answers['swd_eval1'];
+                const eval2 = answers['swd_eval2'];
+                const positiveImage = answers['swd_positive'] || 'Pozitif İmge';
+                const negativeImage = answers['swd_negative'] || 'Negatif İmge';
+
+                let isTotalSuccess = eval2 === 'Pozitif' && (eval1 === 'Silik' || eval1 === 'Gelmiyor' || eval1 === 'Azaldi');
+                let isPartialSuccess = eval2 === 'Negatif' && (eval1 === 'Silik' || eval1 === 'Azaldi');
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isTotalSuccess ? 'bg-emerald-50 border-emerald-200' : isPartialSuccess ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isTotalSuccess ? '✨' : isPartialSuccess ? '🔄' : '🧱'}</div>
+                            <h3 className={`text-2xl font-black ${isTotalSuccess ? 'text-emerald-800' : isPartialSuccess ? 'text-blue-800' : 'text-amber-800'} mb-2`}>
+                                {isTotalSuccess ? 'Tam Başarı: Nöral Bağ Kuruldu!' : isPartialSuccess ? 'Kısmi Başarı: İşlem Devam Ediyor' : 'Direnç Tespit Edildi'}
+                            </h3>
+                            <p className={`${isTotalSuccess ? 'text-emerald-900' : isPartialSuccess ? 'text-blue-900' : 'text-amber-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isTotalSuccess 
+                                    ? `Harika! Beynindeki o eski korku dosyasını sildin ve yerine başarı senaryosunu kaydettin. Artık sınavı düşündüğünde aklına ilk olarak o muhteşem pozitif imge gelecek.` // [cite: 1220]
+                                    : isPartialSuccess
+                                    ? `Olumsuz görüntünün duygusu ve netliği azaldı ancak beynin hala tam olarak pozitif imgeye geçiş yapamadı. Zihnindeki o negatif görüntünün parlaklığını iyice kısmalı ve sesini tamamen susturmalısın.` // [cite: 1221]
+                                    : `Zihnin eski olumsuz görüntüye tutunmakta ısrar ediyor. Bu negatif görüntüyü zihninde bir "cam" gibi düşün ve yeni pozitif imge geldiğinde o camın tuz buz olup kırıldığını hayal et. Bu sadece bir zihin oyunu, kontrol sende!`} 
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-indigo-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🎬 Senin Yönetmen Koltuğun
+                            </h4>
+                            
+                            <div className="flex flex-col md:flex-row gap-4 relative z-10">
+                                <div className="flex-1 border border-rose-500/30 bg-rose-900/20 p-4 rounded-xl opacity-50 grayscale transition-all">
+                                    <div className="text-[10px] text-rose-400 uppercase font-bold tracking-widest flex items-center gap-1 mb-2">🗑️ Çöpe Atılan Sahne</div>
+                                    <div className="text-sm font-medium text-slate-400 line-through">"{negativeImage}"</div>
+                                </div>
+                                <div className="flex-1 border-2 border-emerald-400 bg-emerald-900/30 p-4 rounded-xl transform scale-105 shadow-lg">
+                                    <div className="text-[10px] text-emerald-400 uppercase font-bold tracking-widest flex items-center gap-1 mb-2">🌟 Yeni Ana Sahne</div>
+                                    <div className="text-sm font-bold text-white">"{positiveImage}"</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-4 text-sm">
+                            <span className="font-bold text-slate-800 uppercase text-xs flex items-center gap-2 mb-2">💡 Koçluk Notu</span>
+                            <p className="text-slate-600">
+                                Beyin, en çok hangi görüntüye odaklanırsa ona göre kimyasal (hormon) salgılar[cite: 1226]. Gelecekle ilgili "Ya olmazsa" diye kaygılandığın her an, derin bir nefes al ve zihninde duyduğun o <strong>"SWISH!"</strong> sesiyle ekranı hemen bugün tasarladığın o <strong>"{positiveImage.substring(0, 30)}..."</strong> görüntüsüyle değiştir.
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
