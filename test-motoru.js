@@ -1285,6 +1285,65 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AT-ÇM (AKILLI TUŞ / ÇIPALAMA) SONUÇ EKRANI ---
+            else if (testData.id === 'at-cm') {
+                const emotion = answers['atcm_emotion'] || 'Pozitif Duygu';
+                const button = answers['atcm_button'] || 'Fiziksel Tuş';
+                const testResult = answers['atcm_test'] || 'Basarisiz';
+
+                let isSuccessful = testResult === 'Basarili';
+                
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isSuccessful ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200' : 'bg-gradient-to-br from-rose-50 to-orange-50 border-rose-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isSuccessful ? '🔌' : '🛠️'}</div>
+                            <h3 className={`text-2xl font-black ${isSuccessful ? 'text-emerald-800' : 'text-rose-800'} mb-2`}>
+                                {isSuccessful ? 'Akıllı Tuş Aktif Edildi!' : 'Kurulum Tamamlanamadı'}
+                            </h3>
+                            <p className={`${isSuccessful ? 'text-emerald-900' : 'text-rose-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isSuccessful 
+                                    ? `Muazzam bir nörolojik bağ kurdun. Artık ne zaman "${button}" hareketini yapsan, beynin sana otomatik olarak "${emotion}" hissini pompalayacak.` 
+                                    : `Sistem "Tuş" ile "Duygu" arasındaki bağlantıyı kuramadı. Bu çok normaldir, ilk denemede beynin bu yeni kısayolu öğrenememiş olabilir.`}
+                            </p>
+                        </div>
+                        
+                        {!isSuccessful && (
+                            <div className="bg-white p-5 rounded-xl border border-rose-100 shadow-sm relative overflow-hidden">
+                                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4 flex items-center gap-2">🔍 Hata Ayıklama (Neden Olmadı?)</h4>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className="text-rose-500 font-bold">1.</span> 
+                                        <div><strong>Zamanlama Hatası:</strong> Tuşa duygu tam tepe noktasındayken (Zirvede) değil, duygu sönmeye başladığında basmış olabilirsin. Zamanlama her şeydir.</div>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className="text-rose-500 font-bold">2.</span> 
+                                        <div><strong>Duygu Yetersizliği:</strong> Anıyı sadece kafanda bir film gibi "düşündün", ancak bedeninde gerçekten "hissetmedin".</div>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-slate-700">
+                                        <span className="text-rose-500 font-bold">3.</span> 
+                                        <div><strong>Sıradan Hareket:</strong> Seçtiğin tuş günlük hayatta çok yaptığın (örn: çeneni kaşımak gibi) bir hareketse, beyin bunu yeni bir şifre olarak algılamaz.</div>
+                                    </li>
+                                </ul>
+                                <p className="text-xs text-rose-600 font-bold mt-4 text-center">Lütfen testi baştan başlatarak bu kurallara dikkat edip tekrar dene.</p>
+                            </div>
+                        )}
+
+                        {isSuccessful && (
+                            <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4">
+                                <h4 className="font-extrabold text-teal-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    🔋 Batarya Kullanım Kılavuzu
+                                </h4>
+                                <ul className="space-y-3 text-sm text-slate-300">
+                                    <li className="flex gap-2"><span>🔄</span> <div><strong>Şarj Etme:</strong> Bu tuş kullanıldıkça gücünü yitirir. Haftada bir kez gözlerini kapatıp o güzel anıyı düşünerek tuşa tekrar bas ve sistemi şarj et.</div></li>
+                                    <li className="flex gap-2"><span>➕</span> <div><strong>Duygu Yığma:</strong> Aynı tuşa sadece odaklanmayı değil, cesareti ve neşeyi de yükleyebilirsin (Süper Kahraman Kokteyli).</div></li>
+                                    <li className="flex gap-2"><span>⚠️</span> <div><strong>Uyarı:</strong> Gerçekten üzgün veya depresif olduğun anlarda bu tuşa basma, yoksa sisteme virüs bulaşır ve tuş bozulur. Sadece sınavlarda kullan.</div></li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
