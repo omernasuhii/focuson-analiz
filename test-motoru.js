@@ -2810,6 +2810,84 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- PDAR-360 (PANORAMİK DENEME ANALİZ RAPORU) SONUÇ EKRANI ---
+            else if (testData.id === 'pdar-360') {
+                const timeStatus = answers['pdar_time'];
+                const focusStatus = answers['pdar_focus'];
+                
+                const errBilgi = parseInt(answers['pdar_err_bilgi']) || 0;
+                const errDikkat = parseInt(answers['pdar_err_dikkat']) || 0;
+                const errYorum = parseInt(answers['pdar_err_yorum']) || 0;
+                const errPsi = parseInt(answers['pdar_err_psikolojik']) || 0;
+                const errSure = parseInt(answers['pdar_err_sure']) || 0;
+                const errKod = parseInt(answers['pdar_err_kodlama']) || 0;
+
+                const totalErrors = errBilgi + errDikkat + errYorum + errPsi + errSure + errKod;
+
+                // En yüksek hata türünü bulma
+                let errors = [
+                    { name: 'Bilgi Eksikliği', val: errBilgi },
+                    { name: 'Dikkat ve İşlem', val: errDikkat },
+                    { name: 'Yorum ve Okuma', val: errYorum },
+                    { name: 'Psikolojik Önyargı', val: errPsi },
+                    { name: 'Süre Baskısı', val: errSure }
+                ];
+                errors.sort((a, b) => b.val - a.val);
+                const dominantError = errors[0];
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 text-center shadow-lg text-white">
+                            <div className="text-5xl mb-3">🧭</div>
+                            <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">PDAR-360 Ar-Ge Sonucu</div>
+                            <h3 className="text-2xl font-black text-white mb-2">Sanal Otopsi Tamamlandı</h3>
+                            <p className="text-slate-300 font-medium leading-relaxed opacity-90 text-sm">
+                                Toplam {totalErrors} hatalı/boş sorunun DNA'sı incelendi. Sınavın sadece bir not değil, bir sonraki çalışman için sana yön gösteren bir pusula olduğunu unutma. [cite: 1250-1251]
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                            <h4 className="font-extrabold text-slate-800 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                📊 Kara Kutu Analizi
+                            </h4>
+                            <div className="space-y-3 relative z-10">
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">Baskın Hata Türü</span>
+                                    <span className="text-sm font-black text-indigo-600">{dominantError.name} ({dominantError.val} Soru)</span>
+                                </div>
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">Süre Yönetimi</span>
+                                    <span className={`text-sm font-black ${timeStatus === 'Yetti' ? 'text-emerald-500' : timeStatus === 'UcuUcuna' ? 'text-amber-500' : 'text-rose-500'}`}>
+                                        {timeStatus === 'Yetti' ? 'Başarılı' : timeStatus === 'UcuUcuna' ? 'Sınırda' : 'Yetersiz'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <span className="text-sm font-semibold text-slate-600">Kritik Kopuş Anı</span>
+                                    <span className="text-sm font-black text-rose-500">
+                                        {focusStatus === 'Baslangic' ? 'İlk Dakikalar' : focusStatus === 'Orta' ? 'Sınav Ortası' : focusStatus === 'Son' ? 'Son Dakikalar' : 'Kopuş Yok'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-200 shadow-sm mt-4">
+                            <h4 className="font-extrabold text-indigo-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                💊 Gelecek Deneme Stratejisi (Reçete)
+                            </h4>
+                            <ul className="space-y-2 text-indigo-900 text-sm font-medium">
+                                {dominantError.name === 'Bilgi Eksikliği' && <li>👉 <strong>Teşhis:</strong> Konu eksiğin var. Yeni denemeye girmeden önce eksik olduğun konulardan en az 2 test/fasikül bitir.</li>}
+                                {dominantError.name === 'Dikkat ve İşlem' && <li>👉 <strong>Teşhis:</strong> Bilgi var ama odak sorunu var. Asla zihinden işlem yapma (kalem kullan) ve her 30 soruda bir 10 saniye gözlerini kapatıp nefes molası ver. [cite: 1292-1294]</li>}
+                                {dominantError.name === 'Yorum ve Okuma' && <li>👉 <strong>Teşhis:</strong> Soruyu zihninle değil gözünle okuyorsun. Sorudaki önemli anahtar kelimelerin mutlaka altını çiz.</li>}
+                                {dominantError.name === 'Psikolojik Önyargı' && <li>👉 <strong>Teşhis:</strong> Sınav anında özgüvenini kaybediyorsun. "Bu soru zor" dediğin an yıldız atıp hemen başka soruya atla (Turlama Tekniği). [cite: 1295]</li>}
+                                {dominantError.name === 'Süre Baskısı' && <li>👉 <strong>Teşhis:</strong> Zamanla yarışırken panikliyorsun. Evdeki tüm çalışmalarını mutlaka süre tutarak yap, zamanı hissetmeyi öğren.</li>}
+                                
+                                {focusStatus === 'Orta' && <li className="mt-2 text-rose-600">⚠️ <strong>Ekstra Not:</strong> Sınav ortasında yoruluyorsun. Branşlar arası geçiş yaparken 30 saniye arkana yaslanıp dinlenmeyi ihmal etme.</li>}
+                            </ul>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
