@@ -2696,6 +2696,120 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SÇM (SINAV CHECK-UP VE HATA TEŞHİS MODÜLÜ) SONUÇ EKRANI ---
+            else if (testData.id === 'scm') {
+                let scoreB = 0; // Bilgi
+                let scoreO = 0; // Okuma
+                let scoreD = 0; // Dikkat
+                let scoreS = 0; // Strateji
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key]) || 0;
+                    if (key.startsWith('scm_b')) scoreB += val;
+                    if (key.startsWith('scm_o')) scoreO += val;
+                    if (key.startsWith('scm_d')) scoreD += val;
+                    if (key.startsWith('scm_s')) scoreS += val;
+                });
+
+                const totalErrors = scoreB + scoreO + scoreD + scoreS;
+                
+                let percB = totalErrors > 0 ? Math.round((scoreB / totalErrors) * 100) : 0;
+                let percO = totalErrors > 0 ? Math.round((scoreO / totalErrors) * 100) : 0;
+                let percD = totalErrors > 0 ? Math.round((scoreD / totalErrors) * 100) : 0;
+                let percS = totalErrors > 0 ? Math.round((scoreS / totalErrors) * 100) : 0;
+
+                let profile = {};
+                let recipes = [];
+
+                if (totalErrors === 0) {
+                    profile = { title: "KUSURSUZ DENEME", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Hiç hata girmedin. Eğer bu gerçekten tüm sınavın sonucuysa, harika bir iş çıkarmışsın!" };
+                } else {
+                    profile = { title: "SINAV OTOPSİ RAPORU", color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-200", desc: `Son denemende kaybettiğin toplam ${totalErrors} sorunun kök neden analizi başarıyla tamamlandı. Aşağıdaki reçeteleri acilen uygulamaya başlamalısın.` };
+                    
+                    if (percB > 40) {
+                        recipes.push({ title: "Bilgi Eksikliği Reçetesi", icon: "📚", color: "text-blue-500", desc: "Konu tam oturmamış. Soru çözmeyi bırakıp konu anlatımına dönmeli ve o konudan en az 2 fasikül/test bitirmeden yeni denemeye girmemelisin." });
+                    }
+                    if (percO > 30) {
+                        recipes.push({ title: "Okuma Hatası Reçetesi", icon: "👁️", color: "text-rose-500", desc: "Gözünle değil zihninle okumalısın. Soru kökünün altını çizmek zorunlu. Uzun paragraflarda her cümlenin sonuna küçük bir (/) işareti koyarak göz takibi yap." });
+                    }
+                    if (percD > 30) {
+                        recipes.push({ title: "Dikkat/İşlem Reçetesi", icon: "✍️", color: "text-amber-500", desc: "Zihinden işlem yapmak yasak. En basit işlemi (2+3) bile kağıda yaz. Bulduğun sonucu hemen işaretleme, kutu içine al ve 'Benden bunu mu istiyor?' diye son bir kez sor." });
+                    }
+                    if (percS > 30) {
+                        recipes.push({ title: "Strateji Reçetesi", icon: "⏱️", color: "text-fuchsia-500", desc: "Sınav bilgi değil, kriz yönetimidir. Sorularla inatlaşma. Bir soru 2 dakikayı geçiyorsa yıldız atıp hemen turlama tekniğine geç." });
+                    }
+                    
+                    if (recipes.length === 0) {
+                        recipes.push({ title: "Dengeli Hata Dağılımı", icon: "⚖️", color: "text-slate-500", desc: "Hataların tüm kategorilere dengeli dağılmış. Deneme çözmeye ve yanlışlarını öğrenmeye aynı tempoda devam et." });
+                    }
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Check-Up Karnesi</div>
+                            {totalErrors > 0 && <div className={`text-6xl font-black ${profile.color} mb-2`}>{totalErrors}<span className="text-xl opacity-50"> Kayıp Soru</span></div>}
+                            <h3 className={`text-xl font-black ${profile.color} mb-2`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc}
+                            </p>
+                        </div>
+                        
+                        {totalErrors > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                                <div className={`bg-white p-4 rounded-xl border ${percB > 40 ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Bilgi</div>
+                                    <div className="text-2xl font-black text-slate-700">{scoreB}</div>
+                                    <div className="text-xs font-bold text-blue-500 mt-1">%{percB}</div>
+                                </div>
+                                <div className={`bg-white p-4 rounded-xl border ${percO > 30 ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Okuma</div>
+                                    <div className="text-2xl font-black text-slate-700">{scoreO}</div>
+                                    <div className="text-xs font-bold text-rose-500 mt-1">%{percO}</div>
+                                </div>
+                                <div className={`bg-white p-4 rounded-xl border ${percD > 30 ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Dikkat</div>
+                                    <div className="text-2xl font-black text-slate-700">{scoreD}</div>
+                                    <div className="text-xs font-bold text-amber-500 mt-1">%{percD}</div>
+                                </div>
+                                <div className={`bg-white p-4 rounded-xl border ${percS > 30 ? 'border-fuchsia-400 ring-2 ring-fuchsia-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Strateji</div>
+                                    <div className="text-2xl font-black text-slate-700">{scoreS}</div>
+                                    <div className="text-xs font-bold text-fuchsia-500 mt-1">%{percS}</div>
+                                </div>
+                            </div>
+                        )}
+
+                        {recipes.length > 0 && (
+                            <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                                <h4 className="font-extrabold text-emerald-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    💊 Klinik Reçeteler
+                                </h4>
+                                <div className="space-y-3 relative z-10">
+                                    {recipes.map((recipe, idx) => (
+                                        <div key={idx} className="bg-slate-800 p-4 rounded-lg border-l-4 border-slate-600" style={{ borderColor: recipe.color.replace('text-', '') }}>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="text-xl">{recipe.icon}</span>
+                                                <span className={`font-bold uppercase tracking-widest text-xs ${recipe.color}`}>{recipe.title}</span>
+                                            </div>
+                                            <div className="text-sm font-medium text-slate-300 mt-2 leading-relaxed">
+                                                {recipe.desc} 
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {totalErrors > 0 && (
+                             <div className="mt-4 p-3 bg-white rounded-lg text-slate-600 text-xs font-medium border border-slate-200">
+                                💡 <strong>Hatırlatma:</strong> Hata yapmak öğrenmenin en hızlı yoludur. Bu yanlışlar gerçek sınavda çıkmadı, denemede çıktı. Şanslıyız, şimdi düzeltebiliriz. [cite: 1246-1247]
+                             </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
