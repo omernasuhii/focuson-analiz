@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - SÇM Sınav Check-Up Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'scm',
+            title: 'SÇM Sınav Check-Up Analizi',
+            description: 'Lütfen son deneme sınavı kitapçığını ve optiğini önüne al. Yanlış yaptığın veya boş bıraktığın soruları incele. Hangi hatadan kaç soru kaybettiğini aşağıdaki kutulara yaz. Asla "Dikkatsizlik işte" deyip geçme, hatanın türünü bul!',
+            questions: [
+                // KATEGORİ A: BİLGİ EKSİKLİĞİ
+                { id: 'scm_b1', type: 'number', section: 'Kategori A: Bilgi (Donanım) Hatası', text: 'Konu Eksiği: Bu konuyu hiç bilmiyorum veya çalışmadım diyerek kaçırdığın soru sayısı?', placeholder: 'Örn: 3' },
+                { id: 'scm_b2', type: 'number', section: 'Kategori A: Bilgi (Donanım) Hatası', text: 'Eksik Öğrenme: Çalıştım ama detayı hatırlayamadım / formülü karıştırdım dediğin soru sayısı?', placeholder: 'Örn: 2' },
+                { id: 'scm_b3', type: 'number', section: 'Kategori A: Bilgi (Donanım) Hatası', text: 'Kavram Yanılgısı: Doğru bildiğim şey aslında yanlışmış dediğin soru sayısı?', placeholder: 'Örn: 1' },
+
+                // KATEGORİ B: OKUMA VE YORUMLAMA
+                { id: 'scm_o1', type: 'number', section: 'Kategori B: Okuma (Yazılım) Hatası', text: 'Soru Kökü Körlüğü: "Değildir, Olamaz, Yoktur" ifadesini olumlu okuduğun soru sayısı?', placeholder: 'Örn: 2' },
+                { id: 'scm_o2', type: 'number', section: 'Kategori B: Okuma (Yazılım) Hatası', text: 'Kelime Atlama: "Sadece, Daima, En Az" gibi kısıtlayıcı kelimeleri görmediğin soru sayısı?', placeholder: 'Örn: 1' },
+                { id: 'scm_o3', type: 'number', section: 'Kategori B: Okuma (Yazılım) Hatası', text: 'Şıkkı Tamamlamama: A şıkkını doğru sanıp işaretlediğin, diğerlerini okumadığın soru sayısı?', placeholder: 'Örn: 0' },
+                { id: 'scm_o4', type: 'number', section: 'Kategori B: Okuma (Yazılım) Hatası', text: 'Görsel Yorumlama: Grafiğin eksenlerini veya tablonun başlığını yanlış okuduğun soru sayısı?', placeholder: 'Örn: 1' },
+
+                // KATEGORİ C: DİKKAT VE İŞLEM
+                { id: 'scm_d1', type: 'number', section: 'Kategori C: Dikkat (İşlemci) Hatası', text: 'İşlem Hatası: Dört işlem, işaret hatası (+/-) veya sayıları yanlış geçirme sayın?', placeholder: 'Örn: 3' },
+                { id: 'scm_d2', type: 'number', section: 'Kategori C: Dikkat (İşlemci) Hatası', text: 'Odak Kaybı: O an aklım başka yere gitti, sorudan koptum diyerek kaçırdığın soru sayısı?', placeholder: 'Örn: 2' },
+                { id: 'scm_d3', type: 'number', section: 'Kategori C: Dikkat (İşlemci) Hatası', text: 'Kodlama Hatası: Kitapçıkta doğru, optikte yanlış işaretlediğin soru sayısı?', placeholder: 'Örn: 0' },
+
+                // KATEGORİ D: STRATEJİ VE ZAMANLAMA
+                { id: 'scm_s1', type: 'number', section: 'Kategori D: Strateji (Yönetim) Hatası', text: 'İnatlaşma: Bir soruya 3 dakikadan fazla harcadım, beynim yandı dediğin soru sayısı?', placeholder: 'Örn: 2' },
+                { id: 'scm_s2', type: 'number', section: 'Kategori D: Strateji (Yönetim) Hatası', text: 'Turlama Yapmama: Zor soruyla boğuşurken kolay soruları göremediğin (süre yetmeyen) soru sayısı?', placeholder: 'Örn: 4' },
+                { id: 'scm_s3', type: 'number', section: 'Kategori D: Strateji (Yönetim) Hatası', text: 'Boş Bırakamama: Fikrim yoktu ama "salladım" (Atmasyon) dediğin soru sayısı?', placeholder: 'Örn: 1' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
