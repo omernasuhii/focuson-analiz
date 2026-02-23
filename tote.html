@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - TOTE Strateji Algoritması</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'tote',
+            title: 'TOTE Strateji Algoritması',
+            description: 'Eğer bir konuda netlerin artmıyorsa (patinaj çekiyorsan), "daha çok" çalışmayı bırakıp "farklı" çalışmalısın. Şimdi seninle zihinsel bir algoritma kuracağız.',
+            questions: [
+                { 
+                    id: 'tote_subject', type: 'text', section: 'TEST 1: Durum Tespiti', 
+                    text: 'Hangi ders veya konuda netlerin sıkıştı (plato çiziyor) ve bir türlü artmıyor?', 
+                    placeholder: 'Örn: Türkçe Paragraf, Matematik Problemler...' 
+                },
+                { 
+                    id: 'tote_ideal', type: 'number', section: 'TEST 1: Durum Tespiti', 
+                    text: 'Bu konudaki HEDEFLEDİĞİN (İdeal) net veya doğru sayısı kaç?', 
+                    placeholder: 'Örn: 20' 
+                },
+                { 
+                    id: 'tote_current', type: 'number', section: 'TEST 1: Durum Tespiti', 
+                    text: 'Şu anki MEVCUT netin veya doğru sayın kaç?', 
+                    placeholder: 'Örn: 12' 
+                },
+                { 
+                    id: 'tote_old_strat', type: 'textarea', section: 'OPERATE: Hatalı Kodu Bul', 
+                    text: 'Bugüne kadar bu neti artırmak için ne yapıyordun da İŞE YARAMADI? (Eski, iflas eden stratejin neydi?)', 
+                    placeholder: 'Örn: Rastgele, süre tutmadan sadece soru çözüyordum...' 
+                },
+                { 
+                    id: 'tote_new_strat', type: 'multiple_choice', section: 'OPERATE: Yeni Güncelleme', 
+                    text: 'TOTE kuralı gereği işe yaramayan eylemi tekrar edemezsin. Farkı kapatmak için şimdi "FARKLI" ne yapacaksın? (Yeni Stratejini Seç)', 
+                    options: [
+                        { label: 'A) Soru çözüm stilimi değiştireceğim (Örn: Süre tutarak, sesli çözerek).', value: 'Stil Değişimi' },
+                        { label: 'B) Hata Analizi: Sadece yanlış yaptığım soruları biriktirip çözeceğim.', value: 'Hata Analizi' },
+                        { label: 'C) Kaynak/Hoca değiştireceğim (Farklı bir anlatım dinleyeceğim).', value: 'Kaynak Değişimi' },
+                        { label: 'D) Şıkları eleyerek / Tersten gitme taktiğini deneyeceğim.', value: 'Taktik Değişimi' }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
