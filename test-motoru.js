@@ -2599,6 +2599,103 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- APEA-3D (PERFORMANS ENGEL ANALİZİ) SONUÇ EKRANI ---
+            else if (testData.id === 'apea-3d') {
+                let scoreA = 0; // Bilişsel
+                let scoreB = 0; // Duygusal
+                let scoreC = 0; // Davranışsal
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key]) || 0;
+                    if (key.startsWith('apea_a')) scoreA += val;
+                    if (key.startsWith('apea_b')) scoreB += val;
+                    if (key.startsWith('apea_c')) scoreC += val;
+                });
+
+                let maxScore = Math.max(scoreA, scoreB, scoreC);
+                let dominantProfile = {};
+
+                if (maxScore === scoreA) {
+                    dominantProfile = {
+                        name: "BİLİŞSEL ENGEL (Bilgi İşleme)",
+                        icon: "🧠", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200",
+                        diagnosis: "Sorunun 'İstememek' değil, 'Yapamamak'. Çalışsan da yöntem veya temel eksikliği yüzünden verim alamıyorsun.",
+                        prescriptions: [
+                            "📚 Özel Ders/Etüt: Temel eksikleri kapatmak için akademik destek al.",
+                            "🗺️ Yöntem Değişimi: Hafıza teknikleri ve aktif not alma (Cornell) öğren.",
+                            "🔍 Hata Analizi: Soru çözüm videoları izle, kendi hatanı keşfet."
+                        ]
+                    };
+                } else if (maxScore === scoreB) {
+                    dominantProfile = {
+                        name: "DUYGUSAL ENGEL (Hisler ve Kaygı)",
+                        icon: "❤️", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200",
+                        diagnosis: "Sorunun 'Bilmemek' değil, 'İnanamamak'. Performans kaygın ve özgüven eksikliğin, sahip olduğun bilgiyi kilitliyor.",
+                        prescriptions: [
+                            "🫁 Nefes/Gevşeme: Sınav anı için 4-7-8 nefes egzersizlerini uygula.",
+                            "🔄 Yeniden Çerçeveleme: 'Yapamam' düşüncesini 'Henüz öğreniyorum' ile değiştir.",
+                            "👨‍👩‍👧 Veli Görüşmesi: Ailenle konuşup üzerindeki sonuç baskısını azaltmalıyız."
+                        ]
+                    };
+                } else {
+                    dominantProfile = {
+                        name: "DAVRANIŞSAL ENGEL (Alışkanlıklar)",
+                        icon: "⚙️", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200",
+                        diagnosis: "Sorunun 'Kapasite' değil, 'Disiplin'. Potansiyelin var ama erteleme hastalığı ve telefon bağımlılığı yüzünden eyleme geçemiyorsun.",
+                        prescriptions: [
+                            "📱 Dijital Detoks: Telefon kullanımı için katı kurallar (uygulama kilitleyici) koy.",
+                            "⏱️ Pomodoro: Masaya oturmayı kolaylaştırmak için 25 dakikalık kısa bloklar kur.",
+                            "🛏️ Çevre Düzenlemesi: Masanı sadeleştir, uyku ve beslenme saatini sabitle."
+                        ]
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${dominantProfile.bg} ${dominantProfile.border} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{dominantProfile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Baskın Kök Neden</div>
+                            <h3 className={`text-xl font-black ${dominantProfile.color} mb-3`}>{dominantProfile.name}</h3>
+                            <p className={`${dominantProfile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {dominantProfile.diagnosis} [cite: 3546, 3549, 3552]
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreA ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Bilişsel</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreA}<span className="text-xs text-slate-400">/50</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreB ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Duygusal</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreB}<span className="text-xs text-slate-400">/50</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${maxScore === scoreC ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Davranışsal</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreC}<span className="text-xs text-slate-400">/50</span></div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                            <h4 className="font-extrabold text-emerald-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                💊 Akademik Acil Müdahale Planı
+                            </h4>
+                            <ul className="space-y-3 relative z-10 text-sm text-slate-300">
+                                {dominantProfile.prescriptions.map((tip, idx) => (
+                                    <li key={idx} className="bg-slate-800/80 p-3 rounded-lg border border-slate-700">{tip}</li>
+                                ))}
+                            </ul>
+                        </div>
+                        
+                        {(scoreA > 35 || scoreB > 35) && (
+                            <div className="p-3 bg-rose-50 rounded-lg text-rose-700 text-xs font-bold text-center border border-rose-100 mt-4">
+                                ⚠️ DİKKAT: Puanlarından biri 35'in (klinik eşik) üzerinde. Koçunla bu durumu detaylı bir şekilde analiz edip, gerekirse uzman (Psikolojik Danışman vb.) desteğiyle ilerlemelisin. [cite: 3559-3560]
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
