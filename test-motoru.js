@@ -2438,6 +2438,81 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- AYÇE (AKADEMİK YETKİNLİK VE ÇALIŞMA STRATEJİLERİ) SONUÇ EKRANI ---
+            else if (testData.id === 'ayce') {
+                let scoreA = 0; // Planlama
+                let scoreB = 0; // Tekrar
+                let scoreC = 0; // Not Alma
+                let scoreD = 0; // Süre Yönetimi
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('ayce_a')) scoreA += val;
+                    if (key.startsWith('ayce_b')) scoreB += val;
+                    if (key.startsWith('ayce_c')) scoreC += val;
+                    if (key.startsWith('ayce_d')) scoreD += val;
+                });
+
+                const totalScore = scoreA + scoreB + scoreC + scoreD;
+
+                let profile = {};
+                if (totalScore >= 76) {
+                    profile = { title: "PROFESYONEL ÖĞRENCİ", icon: "🏆", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Kendi öğrenme sorumluluğunu almış, stratejik ve verimli çalışıyorsun. Sistem kurmayı biliyorsun." };
+                } else if (totalScore >= 51) {
+                    profile = { title: "GELİŞMEKTE OLAN ÖĞRENCİ", icon: "📈", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Bazı doğruları yapıyorsun ama istikrarsızsın. Tekrar eksikliği veya plansızlık yüzünden emeklerinin bir kısmı boşa gidiyor." };
+                } else {
+                    profile = { title: "AMATÖR ÖĞRENCİ", icon: "🚧", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Tamamen rastgele, 'canı isterse' çalışıyorsun. Bu sistemsizlik, sınav yaklaştıkça konuların yetişmeyeceği paniğine neden olur." };
+                }
+
+                // En zayıf halkayı (verimsizlik kaçağını) buluyoruz
+                let dimensions = [
+                    { name: "Planlama", score: scoreA, icon: "📅", tactic: "Ye-Kurbağayı (Eat That Frog)", desc: "Günün en zor dersini (kurbağayı) sabah ilk iş olarak hallet. Haftalık Blok Planlayıcı kullan." },
+                    { name: "Tekrar", score: scoreB, icon: "🧠", tactic: "1-7-30 Kuralı", desc: "Unutma eğrisini yenmek için öğrendiğin bilgiyi 1 gün, 1 hafta ve 1 ay sonra aktif olarak tekrar et." },
+                    { name: "Not Alma", score: scoreC, icon: "✍️", tactic: "Cornell Metodu", desc: "Kitabı deftere kopyalama. Sayfayı üçe böl (Notlar, Anahtar Kelimeler, Özet) ve kendi cümlelerinle yaz." },
+                    { name: "Süre Yönetimi", score: scoreD, icon: "⏳", tactic: "Pomodoro & Dijital Detoks", desc: "Masada telefon bulundurma. 25 dakika tam odak, 5 dakika mola şeklinde çalış." }
+                ];
+                
+                // En düşük puanlı boyutu seç
+                dimensions.sort((a, b) => a.score - b.score);
+                let weakLink = dimensions[0];
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{profile.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Strateji Profilin</div>
+                            <div className={`text-6xl font-black ${profile.color} mb-2`}>{totalScore}<span className="text-2xl opacity-50">/100</span></div>
+                            <h3 className={`text-2xl font-black ${profile.color} mb-2`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc} [cite: 1616-1624]
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                            {dimensions.map(dim => (
+                                <div key={dim.name} className={`bg-white p-3 rounded-xl border ${dim.name === weakLink.name ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-xl mb-1">{dim.icon}</div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase leading-tight h-6">{dim.name}</div>
+                                    <div className="text-lg font-bold text-slate-700">{dim.score}<span className="text-[10px] text-slate-400">/25</span></div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                            <h4 className="font-extrabold text-rose-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🚨 Tespit: {weakLink.name} Sorunu
+                            </h4>
+                            <p className="text-slate-300 text-sm mb-4">Sistemindeki en büyük "verimsizlik kaçağı" bu alanda. Emeğini korumak için şu taktiği uygulamaya başla:</p>
+                            
+                            <div className="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
+                                <div className="font-bold text-emerald-400 uppercase tracking-widest text-xs mb-1">Reçete: {weakLink.tactic}</div>
+                                <div className="text-sm font-medium text-white">{weakLink.desc} </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
