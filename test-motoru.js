@@ -2276,6 +2276,8 @@ const FocusON_Engine = () => {
                 );
             }
 
+            
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
