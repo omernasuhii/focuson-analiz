@@ -2888,6 +2888,70 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SZP-30 (SON VİRAJ 30 GÜNLÜK ZİRVE PERFORMANS) SONUÇ EKRANI ---
+            else if (testData.id === 'szp-30') {
+                let hayirCount = 0;
+                let evetCount = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    if (answers[key] === 'Hayır') hayirCount++;
+                    if (answers[key] === 'Evet') evetCount++;
+                });
+
+                const totalQuestions = 10;
+                const isRedAlarm = hayirCount >= 5;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isRedAlarm ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isRedAlarm ? '🚨' : '🏁'}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Hazırbulunuşluk Raporu</div>
+                            <h3 className={`text-2xl font-black ${isRedAlarm ? 'text-rose-600' : 'text-emerald-600'} mb-2`}>
+                                {isRedAlarm ? 'KIRMIZI ALARM: Biyoritim Bozuk' : 'SİSTEM HAZIR: Sınav Modu Aktif'}
+                            </h3>
+                            <p className={`${isRedAlarm ? 'text-rose-900' : 'text-emerald-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isRedAlarm 
+                                    ? `10 kritik maddenin ${hayirCount} tanesine "Hayır" dedin. Hala gece çalışıyor, sabah geç kalkıyor veya konu yetiştirmeye çalışıyorsan sınav günü %30 performans kaybı yaşarsın. Derhal uyku düzenini ve deneme saatini sabitlemelisin.` 
+                                    : `Harika! "Evet"lerin çoğunlukta. Sınavın biyolojik ve psikolojik ritmine başarıyla adapte olmuşsun. Bu çizgiyi bozmadan devam et.`} [cite: 1330-1332]
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-lg text-white mt-6 relative overflow-hidden">
+                            <h4 className="font-extrabold text-amber-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                📜 SON 30 GÜN KAMP KURALLARI
+                            </h4>
+                            <div className="space-y-4 relative z-10">
+                                <div className="bg-slate-800/80 p-4 rounded-lg border-l-4 border-amber-500">
+                                    <div className="font-bold text-amber-400 uppercase tracking-widest text-xs mb-1">KURAL 1: SİMÜLASYON YASASI</div>
+                                    <div className="text-sm font-medium text-slate-200">Bundan sonra her sabah sınav saatinde (Örn: 10.15) deneme çözülecek. Sınav süresince tuvalete gidilmeyecek, müzik dinlenmeyecek. [cite: 1335-1338]</div>
+                                </div>
+                                <div className="bg-slate-800/80 p-4 rounded-lg border-l-4 border-emerald-500">
+                                    <div className="font-bold text-emerald-400 uppercase tracking-widest text-xs mb-1">KURAL 2: HELALLEŞME LİSTESİ</div>
+                                    <div className="text-sm font-medium text-slate-200">Sıfır olduğun o zor konuyu artık bırak. Onunla vedalaş. Enerjini 'Az bildiğin ve sık hata yaptığın' konuları tamir etmeye harca. 1 net, 1 nettir. [cite: 1339-1342]</div>
+                                </div>
+                                <div className="bg-slate-800/80 p-4 rounded-lg border-l-4 border-blue-500">
+                                    <div className="font-bold text-blue-400 uppercase tracking-widest text-xs mb-1">KURAL 3: ARŞİV TARAMASI</div>
+                                    <div className="text-sm font-medium text-slate-200">Yeni soru bankası çözme. Sene başından beri çözdüğün denemelerdeki 'Yanlışlarını' çıkar ve sadece onları tekrar çöz. [cite: 1343-1346]</div>
+                                </div>
+                                <div className="bg-slate-800/80 p-4 rounded-lg border-l-4 border-rose-500">
+                                    <div className="font-bold text-rose-400 uppercase tracking-widest text-xs mb-1">KURAL 4: DİJİTAL DETOKS</div>
+                                    <div className="text-sm font-medium text-slate-200">Son 30 gün, sosyal medya, oyun ve dizi yasak. Beynin dopamin depolarını sınav gününe saklamalıyız. Ekran, odaklanma kaslarını zayıflatır. [cite: 1347-1349]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-xl mt-6">
+                            <h4 className="font-extrabold text-indigo-900 mb-2 text-sm uppercase tracking-wider flex justify-center items-center gap-2">
+                                🎤 Koçun Son Sözü
+                            </h4>
+                            <p className="text-indigo-800 text-sm font-medium italic leading-relaxed text-center">
+                                "Şampiyon, antrenman bitti. Artık maç zamanı. Bugüne kadar ne biriktirdiysen heybende o var. 'Keşke' demenin vakti geçti, şimdi 'İyi ki' deme vakti. Mükemmel olmak zorunda değilsin, sadece o günkü en iyi versiyonun olmalısın. Sınav, senin zekanı ölçmeyecek; sınav senin soğukkanlılığını, stratejini ve emeğini ne kadar yönetebildiğini ölçecek. Bitiş çizgisi göründü, gaza bas!" [cite: 1351]
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
