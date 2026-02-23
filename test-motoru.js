@@ -2513,6 +2513,92 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SOÇ-A (SORU OKUMA VE ÇÖZME STRATEJİLERİ ANALİZİ) SONUÇ EKRANI ---
+            else if (testData.id === 'soc-a') {
+                let scoreA = 0; // Okuma
+                let scoreB = 0; // Dikkat
+                let scoreC = 0; // Strateji
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key]) || 0;
+                    if (key.startsWith('soca_a')) scoreA += val;
+                    if (key.startsWith('soca_b')) scoreB += val;
+                    if (key.startsWith('soca_c')) scoreC += val;
+                });
+
+                const totalErrors = scoreA + scoreB + scoreC;
+
+                let profile = {};
+                if (totalErrors === 0) {
+                    profile = { title: "TEKNİK KUSURSUZLUK", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Harika! Denemede teknik veya taktiksel bir hata yapmamışsın. Eğer netlerin düşükse, bunun tek sebebi 'bilgi/konu eksikliği' demektir. Doğrudan konu çalışmasına odaklanmalısın." };
+                } else {
+                    profile = { title: "TEKNİK KAÇAK TESPİT EDİLDİ", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: `Son denemende tam ${totalErrors} soruyu bilgi eksikliğinden değil, teknik hatalar yüzünden kaybetmişsin. Bu aslında iyi bir haber; teknik hatalar, bilgi eksiğinden çok daha hızlı düzeltilir!` };
+                }
+
+                let dimensions = [
+                    { name: "Okuma ve Algı", score: scoreA, icon: "👁️", tactic: "Şerh Koyma & Kök Analizi", desc: "Hızlı değil doğru okumalısın. Soru köklerine (+/-) işareti koy. Uzun paragraflarda her cümlenin sonuna küçük bir çizgi (/) atarak göz takibini sağla." },
+                    { name: "Dikkat ve İşlem", score: scoreB, icon: "✍️", tactic: "Kalem Oynatma Kuralı", desc: "Zihinden işlem yapmak yasak! En basit toplamayı bile (2+3=5) kağıda yaz. Ayrıca işlem yaparken kağıdı düzenli kullan, verileri taşırken kontrol et." },
+                    { name: "Strateji ve Taktik", score: scoreC, icon: "⏱️", tactic: "Turlama & Süre Yönetimi", desc: "Sınav bilgi değil, kriz yönetimidir. Bir soru 2 dakikayı geçiyorsa onunla inatlaşma, yanına yıldız atıp geç (Turlama). Şıkları ve öncülleri eleyerek ilerle." }
+                ];
+                
+                dimensions.sort((a, b) => b.score - a.score);
+                let dominantError = dimensions[0];
+
+                let percA = totalErrors > 0 ? Math.round((scoreA / totalErrors) * 100) : 0;
+                let percB = totalErrors > 0 ? Math.round((scoreB / totalErrors) * 100) : 0;
+                let percC = totalErrors > 0 ? Math.round((scoreC / totalErrors) * 100) : 0;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Hata Raporu Özeti</div>
+                            {totalErrors > 0 && <div className={`text-6xl font-black ${profile.color} mb-2`}>{totalErrors}<span className="text-xl opacity-50"> Kayıp Soru</span></div>}
+                            <h3 className={`text-xl font-black ${profile.color} mb-2`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc} [cite: 3408-3409]
+                            </p>
+                        </div>
+                        
+                        {totalErrors > 0 && (
+                            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                                <div className={`bg-white p-3 rounded-xl border ${dominantError.name === 'Okuma ve Algı' ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Okuma</div>
+                                    <div className="text-xl font-bold text-slate-700">{scoreA} <span className="text-xs text-slate-400">(%{percA})</span></div>
+                                </div>
+                                <div className={`bg-white p-3 rounded-xl border ${dominantError.name === 'Dikkat ve İşlem' ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Dikkat</div>
+                                    <div className="text-xl font-bold text-slate-700">{scoreB} <span className="text-xs text-slate-400">(%{percB})</span></div>
+                                </div>
+                                <div className={`bg-white p-3 rounded-xl border ${dominantError.name === 'Strateji ve Taktik' ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Strateji</div>
+                                    <div className="text-xl font-bold text-slate-700">{scoreC} <span className="text-xs text-slate-400">(%{percC})</span></div>
+                                </div>
+                            </div>
+                        )}
+
+                        {totalErrors > 0 && (
+                            <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                                <h4 className="font-extrabold text-rose-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    🚨 Sistem Kaçağı: {dominantError.name}
+                                </h4>
+                                <p className="text-slate-300 text-sm mb-4">En çok fireyi bu alandan veriyorsun. Bir sonraki denemeye kadar odaklanman gereken acil eylem planı (TOTE) aşağıdadır:</p>
+                                
+                                <div className="bg-slate-800 p-4 rounded-lg border-l-4 border-indigo-500">
+                                    <div className="font-bold text-indigo-400 uppercase tracking-widest text-xs mb-1">Yeni Taktik: {dominantError.tactic}</div>
+                                    <div className="text-sm font-medium text-white">{dominantError.desc} [cite: 3392-3406]</div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {scoreB > (totalErrors * 0.4) && totalErrors > 5 && (
+                             <div className="mt-4 p-3 bg-rose-50 rounded-lg text-rose-700 text-xs font-bold text-center border border-rose-100">
+                                ⚠️ DİKKAT: Dikkat ve işlem hataların toplam hatalarının %40'ını aşıyor. Eğer bu durum kronikleştiyse veya günlük hayatında da unutkanlık/sakarlık yaşıyorsan koçunla 'odaklanma testleri' üzerine konuşabilirsin. [cite: 3411-3412]
+                             </div>
+                        )}
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
