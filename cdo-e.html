@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - ÇDÖ-E Öz-Disiplin Analizi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'cdo-e',
+            title: 'ÇDÖ-E Öz-Disiplin Analizi',
+            description: 'Başarı, canın istemediğinde de masaya oturabilme sanatıdır. Bu test senin "akademik iradeni" ölçecek. Lütfen ideal olanı değil, şu anki gerçek durumunu işaretle.',
+            questions: [
+                // BOYUT A: PLANLAMA
+                { id: 'cdoe_a_1', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Haftalık çalışma programımı Pazar akşamından veya Pazartesi sabahından yazılı hale getiririm.' },
+                { id: 'cdoe_a_2', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Masaya oturmadan önce "Bugün tam olarak neyi bitireceğim?" sorusunun cevabı bellidir.' },
+                { id: 'cdoe_a_3', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Zor dersleri zihnimin en açık olduğu saatlere (sabah vb.) yerleştiririm.' },
+                { id: 'cdoe_a_4', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Çalışma masamda sadece o an çalışacağım dersin materyalleri bulunur, masa sadedir.' },
+                { id: 'cdoe_a_5', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Okul/Dershane programı ile kendi bireysel çalışma programımı dengeli birleştiririm.' },
+                { id: 'cdoe_a_6', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Beklenmedik durumlar (misafir, hastalık) için programımda "telafi saatleri" bırakırım.' },
+                { id: 'cdoe_a_7', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Hangi derse hangi kaynaktan (kitap/video) çalışacağımı önceden belirlerim.' },
+                { id: 'cdoe_a_8', type: 'likert', section: 'Bölüm 1: Planlama ve Organizasyon', text: 'Önceliklerimi belirlerken "Acil" ve "Önemli" ayrımını yaparım.' },
+
+                // BOYUT B: SÜREKLİLİK
+                { id: 'cdoe_b_1', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Çalışma isteğim olmasa bile ("Canım istemiyor" desem de) programıma sadık kalıp masaya otururum.' },
+                { id: 'cdoe_b_2', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Bir gün programım aksasa bile, ertesi gün "kaldığım yerden" devam ederim (Pes etmem).' },
+                { id: 'cdoe_b_3', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Hafta sonları veya tatil günlerinde de biyolojik saatimi (uyku-uyanıklık) bozmam.' },
+                { id: 'cdoe_b_4', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Başladığım bir soru bankasını veya fasikülü yarım bırakmam, sonuna kadar bitiririm.' },
+                { id: 'cdoe_b_5', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Sınav sonucum kötü gelse bile çalışma tempomu düşürmem (Duygusal dayanıklılık).' },
+                { id: 'cdoe_b_6', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: '"Zinciri Kırma" metodunu uygular, her gün az da olsa mutlaka çalışma yaparım.' },
+                { id: 'cdoe_b_7', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Zor bir konuyla karşılaştığımda hemen vazgeçmem, üzerine giderim.' },
+                { id: 'cdoe_b_8', type: 'likert', section: 'Bölüm 2: Süreklilik ve İstikrar', text: 'Çalışma rutinimi (başlama saati vb.) kolay kolay değiştirmem.' },
+
+                // BOYUT C: DİSİPLİN
+                { id: 'cdoe_c_1', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Ders çalışırken cep telefonumu odadan çıkarırım veya "Rahatsız Etme" moduna alırım.' },
+                { id: 'cdoe_c_2', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Mola sürem dolduğunda (alarm çaldığında) ertelemeden hemen masaya dönerim.' },
+                { id: 'cdoe_c_3', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Ders sırasında aklıma başka şeyler gelse bile tekrar konuya odaklanmayı başarabilirim.' },
+                { id: 'cdoe_c_4', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Arkadaşlarım dışarı çağırdığında veya oyun teklif ettiğinde, ders saatimse "Hayır" diyebilirim.' },
+                { id: 'cdoe_c_5', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Blok çalışma (Örn: 40 dk) yapıyorsam, süre dolmadan su içmeye veya tuvalete kalkmam.' },
+                { id: 'cdoe_c_6', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Uykum gelse veya sıkılsam bile o günkü hedefim (soru sayısı) bitmeden yatmam.' },
+                { id: 'cdoe_c_7', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Ders çalışırken müzik dinlemek, atıştırmak gibi "yalancı odaklanma" tuzaklarına düşmem.' },
+                { id: 'cdoe_c_8', type: 'likert', section: 'Bölüm 3: Disiplin ve Odak Yönetimi', text: 'Kendi kendime koyduğum kurallara (Örn: "Bu test bitmeden kalkmak yok") uyarım.' }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
