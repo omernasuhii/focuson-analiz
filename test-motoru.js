@@ -2276,7 +2276,74 @@ const FocusON_Engine = () => {
                 );
             }
 
-            
+            // --- TOTE (DÖNGÜSEL HEDEF YÖNETİMİ) SONUÇ EKRANI ---
+            else if (testData.id === 'tote') {
+                const subject = answers['tote_subject'] || 'Belirtilmedi';
+                const ideal = parseInt(answers['tote_ideal']) || 0;
+                const current = parseInt(answers['tote_current']) || 0;
+                const oldStrat = answers['tote_old_strat'] || 'Belirtilmedi';
+                const newStrat = answers['tote_new_strat'] || 'Yeni Strateji Belirlenmedi';
+
+                const gap = ideal - current;
+                const isExit = gap <= 0;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isExit ? 'bg-emerald-50 border-emerald-200' : 'bg-indigo-50 border-indigo-200'} text-center shadow-sm`}>
+                            <div className="text-5xl mb-3">{isExit ? '✅' : '🔄'}</div>
+                            <h3 className={`text-2xl font-black ${isExit ? 'text-emerald-800' : 'text-indigo-800'} mb-2`}>
+                                {isExit ? 'EXIT: Görev Tamamlandı!' : 'LOOP: Döngüye Giriliyor'}
+                            </h3>
+                            <p className={`${isExit ? 'text-emerald-900' : 'text-indigo-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isExit 
+                                    ? `Harika! Hedeflediğin noktaya ulaşmışsın (Fark: 0). Artık bu konuya ekstra enerji harcamayı bırakıp (Mükemmeliyetçilik yapma) sıradaki eksik konuna geçebilirsin.` 
+                                    : `Sistemde ${gap} netlik/puanlık bir "Fark (Gap)" tespit edildi. Eski stratejinin çalışmadığı onaylandı. Şimdi yeni seçtiğin operasyonla bu fark kapanana kadar denemeye devam edeceğiz.`}
+                            </p>
+                        </div>
+                        
+                        {!isExit && (
+                            <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 text-6xl opacity-5">⚙️</div>
+                                <h4 className="font-extrabold text-blue-400 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    TOTE Algoritma Raporu
+                                </h4>
+                                
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                                        <div className="text-xs text-slate-400 font-bold uppercase">Hedeflenen (İdeal)</div>
+                                        <div className="text-lg font-black text-emerald-400">{ideal}</div>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                                        <div className="text-xs text-slate-400 font-bold uppercase">Mevcut Durum</div>
+                                        <div className="text-lg font-black text-amber-400">{current}</div>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-rose-900/40 p-3 rounded-lg border border-rose-500/50">
+                                        <div className="text-xs text-rose-300 font-bold uppercase flex items-center gap-2">⚠️ Kapatılacak Fark</div>
+                                        <div className="text-xl font-black text-rose-500">-{gap}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {!isExit && (
+                            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mt-4">
+                                <h4 className="font-extrabold text-slate-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    🛠️ Operasyon Güncellemesi
+                                </h4>
+                                <div className="bg-rose-50 p-3 rounded-lg mb-2 border border-rose-100 opacity-70">
+                                    <span className="text-[10px] font-bold text-rose-600 uppercase">İptal Edilen Strateji:</span>
+                                    <p className="text-sm text-rose-900 mt-1 line-through">"{oldStrat}"</p>
+                                </div>
+                                <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                                    <span className="text-[10px] font-bold text-indigo-600 uppercase">Yeni Aktif Strateji (O2):</span>
+                                    <p className="text-sm text-indigo-900 font-bold mt-1">"{newStrat}"</p>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-3 text-center italic">Bu stratejiyi 1 hafta uygula ve sonra TEST 2 aşamasına geç. [cite: 1453-1454]</p>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
 
             // --- DİĞER GENEL SONUÇ ---
             else {
