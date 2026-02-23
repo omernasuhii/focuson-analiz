@@ -3020,6 +3020,88 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- SS-DKM (SINAV SONRASI DURUM ANALİZİ VE KARAR MATRİSİ) SONUÇ EKRANI ---
+            else if (testData.id === 'ss-dkm') {
+                const feeling = answers['ssdkm_feeling'];
+                const thought = answers['ssdkm_thought'];
+                const mood = parseInt(answers['ssdkm_mood']) || 5;
+                const expected = parseInt(answers['ssdkm_expected']) || 0;
+                const realized = parseInt(answers['ssdkm_realized']) || 0;
+                const potential = answers['ssdkm_potential'];
+                const strength = answers['ssdkm_strength'];
+
+                const gap = realized - expected; // eksi ise hedefin altında kalınmış
+                const gapPercent = expected > 0 ? Math.round(Math.abs(gap) / expected * 100) : 0;
+
+                let recommendation = {};
+                if (strength === 'Hayir' || potential === 'Evet') {
+                    recommendation = {
+                        decision: "KESİNLİKLE TERCİH YAPILMALI",
+                        icon: "🎓", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200",
+                        desc: "Bir yıl daha aynı stresi kaldıracak enerjin yok veya mevcut sonucun zaten senin gerçek potansiyeline denk. Üniversite hayatına başlamak ve yuvadan uçmak senin için psikolojik olarak en sağlıklı karar olacaktır. Bu puanla yazılabilecek en iyi 'Güvenlik Hattı' tercihini yapacağız."
+                    };
+                } else if (strength === 'Evet' && potential === 'Hayir' && gap < 0 && gapPercent > 15) {
+                    recommendation = {
+                        decision: "RİSK ALIP MEZUNA KALINABİLİR",
+                        icon: "🔄", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200",
+                        desc: "Hedefin ile gerçeğin arasında ciddi bir sapma var ve sen potansiyelinin çok altında kaldığını biliyorsun. Daha da önemlisi, bir yıl daha savaşacak iradeye sahipsin. Eğer ailen de destekliyorsa, bu yılı bir 'tecrübe' sayıp seneye şampiyonluğa oynayabilirsin."
+                    };
+                } else {
+                    recommendation = {
+                        decision: "TERCİH YAP, GELMEZSE MEZUNA KAL",
+                        icon: "⚖️", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200",
+                        desc: "Araftasın. İstemediğin bir bölümü sırf gitmek için yazma, ancak hayalindeki bölümlerin 'Uçuş Hattı' ve 'Gerçekçi Hat' bölgelerini listene mutlaka ekle. Eğer sistem seni yerleştirirse gidersin, yerleşmezsen de psikolojik olarak seneye hazırlanmaya zaten açıksın."
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${recommendation.bg} ${recommendation.border} text-center shadow-sm`}>
+                            <div className="text-6xl mb-3">{recommendation.icon}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Algoritma Karar Tavsiyesi</div>
+                            <h3 className={`text-2xl font-black ${recommendation.color} mb-3`}>{recommendation.decision}</h3>
+                            <p className={`${recommendation.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {recommendation.desc} [cite: 1453-1465]
+                            </p>
+                        </div>
+                        
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white relative overflow-hidden">
+                            <h4 className="font-extrabold text-slate-100 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                📊 Akademik Hasar Tespiti
+                            </h4>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                                    <div className="text-[10px] text-slate-400 font-bold uppercase">Hedeflenen Net</div>
+                                    <div className="text-xl font-black text-emerald-400">{expected}</div>
+                                </div>
+                                <div className="bg-slate-800 p-3 rounded-lg text-center border border-slate-700">
+                                    <div className="text-[10px] text-slate-400 font-bold uppercase">Tahmini Net</div>
+                                    <div className="text-xl font-black text-blue-400">{realized}</div>
+                                </div>
+                                <div className={`p-3 rounded-lg text-center border ${gap < 0 ? 'bg-rose-900/40 border-rose-500/50' : 'bg-emerald-900/40 border-emerald-500/50'}`}>
+                                    <div className={`text-[10px] font-bold uppercase ${gap < 0 ? 'text-rose-300' : 'text-emerald-300'}`}>Sapma (Fark)</div>
+                                    <div className={`text-xl font-black ${gap < 0 ? 'text-rose-500' : 'text-emerald-400'}`}>{gap > 0 ? '+' : ''}{gap}</div>
+                                </div>
+                            </div>
+                            {gap < 0 && gapPercent > 20 && (
+                                <div className="mt-3 text-xs text-rose-300 bg-rose-900/30 p-2 rounded text-center border border-rose-500/20">
+                                    Kritik Sapma: Hedefinden %{gapPercent} oranında saptın. Sınav yönetimi veya temel bilgi hatası mevcut. [cite: 1448-1449]
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-6 bg-white border border-slate-200 rounded-xl mt-4 shadow-sm">
+                            <h4 className="font-extrabold text-slate-800 mb-2 text-sm uppercase tracking-wider flex justify-center items-center gap-2">
+                                💌 Veliye Not
+                            </h4>
+                            <p className="text-slate-600 text-sm font-medium italic leading-relaxed text-center">
+                                "Zorlu bir maratonu tamamladınız. Şu an elimizdeki bu tablo, çocuğumuzun değerini değil, o günkü performansını gösterir. Lütfen 'Ben sana demiştim' cümlesini kurmayalım. Şu an onun en çok ihtiyaç duyduğu şey 'Suçlanmak' değil, 'Anlaşılmaktır'. Kararınız ne olursa olsun, biz yanınızdayız." [cite: 1466-1468]
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
