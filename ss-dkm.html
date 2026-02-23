@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusON - SS-DKM Sınav Sonrası Karar Matrisi</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; position: fixed; width: 100%; height: 100%; overflow: hidden; }
+        .question-enter { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(40px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        textarea::-webkit-scrollbar { width: 0px; } *:focus { outline: none; }
+    </style>
+
+    <script>
+        window.CURRENT_TEST_DATA = {
+            id: 'ss-dkm',
+            title: 'SS-DKM Sınav Sonrası Karar Matrisi',
+            description: 'Zorlu maraton bitti. Geçmiş olsun! Sonuç ne olursa olsun, sen elinden geleni yaptın. Şimdi duygularımızı bir kenara bırakıp, rakamlarla "Ne yapacağız?" sorusuna rasyonel bir cevap bulma vakti.',
+            questions: [
+                // BÖLÜM 1: PSİKOLOJİK DEBRİEFİNG
+                { 
+                    id: 'ssdkm_feeling', type: 'multiple_choice', section: 'Bölüm 1: Duygu Dökümü', 
+                    text: 'Sınav anında en çok ne hissettin?', 
+                    options: [
+                        { label: 'Sakin ve Odaklıydım (Kontrol bendeydi)', value: 'Kontrol' },
+                        { label: 'Zamanla yarıştım, çok panikledim', value: 'Panik' },
+                        { label: 'Donup kaldım, hiçbir şey hatırlayamadım (Blackout)', value: 'Donma' }
+                    ]
+                },
+                { 
+                    id: 'ssdkm_thought', type: 'multiple_choice', section: 'Bölüm 1: Duygu Dökümü', 
+                    text: 'Sınavdan çıktığın an ilk düşüncen neydi?', 
+                    options: [
+                        { label: '"Bitti, kurtuldum! Sonuç ne olursa olsun rahatladım."', value: 'Rahatlama' },
+                        { label: '"Keşke sene içinde daha çok çalışsaydım, benim hatam."', value: 'Pismanlik' },
+                        { label: '"Çok zordu, hakkımı alamadım, şanssızdım."', value: 'Dis_Etken' }
+                    ]
+                },
+                { 
+                    id: 'ssdkm_mood', type: 'scale10', section: 'Bölüm 1: Duygu Dökümü', 
+                    text: 'Şu anki Ruh Halin (Motivasyonun) 1-10 üzerinden kaç? (1: Tam bir çöküş, 10: Zafer/Kutlama)' 
+                },
+
+                // BÖLÜM 2: AKADEMİK HASAR TESPİTİ
+                { 
+                    id: 'ssdkm_expected', type: 'number', section: 'Bölüm 2: Akademik Tablo', 
+                    text: 'Sınava girmeden önce HEDEFLEDİĞİN (Beklediğin) TOPLAM NET kaçtı?', 
+                    placeholder: 'Örn: 80' 
+                },
+                { 
+                    id: 'ssdkm_realized', type: 'number', section: 'Bölüm 2: Akademik Tablo', 
+                    text: 'Cevap anahtarı açıklandıktan sonraki TAHMİNİ (Gerçekleşen) TOPLAM NETİN kaç?', 
+                    placeholder: 'Örn: 65' 
+                },
+
+                // BÖLÜM 3: KARAR MATRİSİ
+                { 
+                    id: 'ssdkm_potential', type: 'multiple_choice', section: 'Bölüm 3: Karar Aşaması', 
+                    text: 'Bu tahmini sonuç, senin "gerçek potansiyelini" yansıtıyor mu? (Ben istesem çok daha iyisini yapardım diyor musun?)', 
+                    options: [{ label: 'Evet, kapasitem bu kadardı', value: 'Evet' }, { label: 'Hayır, potansiyelim çok daha yüksek', value: 'Hayir' }] 
+                },
+                { 
+                    id: 'ssdkm_strength', type: 'multiple_choice', section: 'Bölüm 3: Karar Aşaması', 
+                    text: 'Eğer gerekirse, BİR YIL DAHA (Mezuna kalıp) aynı çalışma stresini kaldıracak psikolojik ve maddi gücün var mı?', 
+                    options: [{ label: 'Evet, bir yıl daha savaşırım', value: 'Evet' }, { label: 'Hayır, asla bir yıl daha çekemem', value: 'Hayir' }] 
+                }
+            ]
+        };
+    </script>
+
+    <script type="text/babel" src="test-motoru.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
