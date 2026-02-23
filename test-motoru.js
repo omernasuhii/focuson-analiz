@@ -2952,6 +2952,74 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- ZG-ZP (ZOR GÜN SENARYOSU VE ZAFER PLANI) SONUÇ EKRANI ---
+            else if (testData.id === 'zg-zp') {
+                let unacceptedCount = 0;
+                
+                Object.keys(answers).forEach(key => {
+                    if (answers[key] === 'Hayır') unacceptedCount++;
+                });
+
+                const isFullyAccepted = unacceptedCount === 0;
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${isFullyAccepted ? 'bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200' : 'bg-rose-50 border-rose-200'} text-center shadow-lg text-slate-800`}>
+                            <div className="text-6xl mb-4">{isFullyAccepted ? '🏆' : '⚠️'}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Protokol Onay Durumu</div>
+                            <h3 className={`text-2xl font-black ${isFullyAccepted ? 'text-indigo-800' : 'text-rose-600'} mb-3`}>
+                                {isFullyAccepted ? 'ZAFER PLANI AKTİF EDİLDİ' : 'KRİTİK GÜVENLİK İHLALİ'}
+                            </h3>
+                            <p className={`${isFullyAccepted ? 'text-indigo-900' : 'text-rose-900'} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {isFullyAccepted 
+                                    ? `Tebrikler Şampiyon! Sınav anında karşına çıkabilecek tüm kriz senaryolarını okudun ve zihinsel savunma kalkanlarını kuşandın. Artık sürpriz yok, sadece senin yöneteceğin bir süreç var.` 
+                                    : `Sözleşmedeki bazı kriz yönetimi kurallarını reddettin. Sınav anında doğaçlama yapmak veya kurallara uymamak büyük risk taşır. Lütfen koçunla reddettiğin maddeler üzerine bir strateji toplantısı yap.`} [cite: 1361, 1363-1364]
+                            </p>
+                        </div>
+                        
+                        {isFullyAccepted && (
+                            <div className="bg-slate-900 p-6 rounded-xl shadow-xl text-white relative overflow-hidden mt-6">
+                                <h4 className="font-extrabold text-amber-400 mb-5 text-sm uppercase tracking-wider flex justify-center items-center gap-2">
+                                    🛡️ Kriz Anı Taktik Panosu
+                                </h4>
+                                <div className="space-y-4 relative z-10 text-sm">
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">🫁</div>
+                                        <div>
+                                            <strong className="text-emerald-400 block mb-1">Nefes ve Su Terapisi</strong>
+                                            <span className="text-slate-300">"Sıfırlandığını" hissettiğin an kalemi bırak ve 4-7-8 nefesi alarak beynine oksijen yolla. [cite: 1398-1402]</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">🔄</div>
+                                        <div>
+                                            <strong className="text-blue-400 block mb-1">Branş Değişimi (Mola)</strong>
+                                            <span className="text-slate-300">Arka arkaya yapamadığın sorular çıkarsa inatlaşma, o derse mola verip zihninin sevdiği başka bir derse atla. [cite: 1403-1404]</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className="text-2xl">🎧</div>
+                                        <div>
+                                            <strong className="text-rose-400 block mb-1">Cam Fanus Etkisi</strong>
+                                            <span className="text-slate-300">Okul bahçesinde konuşulanları duyma. Sen kendi "Mükemmellik Çemberi"ndesin. [cite: 1388-1390]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="p-6 bg-white border border-slate-200 rounded-xl mt-6 shadow-sm">
+                            <h4 className="font-extrabold text-slate-800 mb-2 text-sm uppercase tracking-wider flex justify-center items-center gap-2">
+                                💌 Son Bir Not
+                            </h4>
+                            <p className="text-slate-600 text-sm font-medium italic leading-relaxed text-center">
+                                "Bugün gireceğin sınav bir savaş değil, sadece bir değerlendirme. O kapıdan çıktığında sonuç ne olursa olsun senin en büyük başarın o masada döktüğün terdir. Geçmiş olsun, bitti gitti. Şimdi derin bir nefes al ve başarının tadını çıkar!" [cite: 1411-1413]
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
