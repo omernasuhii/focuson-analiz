@@ -2345,6 +2345,99 @@ const FocusON_Engine = () => {
                 );
             }
 
+            // --- ÇDÖ-E (ÇALIŞMA DAVRANIŞI VE ÖZ-DİSİPLİN) SONUÇ EKRANI ---
+            else if (testData.id === 'cdo-e') {
+                let scoreA = 0; // Planlama
+                let scoreB = 0; // Süreklilik
+                let scoreC = 0; // Disiplin
+                
+                Object.keys(answers).forEach(key => {
+                    let val = parseInt(answers[key] || 0);
+                    if (key.startsWith('cdoe_a')) scoreA += val;
+                    if (key.startsWith('cdoe_b')) scoreB += val;
+                    if (key.startsWith('cdoe_c')) scoreC += val;
+                });
+
+                const totalScore = scoreA + scoreB + scoreC;
+
+                let profile = {};
+                if (totalScore >= 91) {
+                    profile = { title: "PROFESYONEL ÖĞRENCİ 🦁", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", desc: "Çalışmayı 'duygularına' değil 'sisteme' bağlamışsın. Canın istemese de yapıyorsun. İradeni değil, alışkanlıklarını kullanıyorsun. Bu sistem seni zirveye taşır." };
+                } else if (totalScore >= 61) {
+                    profile = { title: "SAMAN ALEVİ 🐇", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", desc: "Plan yapıyorsun, hızlı başlıyorsun ama çabuk sönüyorsun. 3 gün mükemmel çalışıp, 4 gün yatıyorsun. Duygusal dalgalanmaların ve disiplin eksikliğin, potansiyelini çalıyor." };
+                } else {
+                    profile = { title: "TURİST ÖĞRENCİ 🐢", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", desc: "Sadece sınav haftası veya 'canın isteyince' çalışıyorsun. Masaya bir 'misafir' gibi uğruyorsun. Rutin yokluğu, sınav anında 'hatırlayamıyorum' krizlerine yol açacaktır." };
+                }
+
+                // En zayıf halkayı bulup ona göre reçete yazıyoruz
+                let minScore = Math.min(scoreA, scoreB, scoreC);
+                let weakLink = {};
+                
+                if (minScore === scoreA) {
+                    weakLink = {
+                        name: "Planlama ve Organizasyon", icon: "🗺️", 
+                        issue: "Kervan Yolda Düzülür Mantığı",
+                        solution: "'Haftalık Blok Planlayıcı' kullanmalısın. Her Pazar akşamı 15 dakikanı 'Haftalık Tasarım Toplantısı'na ayırıp ne zaman ne çözeceğini önceden belirle."
+                    };
+                } else if (minScore === scoreB) {
+                    weakLink = {
+                        name: "Süreklilik ve İstikrar", icon: "🔗", 
+                        issue: "Bir Var Bir Yok (İstikrarsızlık)",
+                        solution: "'Zinciri Kırma' takvimini uygulamalısın. Günde 300 soru çözüp ertesi gün yatmak yerine, hedefini küçült (örn: günde 30 soru) ama HER GÜN yap."
+                    };
+                } else {
+                    weakLink = {
+                        name: "Disiplin ve Odak Yönetimi", icon: "🛡️", 
+                        issue: "Çeldiricilere Yenilme (Telefon/Mola Uzatma)",
+                        solution: "'Dijital Detoks' ve 'Pomodoro (25+5)' tekniklerine geçmelisin. Masada telefon bulundurmak iradeni tüketir, onu fiziken odadan çıkarman gerekiyor."
+                    };
+                }
+
+                content = (
+                    <div className="space-y-6 mb-8 text-left">
+                        <div className={`p-6 rounded-2xl border ${profile.bg} ${profile.border} text-center shadow-sm`}>
+                            <div className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">Akademik İrade Profilin</div>
+                            <div className={`text-6xl font-black ${profile.color} mb-2`}>{totalScore}<span className="text-2xl opacity-50">/120</span></div>
+                            <h3 className={`text-2xl font-black ${profile.color} mb-3`}>{profile.title}</h3>
+                            <p className={`${profile.color} font-medium leading-relaxed opacity-90 text-sm`}>
+                                {profile.desc}
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                            <div className={`bg-white p-3 rounded-xl border ${minScore === scoreA ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Planlama</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreA}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${minScore === scoreB ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Süreklilik</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreB}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                            <div className={`bg-white p-3 rounded-xl border ${minScore === scoreC ? 'border-rose-400 ring-2 ring-rose-100' : 'border-slate-100'} shadow-sm text-center flex flex-col justify-center`}>
+                                <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase">Disiplin</div>
+                                <div className="text-xl font-bold text-slate-700">{scoreC}<span className="text-xs text-slate-400">/40</span></div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900 p-5 rounded-xl shadow-sm text-white mt-4 relative overflow-hidden">
+                            <h4 className="font-extrabold text-rose-400 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+                                🚨 Sistemdeki En Zayıf Halka
+                            </h4>
+                            <div className="bg-slate-800 p-4 rounded-lg border-l-4 border-rose-500">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-2xl">{weakLink.icon}</span>
+                                    <span className="font-bold text-slate-200">{weakLink.name}</span>
+                                </div>
+                                <div className="text-xs text-rose-300 mb-1">Teşhis: {weakLink.issue}</div>
+                                <div className="text-sm font-medium text-emerald-400 mt-2 border-t border-slate-700 pt-2">
+                                    💊 Reçete: {weakLink.solution} [cite: 1554-1562]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             // --- DİĞER GENEL SONUÇ ---
             else {
                 content = <p className="text-emerald-600 font-medium mb-8">Verilerin başarıyla koçuna iletildi!</p>;
