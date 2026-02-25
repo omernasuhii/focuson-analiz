@@ -188,12 +188,12 @@ const FocusON_Engine = () => {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'Prefer': 'return=minimal',
-                    'Content-Profile': 'focuson' // Eğer tablon 'public' şemasındaysa bu satırı YORUMA AL (//)
+                    'Content-Profile': 'focuson' // Tablon focuson şemasında olduğu için bu kesinlikle kalmalı.
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
                     test_code: testData.id,
-                    answers: testAnswers,
+                    answers: testAnswers, 
                     ai_prompt_context: aiPromptContext
                 })
             });
@@ -201,7 +201,7 @@ const FocusON_Engine = () => {
             // Eğer HTTP durumu 200-299 dışında bir şeyse, Supabase'in gizli hata mesajını oku!
             if (!response.ok) {
                 const errorText = await response.text(); // Hatayı yakala
-                throw new Error(`Supabase Sunucu Hatası (${response.status}): ${errorText}`);
+                throw new Error(`Supabase Sunucu Hatası (${response.status}): \n${errorText}`);
             }
             
             setSubmitStatus('success');
