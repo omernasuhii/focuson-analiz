@@ -141,19 +141,47 @@ const FocusON_Engine = () => {
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
+// --- YAPAY ZEKA İÇİN BRİFİNG HAZIRLAYICI ---
+    const generateAIContext = (testData, answers) => {
+        let contextText = `Öğrenci az önce "${testData.title}" testini çözdü.\n`;
+        contextText += `Testin Amacı: ${testData.description}\n\n`;
+        contextText += `Öğrencinin Soru Bazlı Cevapları:\n`;
+
+        testData.questions.forEach(q => {
+            if (q.id === 'student_id') return; // Numara sorusunu atla
+            
+            let answerVal = answers[q.id] || "Boş Bıraktı";
+            let answerLabel = answerVal;
+
+            // Eğer çoktan seçmeliyse şıkkın tam metnini al
+            if (q.options) {
+                let selectedOpt = q.options.find(o => String(o.value) === String(answerVal) || String(o.label).includes(String(answerVal)));
+                if (selectedOpt) answerLabel = selectedOpt.label;
+            }
+
+            contextText += `- Soru: "${q.text}" | Cevabı: ${answerLabel}\n`;
+        });
+
+        contextText += `\nSen FocusON dijital öğrenci koçusun. Yukarıdaki test sorularını ve öğrencinin verdiği cevapları incele. Öğrencinin test sonucuna göre ona samimi, motive edici ve akademik bir dille (sen diliyle) kısa bir durum değerlendirmesi ve tavsiye yaz. (Sadece doğrudan koçluk metnini üret, merhaba/saygılar gibi kalıplar kullanma).`;
+
+        return contextText;
+    };
+
     // --- SUPABASE GÖNDERİM FONKSİYONU ---
     const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
-        
         const studentId = finalAnswers['student_id'];
         const testAnswers = { ...finalAnswers };
         delete testAnswers['student_id'];
 
+        // Yapay Zeka için bağlam metnini oluşturuyoruz
+        const aiPromptContext = generateAIContext(testData, testAnswers);
+
         const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
-
+        
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, { // <-- NOT: Tablo adın test_results ise böyle kalmalı
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -165,10 +193,10 @@ const FocusON_Engine = () => {
                 body: JSON.stringify({
                     student_id: studentId, 
                     test_code: testData.id,
-                    answers: testAnswers
+                    answers: testAnswers,
+                    ai_prompt_context: aiPromptContext // <-- İŞTE SİHİR BURADA!
                 })
             });
-
             if (!response.ok) throw new Error("Ağ hatası oluştu.");
             setSubmitStatus('success');
         } catch (error) {
