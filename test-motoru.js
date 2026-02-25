@@ -167,7 +167,7 @@ const FocusON_Engine = () => {
         return contextText;
     };
 
-    // --- SUPABASE GÖNDERİM FONKSİYONU ---
+// --- SUPABASE GÖNDERİM FONKSİYONU ---
     const submitToSupabase = async (finalAnswers) => {
         setIsSubmitting(true);
         const studentId = finalAnswers['student_id'];
@@ -181,26 +181,33 @@ const FocusON_Engine = () => {
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
         
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, { // <-- NOT: Tablo adın test_results ise böyle kalmalı
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/test_results`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     'Prefer': 'return=minimal',
-                    'Content-Profile': 'focuson' 
+                    'Content-Profile': 'focuson' // Eğer tablon 'public' şemasındaysa bu satırı YORUMA AL (//)
                 },
                 body: JSON.stringify({
                     student_id: studentId, 
                     test_code: testData.id,
                     answers: testAnswers,
-                    ai_prompt_context: aiPromptContext // <-- İŞTE SİHİR BURADA!
+                    ai_prompt_context: aiPromptContext
                 })
             });
-            if (!response.ok) throw new Error("Ağ hatası oluştu.");
+            
+            // Eğer HTTP durumu 200-299 dışında bir şeyse, Supabase'in gizli hata mesajını oku!
+            if (!response.ok) {
+                const errorText = await response.text(); // Hatayı yakala
+                throw new Error(`Supabase Sunucu Hatası (${response.status}): ${errorText}`);
+            }
+            
             setSubmitStatus('success');
         } catch (error) {
-            console.error("Gönderim Hatası:", error);
+            console.error("Gönderim Hatası Detayı:", error);
+            alert("KAYIT HATASI:\n" + error.message); // Ekrana net hatayı basar
             setSubmitStatus('error');
         } finally {
             setIsSubmitting(false);
