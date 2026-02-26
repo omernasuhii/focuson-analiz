@@ -285,18 +285,20 @@ const FocusON_Engine = () => {
     const nextStep = () => {
         setAnimating(true);
         setTimeout(() => { 
-            const nextStepNum = step + 1;
-            setStep(nextStepNum); 
+            setStep(step + 1); 
             setAnimating(false);
-            
-            if (nextStepNum === totalQuestions) {
-                // 1. O testin kısa özetini hesapla
-                const calculatedResult = getAutoDiagnosis(testData.id, answers);
-                // 2. Hem cevapları hem de hesaplanan bu sonucu Supabase'e yolla!
-                submitToSupabase(answers, calculatedResult);
-            }
         }, 300);
     };
+
+    // --- TEST BİTTİĞİNDE (SON ADIMA GELDİĞİNDE) OTOMATİK KAYDET ---
+    React.useEffect(() => {
+        // Eğer güncel adım, toplam soru sayısına eşitse (Yani test bittiyse)
+        if (step === totalQuestions) {
+            // Son ve en güncel 'answers' verisiyle gönderim yap!
+            const calculatedResult = getAutoDiagnosis(testData.id, answers);
+            submitToSupabase(answers, calculatedResult);
+        }
+    }, [step]); // 'step' her değiştiğinde bu bloğu kontrol et
 
     const handleAnswer = (val) => {
         setAnswers(prev => ({ ...prev, [currentQ.id]: val }));
