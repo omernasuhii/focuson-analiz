@@ -141,9 +141,47 @@ const FocusON_Engine = () => {
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
-// --- YAPAY ZEKA İÇİN HAM VERİ PAKETLEYİCİ ---
+// --- YAPAY ZEKA İÇİN KISA TEŞHİS ÖZETLEYİCİ (DÜZELTİLDİ) ---
+    const getAutoDiagnosis = (testId, answers) => {
+        try {
+            let total = 0;
+            Object.keys(answers).forEach(k => { 
+                // HATA ÇÖZÜMÜ: student_id'yi asla puana dahil etme!
+                if(k !== 'student_id' && answers[k] !== "" && !isNaN(parseInt(answers[k]))) {
+                    total += parseInt(answers[k]); 
+                }
+            });
+
+            switch(testId) {
+                case 'oti-a': return total <= 25 ? 'Kırmızı Bölge (Sistemsiz)' : total <= 39 ? 'Sarı Bölge' : 'Yeşil Bölge (Disiplinli)';
+                case 'sp-be': 
+                    let sA=0, sB=0, sC=0; 
+                    Object.keys(answers).forEach(k => { 
+                        if(k !== 'student_id') {
+                            let v=parseInt(answers[k]||0); 
+                            if(k.includes('_a')) sA+=v; 
+                            if(k.includes('_b')) sB+=v; 
+                            if(k.includes('_c')) sC+=v; 
+                        }
+                    });
+                    let m = Math.max(sA,sB,sC);
+                    return m===sA ? 'Volkan Tipi (Savaş/Öfke)' : m===sB ? 'Buzdağı Tipi (Donma/Kaçma)' : 'Halterci Tipi (Aşırı Kontrol)';
+                case 'adte-20': return total >= 30 ? 'Yüksek Risk (Uzman Desteği Önerilir)' : 'Normal / Yönetilebilir';
+                case 'as-eq': return total >= 100 ? 'Yüksek Duygusal Zeka' : total >= 75 ? 'Orta Düzey' : 'Düşük EQ (Riskli)';
+                case 'ag-mot': return total >= 70 ? 'Yüksek Risk (Öğrenilmiş Çaresizlik)' : total >= 46 ? 'Orta Risk' : 'Sağlıklı Durum';
+                case 'apk-s': return total >= 97 ? 'Panik Düzeyi (Kırmızı Alarm)' : total >= 73 ? 'Yüksek Kaygı' : 'Yönetilebilir Stres';
+                case 'cdo-e': return total >= 91 ? 'Profesyonel Öğrenci' : total >= 61 ? 'Saman Alevi' : 'Turist Öğrenci';
+                case 'ayce': return total >= 76 ? 'Profesyonel Stratejist' : total >= 51 ? 'Gelişmekte' : 'Amatör Seviye';
+                case 'ss-dkm': return answers['ssdkm_strength'] === 'Hayir' ? 'Kesinlikle Tercih Yapılmalı' : 'Mezuna Kalınabilir';
+                default: return "Sistem teşhisi tamamlandı. AI kılavuza göre detaylı analiz yapacak.";
+            }
+        } catch(e) {
+            return "Test Tamamlandı.";
+        }
+    };
+
+    // --- YAPAY ZEKA İÇİN HAM VERİ PAKETLEYİCİ (DÜZELTİLDİ) ---
     const generateAIContext = (testData, answers, calculatedResult = "") => {
-        // Sadece temel bilgiler, sorular, cevaplar ve sistem sonucu. Prompt veya kural yok!
         let contextText = `Test Adı: ${testData.title}\n`;
         
         if (calculatedResult) {
@@ -157,11 +195,13 @@ const FocusON_Engine = () => {
         testData.questions.forEach(q => {
             if (q.id === 'student_id') return; // Numara sorusunu atla
             
-            let answerVal = answers[q.id] || "Boş Bıraktı";
+            // HATA ÇÖZÜMÜ: 0 rakamının false sayılmasını engelliyoruz. Sadece gerçekten undefined veya null ise Boş Bıraktı yaz.
+            let rawAnswer = answers[q.id];
+            let answerVal = (rawAnswer !== undefined && rawAnswer !== null && rawAnswer !== "") ? rawAnswer : "Boş Bıraktı";
             let answerLabel = answerVal;
 
             // Eğer çoktan seçmeliyse şıkkın tam metnini al
-            if (q.options) {
+            if (q.options && answerVal !== "Boş Bıraktı") {
                 let selectedOpt = q.options.find(o => String(o.value) === String(answerVal) || String(o.label).includes(String(answerVal)));
                 if (selectedOpt) answerLabel = selectedOpt.label;
             }
@@ -254,33 +294,6 @@ const FocusON_Engine = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [step, answers, currentQ, animating, totalQuestions]);
-
-    // --- YAPAY ZEKA İÇİN KISA TEŞHİS ÖZETLEYİCİ ---
-    const getAutoDiagnosis = (testId, answers) => {
-        try {
-            let total = 0;
-            Object.keys(answers).forEach(k => { if(!isNaN(parseInt(answers[k]))) total += parseInt(answers[k]); });
-
-            switch(testId) {
-                case 'oti-a': return total <= 25 ? 'Kırmızı Bölge (Sistemsiz)' : total <= 39 ? 'Sarı Bölge' : 'Yeşil Bölge (Disiplinli)';
-                case 'sp-be': 
-                    let sA=0, sB=0, sC=0; 
-                    Object.keys(answers).forEach(k => { let v=parseInt(answers[k]||0); if(k.includes('_a')) sA+=v; if(k.includes('_b')) sB+=v; if(k.includes('_c')) sC+=v; });
-                    let m = Math.max(sA,sB,sC);
-                    return m===sA ? 'Volkan Tipi (Savaş/Öfke)' : m===sB ? 'Buzdağı Tipi (Donma/Kaçma)' : 'Halterci Tipi (Aşırı Kontrol)';
-                case 'adte-20': return total >= 30 ? 'Yüksek Risk (Uzman Desteği Önerilir)' : 'Normal / Yönetilebilir';
-                case 'as-eq': return total >= 100 ? 'Yüksek Duygusal Zeka' : total >= 75 ? 'Orta Düzey' : 'Düşük EQ (Riskli)';
-                case 'ag-mot': return total >= 70 ? 'Yüksek Risk (Öğrenilmiş Çaresizlik)' : total >= 46 ? 'Orta Risk' : 'Sağlıklı Durum';
-                case 'apk-s': return total >= 97 ? 'Panik Düzeyi (Kırmızı Alarm)' : total >= 73 ? 'Yüksek Kaygı' : 'Yönetilebilir Stres';
-                case 'cdo-e': return total >= 91 ? 'Profesyonel Öğrenci' : total >= 61 ? 'Saman Alevi' : 'Turist Öğrenci';
-                case 'ayce': return total >= 76 ? 'Profesyonel Stratejist' : total >= 51 ? 'Gelişmekte' : 'Amatör Seviye';
-                case 'ss-dkm': return answers['ssdkm_strength'] === 'Hayir' ? 'Kesinlikle Tercih Yapılmalı' : 'Mezuna Kalınabilir';
-                default: return "Sistem teşhisi tamamlandı. AI kılavuza göre detaylı analiz yapacak.";
-            }
-        } catch(e) {
-            return "Test Tamamlandı.";
-        }
-    };
     
     const nextStep = () => {
         setAnimating(true);
