@@ -141,10 +141,17 @@ const FocusON_Engine = () => {
     const totalQuestions = testData.questions.length;
     const currentQ = testData.questions[step];
 
-// --- YAPAY ZEKA İÇİN BRİFİNG HAZIRLAYICI ---
-    const generateAIContext = (testData, answers) => {
-        let contextText = `Öğrenci az önce "${testData.title}" testini çözdü.\n`;
-        contextText += `Testin Amacı: ${testData.description}\n\n`;
+// --- YAPAY ZEKA İÇİN HAM VERİ PAKETLEYİCİ ---
+    const generateAIContext = (testData, answers, calculatedResult = "") => {
+        // Sadece temel bilgiler, sorular, cevaplar ve sistem sonucu. Prompt veya kural yok!
+        let contextText = `Test Adı: ${testData.title}\n`;
+        
+        if (calculatedResult) {
+            contextText += `Sistemin Çıkardığı Otomatik Sonuç / Teşhis: ${calculatedResult}\n\n`;
+        } else {
+            contextText += `\n`;
+        }
+
         contextText += `Öğrencinin Soru Bazlı Cevapları:\n`;
 
         testData.questions.forEach(q => {
@@ -162,20 +169,19 @@ const FocusON_Engine = () => {
             contextText += `- Soru: "${q.text}" | Cevabı: ${answerLabel}\n`;
         });
 
-        contextText += `\nSen FocusON dijital öğrenci koçusun. Yukarıdaki test sorularını ve öğrencinin verdiği cevapları incele. Öğrencinin test sonucuna göre ona samimi, motive edici ve akademik bir dille (sen diliyle) kısa bir durum değerlendirmesi ve tavsiye yaz. (Sadece doğrudan koçluk metnini üret, merhaba/saygılar gibi kalıplar kullanma).`;
-
         return contextText;
     };
 
 // --- SUPABASE GÖNDERİM FONKSİYONU ---
-    const submitToSupabase = async (finalAnswers) => {
+    // NOT: finalAnswers yanına calculatedResult parametresi ekledik
+    const submitToSupabase = async (finalAnswers, calculatedResult = "") => {
         setIsSubmitting(true);
         const studentId = finalAnswers['student_id'];
         const testAnswers = { ...finalAnswers };
         delete testAnswers['student_id'];
 
-        // Yapay Zeka için bağlam metnini oluşturuyoruz
-        const aiPromptContext = generateAIContext(testData, testAnswers);
+        // Yapay Zeka için SADECE ham bağlam metnini oluşturuyoruz
+        const aiPromptContext = generateAIContext(testData, testAnswers, calculatedResult);
 
         const SUPABASE_URL = "https://hlegbaflvfdpmcodfuew.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZWdiYWZsdmZkcG1jb2RmdWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MzIyNjAsImV4cCI6MjA4MzQwODI2MH0.siothqmKdww-IfMS4jLXMKswyvASUkBVWnhLwWDC8mg";
@@ -194,6 +200,7 @@ const FocusON_Engine = () => {
                     student_id: studentId, 
                     test_code: testData.id,
                     answers: testAnswers, 
+                    ai_summary: calculatedResult, // Sistemin kendi ürettiği kısa sonucu özel sütuna da yazıyoruz
                     ai_prompt_context: aiPromptContext
                 })
             });
