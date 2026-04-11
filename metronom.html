@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sınav Zaman Asistanı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            transition: background-color 0.5s ease;
+        }
+        /* 20 Dakika dolduğunda arka planın yeşil parlaması için */
+        body.flash-green {
+            background-color: #064e3b !important; /* Tailwind green-900 */
+        }
+        /* Sınav başladığında ayarları gizleme animasyonu */
+        .focus-mode .hide-on-focus {
+            opacity: 0;
+            pointer-events: none;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        /* Dijital saat fontu için monospace */
+        .clock-font {
+            font-family: 'Courier New', Courier, monospace;
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4 selection:bg-blue-500 selection:text-white">
+
+    <div id="appContainer" class="w-full max-w-4xl flex flex-col items-center transition-all duration-500">
+        
+        <!-- Başlık ve Uyarı (Sınavda Gizlenir) -->
+        <div class="text-center mb-8 hide-on-focus w-full">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-slate-100">Sınav Zaman Asistanı</h1>
+            <p class="text-slate-400">Duyuşsal Zaman Yönetimi ve Soru Ritmi Simülatörü</p>
+        </div>
+
+        <!-- Sınav Modu Seçimi (Sınavda Gizlenir) -->
+        <div class="flex flex-wrap justify-center gap-4 mb-8 hide-on-focus w-full">
+            <button onclick="setMode('TYT')" id="btn-TYT" class="mode-btn px-8 py-3 rounded-xl font-bold text-lg bg-blue-600 text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-500 hover:-translate-y-1">
+                TYT <span class="block text-xs font-normal opacity-80">165 Dk (75sn Ritim)</span>
+            </button>
+            <button onclick="setMode('AYT')" id="btn-AYT" class="mode-btn px-8 py-3 rounded-xl font-bold text-lg bg-slate-700 text-slate-300 transition-all hover:bg-slate-600">
+                AYT <span class="block text-xs font-normal opacity-80">180 Dk (135sn Ritim)</span>
+            </button>
+            <button onclick="setMode('YDT')" id="btn-YDT" class="mode-btn px-8 py-3 rounded-xl font-bold text-lg bg-slate-700 text-slate-300 transition-all hover:bg-slate-600">
+                YDT <span class="block text-xs font-normal opacity-80">120 Dk (90sn Ritim)</span>
+            </button>
+        </div>
+
+        <!-- Ses Ayarları (Sınavda Gizlenir) -->
+        <div class="flex flex-col md:flex-row flex-wrap items-center gap-4 mb-12 hide-on-focus bg-slate-800 p-4 rounded-2xl w-full max-w-4xl justify-center">
+            <div class="flex items-center gap-2">
+                <span class="text-slate-300">Ritim Seviyesi:</span>
+                <input type="range" id="rhythmVolumeSlider" min="0" max="100" value="50" class="w-24 cursor-pointer accent-blue-500">
+            </div>
+            <div class="hidden md:block w-px h-8 bg-slate-600"></div>
+            <div class="flex items-center gap-2">
+                <span class="text-slate-300">Çan Seviyesi:</span>
+                <input type="range" id="chimeVolumeSlider" min="0" max="100" value="70" class="w-24 cursor-pointer accent-emerald-500">
+            </div>
+            <div class="hidden md:block w-px h-8 bg-slate-600"></div>
+            <div class="flex items-center gap-2">
+                <span class="text-slate-300">Ritim Sesi:</span>
+                <select id="soundType" class="bg-slate-700 text-white rounded px-3 py-1 outline-none cursor-pointer border border-slate-600 focus:border-blue-500">
+                    <option value="beep">Bip Sesi (Canlı)</option>
+                    <option value="click">Tık Sesi (Tok)</option>
+                </select>
+            </div>
+            <div class="hidden md:block w-px h-8 bg-slate-600"></div>
+            <div class="flex items-center gap-2">
+                <button onclick="testMicroSound()" class="px-3 py-1 bg-slate-700 rounded hover:bg-slate-600 text-sm" title="Ritim Sesini Test Et">Ritim Test</button>
+                <button onclick="testChime()" class="px-3 py-1 bg-slate-700 rounded hover:bg-slate-600 text-sm" title="20 Dk Sesini Test Et">Çan Test</button>
+            </div>
+        </div>
+
+        <!-- Dijital Saat Ekranı -->
+        <div class="relative bg-slate-800/50 p-8 md:p-16 rounded-3xl border border-slate-700/50 shadow-2xl mb-12 w-full text-center">
+            <div id="clockDisplay" class="text-6xl md:text-8xl lg:text-[9rem] font-bold clock-font text-slate-100 tracking-tight leading-none">
+                10:15:00
+            </div>
+            
+            <!-- İlerleme Durumu -->
+            <div id="statusText" class="absolute bottom-4 left-0 right-0 text-center text-slate-400 font-medium">
+                Başlamak için hazır.
+            </div>
+        </div>
+
+        <!-- Kontrol Butonları -->
+        <div class="flex gap-4 z-10">
+            <button id="startBtn" onclick="toggleTimer()" class="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xl shadow-lg shadow-emerald-600/20 transition-all hover:-translate-y-1">
+                Sınavı Başlat
+            </button>
+            <button id="resetBtn" onclick="resetTimer()" class="px-8 py-4 bg-rose-900 hover:bg-rose-800 text-rose-200 font-bold rounded-2xl text-lg shadow-lg hidden transition-all">
+                Bitir / Sıfırla
+            </button>
+            <button id="fullscreenBtn" onclick="toggleFullScreen()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-2xl text-lg transition-all" title="Tam Ekran">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+        </div>
+
+        <!-- Onay Modalı (Sıfırlama için) -->
+        <div id="confirmModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 transition-opacity">
+            <div class="bg-slate-800 p-8 rounded-3xl max-w-sm w-full text-center border border-slate-700 shadow-2xl">
+                <h3 class="text-2xl font-bold text-white mb-4">Sınavı Bitir</h3>
+                <p class="text-slate-300 mb-8">Sınavı bitirmek ve süreyi sıfırlamak istediğinize emin misiniz?</p>
+                <div class="flex justify-center gap-4">
+                    <button onclick="cancelReset()" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl transition-all">İptal</button>
+                    <button onclick="confirmReset()" class="px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all">Evet, Bitir</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- AYARLAR VE VERİ YAPISI ---
+        const MODES = {
+            'TYT': { duration: 165, tickInterval: 75, startH: 10, startM: 15 },
+            'AYT': { duration: 180, tickInterval: 135, startH: 10, startM: 15 },
+            'YDT': { duration: 120, tickInterval: 90, startH: 15, startM: 45 }
+        };
+
+        const MACRO_INTERVAL = 1200; // 20 dakika = 1200 saniye
+
+        let currentMode = 'TYT';
+        let isRunning = false;
+        let animationFrameId = null;
+        let startTimeMs = 0;
+        let pausedElapsedSeconds = 0;
+        let lastProcessedElapsed = -1;
+
+        // --- WEB AUDIO API (Ses Sentezleyici) ---
+        // Harici dosya kullanmadan tarayıcı içinde ses üretiyoruz.
+        let audioCtx;
+        let rhythmGain;
+        let chimeGain;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                rhythmGain = audioCtx.createGain();
+                rhythmGain.connect(audioCtx.destination);
+                
+                chimeGain = audioCtx.createGain();
+                chimeGain.connect(audioCtx.destination);
+                
+                updateRhythmVolume();
+                updateChimeVolume();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function updateRhythmVolume() {
+            if (rhythmGain) {
+                const vol = document.getElementById('rhythmVolumeSlider').value;
+                // Logaritmik algı için karesini alıyoruz
+                rhythmGain.gain.value = (vol / 100) * (vol / 100); 
+            }
+        }
+
+        function updateChimeVolume() {
+            if (chimeGain) {
+                const vol = document.getElementById('chimeVolumeSlider').value;
+                // Logaritmik algı için karesini alıyoruz
+                chimeGain.gain.value = (vol / 100) * (vol / 100); 
+            }
+        }
+
+        document.getElementById('rhythmVolumeSlider').addEventListener('input', updateRhythmVolume);
+        document.getElementById('chimeVolumeSlider').addEventListener('input', updateChimeVolume);
+
+        // Metronom Sesi (Kısa ve tok bir "tık")
+        function playClickSound() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(rhythmGain);
+            
+            // Daha canlı, duyulabilir ve keskin bir metronom sesi (Woodblock benzeri)
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.08);
+            
+            // Başlangıç ses seviyesini 1.0 yaparak daha belirgin ve tok hale getirdik
+            gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        // Bip Sesi (Sınıf/Kütüphane ortamı için daha delici ve net)
+        function playBeepSound() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(rhythmGain);
+            
+            osc.type = 'square'; // Kare dalga akustik olarak çok daha geniş bir alana yayılır
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+            
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime); // Kare dalga çok güçlü olduğu için seviyeyi dengeliyoruz
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playCurrentMicroSound() {
+            const type = document.getElementById('soundType').value;
+            if (type === 'beep') playBeepSound();
+            else playClickSound();
+        }
+
+        // 20 Dakika Uyarısı (Yumuşak, uzun bir "çan" / ding)
+        function playChimeSound() {
+            if (!audioCtx) return;
+            // Daha canlı ve zengin bir çan sesi için iki osilatör kullanıyoruz
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(chimeGain);
+            
+            osc1.type = 'sine';
+            osc2.type = 'triangle';
+            
+            osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 notası
+            osc2.frequency.setValueAtTime(1760, audioCtx.currentTime); // A6 notası (Parlaklık katar)
+            
+            gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.5);
+            
+            osc1.start();
+            osc2.start();
+            osc1.stop(audioCtx.currentTime + 2.5);
+            osc2.stop(audioCtx.currentTime + 2.5);
+        }
+
+        function testMicroSound() { initAudio(); playCurrentMicroSound(); }
+        function testChime() { initAudio(); playChimeSound(); }
+
+        // --- ARAYÜZ VE MANTIK FONKSİYONLARI ---
+
+        function setMode(modeName) {
+            if (isRunning) return; // Sınav anında mod değişimi yasak
+            currentMode = modeName;
+            pausedElapsedSeconds = 0;
+            lastProcessedElapsed = -1;
+            
+            // Buton Stillerini Güncelle
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-500/30', 'hover:bg-blue-500', 'hover:-translate-y-1');
+                btn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${modeName}`);
+            activeBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-500/30', 'hover:bg-blue-500', 'hover:-translate-y-1');
+
+            updateDisplay();
+            document.getElementById('statusText').innerText = `${modeName} Modu Seçildi. Başlamak için hazır.`;
+        }
+
+        function formatSimulatedTime(elapsedSeconds) {
+            const startH = MODES[currentMode].startH;
+            const startM = MODES[currentMode].startM;
+            
+            let totalSimulatedSeconds = (startH * 3600) + (startM * 60) + elapsedSeconds;
+            
+            const h = Math.floor(totalSimulatedSeconds / 3600) % 24;
+            const m = Math.floor((totalSimulatedSeconds % 3600) / 60);
+            const s = totalSimulatedSeconds % 60;
+            
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            document.getElementById('clockDisplay').innerText = formatSimulatedTime(pausedElapsedSeconds);
+        }
+
+        function triggerFlashEffect() {
+            document.body.classList.add('flash-green');
+            setTimeout(() => {
+                document.body.classList.remove('flash-green');
+            }, 1000); // 1 saniye sonra yeşilliği kaldır
+        }
+
+        function gameLoop() {
+            if (!isRunning) return;
+
+            const now = Date.now();
+            const elapsedSeconds = Math.floor((now - startTimeMs) / 1000);
+
+            // Sadece saniye değiştiğinde işlem yap
+            if (elapsedSeconds !== lastProcessedElapsed && elapsedSeconds >= 0) {
+                lastProcessedElapsed = elapsedSeconds;
+                
+                // Saati her saniye güncellemek için pausedElapsedSeconds değişkenini aracı olarak kullanıyoruz
+                pausedElapsedSeconds = elapsedSeconds;
+
+                // Kontrol Algoritması (Çakışma Yönetimi)
+                if (elapsedSeconds > 0) {
+                    const isMacroTick = (elapsedSeconds % MACRO_INTERVAL === 0);
+                    const isMicroTick = (elapsedSeconds % MODES[currentMode].tickInterval === 0);
+
+                    if (isMacroTick) {
+                        // 20 Dakika Kuralı (Öncelikli)
+                        playChimeSound();
+                        triggerFlashEffect();
+                        const blocks = elapsedSeconds / MACRO_INTERVAL;
+                        document.getElementById('statusText').innerText = `${blocks * 20} dakika geride kaldı!`;
+                    } else if (isMicroTick) {
+                        // Soru Ritmi Kuralı (Eğer çakışma yoksa)
+                        playCurrentMicroSound();
+                    }
+                }
+
+                updateDisplay();
+
+                if (elapsedSeconds >= MODES[currentMode].duration * 60) {
+                    endTimer();
+                    return;
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function toggleTimer() {
+            initAudio(); // Tarayıcı politikası gereği ilk tıklamada ses motorunu başlat
+
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            if (!isRunning) {
+                // BAŞLAT
+                isRunning = true;
+                startTimeMs = Date.now() - (pausedElapsedSeconds * 1000);
+                
+                // Arayüzü odak moduna al
+                document.getElementById('appContainer').classList.add('focus-mode');
+                startBtn.innerText = "Duraklat";
+                startBtn.classList.replace('bg-emerald-600', 'bg-amber-600');
+                startBtn.classList.replace('hover:bg-emerald-500', 'hover:bg-amber-500');
+                startBtn.classList.replace('shadow-emerald-600/20', 'shadow-amber-600/20');
+                resetBtn.classList.remove('hidden');
+                
+                const currentTick = MODES[currentMode].tickInterval;
+                document.getElementById('statusText').innerText = `Sınav saati çalışıyor. Her ${currentTick} saniyede ritim duyacaksınız.`;
+
+                animationFrameId = requestAnimationFrame(gameLoop);
+            } else {
+                // DURAKLAT
+                isRunning = false;
+                cancelAnimationFrame(animationFrameId);
+                
+                startBtn.innerText = "Devam Et";
+                startBtn.classList.replace('bg-amber-600', 'bg-emerald-600');
+                startBtn.classList.replace('hover:bg-amber-500', 'hover:bg-emerald-500');
+                startBtn.classList.replace('shadow-amber-600/20', 'shadow-emerald-600/20');
+                document.getElementById('statusText').innerText = "Sınav duraklatıldı.";
+            }
+        }
+
+        function resetTimer() {
+            // Tarayıcı içinde çalışan iFrame'lerde alert/confirm engellendiği için özel modal açıyoruz
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
+
+        function cancelReset() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+
+        function confirmReset() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+
+            isRunning = false;
+            cancelAnimationFrame(animationFrameId);
+            
+            pausedElapsedSeconds = 0;
+            lastProcessedElapsed = -1;
+            updateDisplay();
+            
+            // Arayüzü eski haline getir
+            document.getElementById('appContainer').classList.remove('focus-mode');
+            const startBtn = document.getElementById('startBtn');
+            startBtn.innerText = "Sınavı Başlat";
+            startBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-600/20');
+            startBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-600/20');
+            
+            document.getElementById('resetBtn').classList.add('hidden');
+            document.getElementById('statusText').innerText = "Süre sıfırlandı. Başlamak için hazır.";
+        }
+
+        function endTimer() {
+            isRunning = false;
+            
+            // Saati tam sınav bitiş anına sabitle
+            pausedElapsedSeconds = MODES[currentMode].duration * 60;
+            updateDisplay();
+            
+            document.getElementById('statusText').innerText = "SINAV BİTTİ!";
+            
+            // Bitiş sesi (Çift çan)
+            playChimeSound();
+            setTimeout(playChimeSound, 1000);
+            
+            document.body.classList.add('flash-green'); // Son yeşil ekran
+            
+            const startBtn = document.getElementById('startBtn');
+            startBtn.classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('focus-mode');
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Tam ekran hatası: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Başlangıç ekranı formatı
+        updateDisplay();
+    </script>
+</body>
+</html>
