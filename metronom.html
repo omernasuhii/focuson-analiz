@@ -34,7 +34,9 @@
         
         <!-- Marka Logosu, Başlık ve Uyarı (Sınavda Gizlenir) -->
         <div class="text-center mb-8 hide-on-focus w-full flex flex-col items-center">
-            <img src="https://lh3.googleusercontent.com/d/130XeA8KeLOlbo9dZFn9gFY2A5inMKaYk" alt="Kurum Logosu" class="h-24 md:h-32 mb-6 object-contain drop-shadow-xl transition-transform hover:scale-105">
+            <a href="https://omernasuhakademi.com" target="_blank" class="block mb-6 transition-transform hover:scale-105" title="omernasuhakademi.com'a git">
+                <img src="https://lh3.googleusercontent.com/d/130XeA8KeLOlbo9dZFn9gFY2A5inMKaYk" alt="Kurum Logosu" class="h-24 md:h-32 object-contain drop-shadow-xl">
+            </a>
             <h1 class="text-4xl md:text-5xl font-bold mb-2 text-slate-100">Sınav Zaman Asistanı</h1>
             <p class="text-slate-400">Duyuşsal Zaman Yönetimi ve Soru Ritmi Simülatörü</p>
         </div>
@@ -399,12 +401,15 @@
             lastProcessedElapsed = -1;
             updateDisplay();
             
+            document.body.classList.remove('flash-green'); // HATA DÜZELTİLDİ: Sıfırlandığında yeşil arkaplanı kaldır
+            
             // Arayüzü eski haline getir
             document.getElementById('appContainer').classList.remove('focus-mode');
             const startBtn = document.getElementById('startBtn');
             startBtn.innerText = "Sınavı Başlat";
             startBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-600/20');
             startBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-600/20');
+            startBtn.classList.remove('hidden');
             
             document.getElementById('resetBtn').classList.add('hidden');
             document.getElementById('statusText').innerText = "Süre sıfırlandı. Başlamak için hazır.";
